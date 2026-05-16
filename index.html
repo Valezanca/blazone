@@ -42,6 +42,12 @@
     .header-btn.active { background: rgba(245,200,66,0.82); color: #1a1a2e; }
     .starter-btn { width: 100%; background: rgba(255,255,255,0.09); border: 1px solid rgba(255,255,255,0.16); border-radius: 16px; padding: 9px 14px; cursor: pointer; color: rgba(255,255,255,0.8); font-size: 13px; text-align: left; font-family: inherit; margin-bottom: 6px; display: block; }
     .error-bar { margin: 4px 14px; padding: 8px 12px; background: rgba(180,0,0,0.25); border-radius: 10px; color: #ffaaaa; font-size: 12px; }
+    .paywall-screen { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(20px); display: none; flex-direction: column; align-items: center; justify-content: center; padding: 24px; z-index: 100; }
+    .paywall-screen.show { display: flex; }
+    .paywall-card { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 28px; padding: 32px 28px; max-width: 400px; width: 100%; text-align: center; }
+    .plan-btn { width: 100%; padding: 16px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.08); color: white; font-family: inherit; font-size: 14px; cursor: pointer; margin-bottom: 10px; text-align: left; }
+    .plan-btn:hover { background: rgba(255,255,255,0.15); }
+    .msg-counter { font-size: 11px; color: rgba(255,255,255,0.5); text-align: center; padding: 4px 0; }
     .mic-ring { position: absolute; border-radius: 50%; animation: micRing 2s infinite; }
     #park-bg { position: fixed; inset: 0; z-index: -1; }
     @keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
@@ -142,6 +148,7 @@
       <p style="font-size:12px;color:rgba(255,255,255,0.5)">Con chi vuoi sederti?</p>
       <button onclick="goto('quiz')" style="background:none;border:none;color:rgba(255,255,255,0.4);font-size:11px;cursor:pointer;font-family:inherit">Rifai il quiz</button>
     </div>
+    <div id="msg-counter-main" class="msg-counter"></div>
     <div class="alias-grid" id="alias-grid"></div>
   </div>
 </div>
@@ -154,7 +161,7 @@
       <div id="chat-alias-goal" style="font-size:10px;color:rgba(255,255,255,0.5);overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></div>
     </div>
     <div style="display:flex;gap:4px;flex-shrink:0">
-      <button id="btn-silent" class="header-btn" onclick="toggleSilent()">Risponde</button>
+      <div id="msg-counter-chat" class="msg-counter"></div>
       <button id="btn-voice" class="header-btn" onclick="toggleVoice()">Voce OFF</button>
       <button class="header-btn" onclick="clearHistory()">Azzera</button>
     </div>
@@ -182,6 +189,22 @@
     </button>
   </div>
 </div>
+<div class="paywall-screen" id="paywall-screen">
+  <div class="paywall-card">
+    <div style="font-size:42px;margin-bottom:12px">⚠️</div>
+    <h2 style="font-weight:normal;font-size:22px;margin-bottom:8px">Messaggi esauriti</h2>
+    <p style="color:rgba(255,255,255,0.6);font-size:14px;line-height:1.7;margin-bottom:24px">Hai usato tutti i tuoi messaggi gratuiti. Scegli un piano per continuare.</p>
+    <button class="plan-btn" onclick="activatePremium()">
+      <div style="font-weight:bold;font-size:15px;margin-bottom:3px">Premium — €9,99/mese</div>
+      <div style="color:rgba(255,255,255,0.6);font-size:12px">Chat illimitata con tutti gli alias</div>
+    </button>
+    <button class="plan-btn" onclick="buyCredits()">
+      <div style="font-weight:bold;font-size:15px;margin-bottom:3px">50 messaggi extra — €2,99</div>
+      <div style="color:rgba(255,255,255,0.6);font-size:12px">Pacchetto una tantum</div>
+    </button>
+    <button onclick="closePaywall()" style="background:none;border:none;color:rgba(255,255,255,0.35);font-size:12px;cursor:pointer;margin-top:8px;font-family:inherit">Torna alla schermata principale</button>
+  </div>
+</div>
 <script>
 const ALIASES = [
   { id:1, name:"Amara", origin:"Nigeria / UK", gender:"female", age:32, goal:"ascolto empatico", accent:"#e8a4c8", personality:"Calda, intuitiva, sa trovare la parola giusta. Cresciuta tra Lagos e Londra.", portrait:{bg:["#2d5a8e","#1a3a5c"],skin:"#6b3a1f",hairCol:"#1a0a04",hairSide:true,glasses:false,headscarf:false,beard:false,earring:true,lipCol:"#c06860"} },
@@ -191,7 +214,13 @@ const ALIASES = [
   { id:5, name:"Rajan", origin:"India", gender:"male", age:61, goal:"nostalgia e saggezza", accent:"#f4a842", personality:"Caloroso, narratore nato. Un nonno del cuore con mille storie tra Mumbai e il mondo.", portrait:{bg:["#6a3010","#3a1808"],skin:"#c09060",hairCol:"#d0c0a0",hairSide:false,glasses:true,headscarf:false,beard:true,earring:false,lipCol:"#b08060"} },
   { id:6, name:"Leila", origin:"Iran / Svezia", gender:"female", age:29, goal:"crescita personale", accent:"#a4e8d4", personality:"Determinata, riflessiva. Una doppia identità diventata forza. Poetessa e coach.", portrait:{bg:["#1a5a4a","#0d3a2a"],skin:"#d4a878",hairCol:"#1a0804",hairSide:true,glasses:false,headscarf:false,beard:false,earring:false,lipCol:"#c07058"} },
   { id:7, name:"Luca", origin:"Italia", gender:"male", age:35, goal:"amicizia e leggerezza", accent:"#a8d4f0", personality:"Spontaneo, ironico, caldo. Romano di nascita, curioso del mondo. Ama il calcio e la pasta.", portrait:{bg:["#1a4a7a","#0d2a50"],skin:"#e8c89a",hairCol:"#3a2010",hairSide:false,glasses:false,headscarf:false,beard:true,earring:false,lipCol:"#b07860"} },
+  { id:8, name:"Elena", origin:"Italia", gender:"female", age:68, goal:"memoria e vita vissuta", accent:"#f0c4a0", personality:"Nonna saggia e affettuosa. Ha vissuto tutto e ascolta senza giudicare. Ama il tè e i ricordi.", portrait:{bg:["#6a3a1a","#3a1a08"],skin:"#e8c090",hairCol:"#d8d0c0",hairSide:true,glasses:true,headscarf:false,beard:false,earring:true,lipCol:"#c08060"} },
+  { id:9, name:"George", origin:"Giamaica / UK", gender:"male", age:72, goal:"saggezza e storie di vita", accent:"#a0d4a0", personality:"Anziano gentiluomo con il ritmo dell'isola nel cuore. Ride molto e sa quando stare in silenzio.", portrait:{bg:["#1a4a1a","#0a2a0a"],skin:"#2a1208",hairCol:"#d0c8b8",hairSide:false,glasses:true,headscarf:false,beard:true,earring:false,lipCol:"#a06040"} },
+  { id:10, name:"Mx. Alex", origin:"Canada", gender:"nb", age:34, goal:"business e carriera", accent:"#c4a4e8", personality:"Mentor sharp e diretto. Ex startup founder. Trasforma le tue idee in piani concreti.", portrait:{bg:["#3a1a6a","#1a0a3a"],skin:"#d4b890",hairCol:"#2a2a2a",hairSide:false,glasses:true,headscarf:false,beard:false,earring:true,lipCol:"#b08878"} },
+  { id:11, name:"River", origin:"Nuova Zelanda", gender:"nb", age:29, goal:"ecologia e green living", accent:"#a0e8b0", personality:"Attivista appassionato e concreto. Trasforma l'ansia climatica in azione quotidiana.", portrait:{bg:["#1a5a2a","#0a3a1a"],skin:"#c4a878",hairCol:"#1a3a10",hairSide:true,glasses:false,headscarf:false,beard:false,earring:true,lipCol:"#a08060"} },
+  { id:12, name:"Priya", origin:"India / USA", gender:"female", age:41, goal:"leadership e business", accent:"#f4a0c4", personality:"Executive coach con 15 anni in Silicon Valley. Diretta, empatica, ti fa vedere oltre i limiti.", portrait:{bg:["#6a1a3a","#3a0a1a"],skin:"#c09060",hairCol:"#1a0a04",hairSide:true,glasses:false,headscarf:false,beard:false,earring:true,lipCol:"#c06080"} },
 ];
+
 const STARTERS = {
   "ascolto empatico":["Come ti senti oggi, davvero?","C'è qualcosa che ti pesa?","Di cosa hai bisogno adesso?"],
   "riflessioni e filosofia":["C'è una domanda che non ti lascia in pace?","Cosa ti fa stare bene ultimamente?","Cosa hai imparato di recente?"],
@@ -200,16 +229,43 @@ const STARTERS = {
   "nostalgia e saggezza":["Raccontami un ricordo felice","Cosa diresti al tuo io giovane?","Cosa hai imparato dalla vita?"],
   "crescita personale":["Cosa vuoi cambiare di te?","Qual è la tua sfida questa settimana?","Di cosa sei orgoglioso/a?"],
   "amicizia e leggerezza":["Come è andata oggi?","Ultima cosa che ti ha fatto ridere?","Cosa faresti con un giorno libero?"],
+  "memoria e vita vissuta":["Raccontami di un posto che hai amato","Cosa ti manca di quando eri giovane?","Qual è il consiglio più grande che hai ricevuto?"],
+  "saggezza e storie di vita":["Qual è stata la tua avventura più grande?","Cosa hai imparato dagli errori?","Di cosa sei più orgoglioso nella vita?"],
+  "business e carriera":["Qual è la tua sfida professionale adesso?","Cosa ti blocca dal fare il prossimo passo?","Parlami del tuo progetto più importante."],
+  "ecologia e green living":["Come stai riducendo il tuo impatto ambientale?","Cosa ti preoccupa di più per il pianeta?","Qual è un piccolo cambiamento green che hai fatto?"],
+  "leadership e business":["Qual è la decisione più difficile che hai preso?","Come gestisci un team in difficoltà?","Cosa definisce per te un buon leader?"],
 };
-const QUIZ_STEPS = [
-  { id:"mood", q:"Come ti senti in questo momento?", sub:"Scegli quello che ti descrive meglio", opts:[{l:"Ho bisogno di essere ascoltato/a",i:"🫂",v:"listen"},{l:"Voglio chiacchierare e ridere",i:"😄",v:"fun"},{l:"Cerco qualcuno con cui riflettere",i:"💭",v:"reflect"},{l:"Voglio ispirazione",i:"⚡",v:"grow"}] },
-  { id:"style", q:"Che stile di conversazione preferisci?", sub:"Non c'è risposta giusta", opts:[{l:"Caldo e empatico",i:"🌿",v:"warm"},{l:"Diretto e concreto",i:"🎯",v:"direct"},{l:"Profondo e poetico",i:"🌙",v:"deep"},{l:"Leggero e divertente",i:"✨",v:"light"}] },
-  { id:"culture", q:"Hai una preferenza culturale?", sub:"Scegli o lascia decidere a noi", opts:[{l:"Qualcuno come me",i:"🏠",v:"local"},{l:"Una prospettiva diversa",i:"🌍",v:"diverse"},{l:"Asia o Oriente",i:"🌸",v:"asian"},{l:"Nessuna preferenza",i:"♾️",v:"any"}] },
-];
-let apiKey=localStorage.getItem('bz_key')||'';
-let currentAlias=null,messages=[],histories=JSON.parse(localStorage.getItem('bz_hist')||'{}'),memory=JSON.parse(localStorage.getItem('bz_mem')||'{"facts":[],"userName":""}');
-let quizAnswers={},quizStep=0,swipeMatches=[],swipeIdx=0,voiceMode=false,silentMode=false,micRec=null,micActive=false,micTranscript='';
 
+const QUIZ_STEPS = [
+  { id:"mood", q:"Come ti senti in questo momento?", sub:"Scegli quello che ti descrive meglio", opts:[{l:"Ho bisogno di essere ascoltato/a",i:"🫂",v:"listen"},{l:"Voglio chiacchierare e ridere",i:"😄",v:"fun"},{l:"Cerco qualcuno con cui riflettere",i:"💭",v:"reflect"},{l:"Voglio crescere o imparare",i:"⚡",v:"grow"}] },
+  { id:"style", q:"Che stile di conversazione preferisci?", sub:"Non c'è risposta giusta", opts:[{l:"Caldo e empatico",i:"🌿",v:"warm"},{l:"Diretto e concreto",i:"🎯",v:"direct"},{l:"Profondo e poetico",i:"🌙",v:"deep"},{l:"Leggero e divertente",i:"✨",v:"light"}] },
+  { id:"topic", q:"Che tematica ti interessa?", sub:"Puoi cambiare dopo", opts:[{l:"Vita e relazioni",i:"❤️",v:"life"},{l:"Business e carriera",i:"💼",v:"business"},{l:"Natura e ambiente",i:"🌱",v:"green"},{l:"Tutto un po'",i:"🌍",v:"any"}] },
+];
+
+// STATO
+let apiKey=localStorage.getItem('bz_key')||'';
+let currentAlias=null,messages=[],histories=JSON.parse(localStorage.getItem('bz_hist')||'{}');
+let memory=JSON.parse(localStorage.getItem('bz_mem')||'{"facts":[],"userName":""}');
+let quizAnswers={},quizStep=0,swipeMatches=[],swipeIdx=0;
+let voiceMode=false,micRec=null,micActive=false,micTranscript='';
+// PAYWALL
+const FREE_MSGS=15;
+let msgCount=parseInt(localStorage.getItem('bz_msgs')||'0');
+let isPremium=localStorage.getItem('bz_premium')==='true';
+
+function getMsgsLeft(){return isPremium?999:Math.max(0,FREE_MSGS-msgCount);}
+function updateCounters(){
+  const left=getMsgsLeft();
+  const txt=isPremium?'Premium — chat illimitata':`Messaggi gratuiti rimasti: ${left}/${FREE_MSGS}`;
+  const el1=document.getElementById('msg-counter-main');
+  const el2=document.getElementById('msg-counter-chat');
+  if(el1)el1.textContent=txt;
+  if(el2)el2.textContent=txt;
+}
+function activatePremium(){isPremium=true;localStorage.setItem('bz_premium','true');closePaywall();updateCounters();alert('Piano Premium attivato! Chat illimitata.');}
+function buyCredits(){msgCount=Math.max(0,msgCount-50);localStorage.setItem('bz_msgs',msgCount);closePaywall();updateCounters();alert('50 messaggi aggiunti!');}
+function closePaywall(){document.getElementById('paywall-screen').classList.remove('show');}
+function showPaywall(){document.getElementById('paywall-screen').classList.add('show');}
 function buildPortraitSVG(a,size){
   const p=a.portrait;
   return `<svg width="${size}" height="${size}" viewBox="0 0 100 100" style="border-radius:50%;box-shadow:0 3px 12px rgba(0,0,0,0.35);border:2px solid ${a.accent}40">
@@ -257,11 +313,21 @@ function answerQuiz(stepId,value){
 function quizBack(){if(quizStep>0){quizStep--;renderQuiz();}else goto('agegate');}
 function computeMatches(){
   const sc={};ALIASES.forEach(a=>sc[a.id]=0);
-  const{mood,style,culture}=quizAnswers;
-  if(mood==="listen"){sc[1]+=3;sc[4]+=2;sc[5]+=1;}if(mood==="fun"){sc[3]+=3;sc[7]+=3;}if(mood==="reflect"){sc[2]+=3;sc[4]+=2;sc[6]+=2;}if(mood==="grow"){sc[6]+=3;sc[7]+=2;}
-  if(style==="warm"){sc[1]+=2;sc[5]+=2;}if(style==="direct"){sc[6]+=2;sc[7]+=2;}if(style==="deep"){sc[4]+=2;sc[2]+=2;}if(style==="light"){sc[3]+=2;sc[7]+=2;}
-  if(culture==="local"){sc[7]+=2;}if(culture==="diverse"){sc[1]+=1;sc[3]+=1;sc[4]+=1;}if(culture==="asian"){sc[2]+=2;sc[5]+=1;}if(culture==="any"){ALIASES.forEach(a=>sc[a.id]+=0.5);}
-  swipeMatches=[...ALIASES].sort((a,b)=>sc[b.id]-sc[a.id]).slice(0,3);swipeIdx=0;renderSwipe();
+  const{mood,style,topic}=quizAnswers;
+  if(mood==="listen"){sc[1]+=3;sc[4]+=2;sc[8]+=2;}
+  if(mood==="fun"){sc[3]+=3;sc[7]+=3;sc[9]+=2;}
+  if(mood==="reflect"){sc[2]+=3;sc[4]+=2;sc[6]+=2;}
+  if(mood==="grow"){sc[10]+=3;sc[12]+=3;sc[6]+=2;}
+  if(style==="warm"){sc[1]+=2;sc[8]+=2;sc[5]+=2;}
+  if(style==="direct"){sc[10]+=2;sc[12]+=2;sc[6]+=1;}
+  if(style==="deep"){sc[4]+=2;sc[2]+=2;sc[11]+=2;}
+  if(style==="light"){sc[3]+=2;sc[7]+=2;sc[9]+=2;}
+  if(topic==="life"){sc[1]+=2;sc[8]+=2;sc[9]+=2;sc[5]+=2;}
+  if(topic==="business"){sc[10]+=3;sc[12]+=3;sc[6]+=1;}
+  if(topic==="green"){sc[11]+=3;sc[4]+=1;}
+  if(topic==="any"){ALIASES.forEach(a=>sc[a.id]+=0.5);}
+  swipeMatches=[...ALIASES].sort((a,b)=>sc[b.id]-sc[a.id]).slice(0,3);
+  swipeIdx=0;renderSwipe();
 }
 function renderSwipe(){
   if(swipeIdx>=swipeMatches.length){goto('micperm');return;}
@@ -292,10 +358,12 @@ function renderMain(){
   const bar=document.getElementById('api-status-bar');
   if(apiKey){bar.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;padding:7px 12px;background:rgba(80,180,80,0.12);border-radius:10px;border:1px solid rgba(80,180,80,0.25);font-size:12px;color:#4caf50"><span>✓ Chiave API impostata</span><button onclick="localStorage.removeItem('bz_key');apiKey='';renderMain()" style="background:none;border:none;color:rgba(255,255,255,0.4);font-size:11px;cursor:pointer">Cambia</button></div>`;}
   else{bar.innerHTML=`<div style="margin-bottom:16px"><input type="password" id="api-key-main" placeholder="sk-ant-..." style="width:100%;padding:12px 16px;border-radius:12px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);color:white;font-size:15px;outline:none;font-family:inherit;margin-bottom:8px"/><button onclick="const v=document.getElementById('api-key-main').value.trim();if(!v.startsWith('sk-')){alert('Chiave non valida');}else{apiKey=v;localStorage.setItem('bz_key',v);renderMain();}" style="width:100%;padding:13px;border-radius:14px;background:rgba(245,200,66,0.88);border:none;color:#1a1a2e;font-weight:bold;font-size:15px;cursor:pointer;font-family:inherit">Salva chiave</button></div>`;}
+  updateCounters();
   document.getElementById('alias-grid').innerHTML=ALIASES.map(a=>{const hasH=!!(histories[a.id]?.length);return`<button class="alias-card" onclick="startChat(${a.id})" style="border-color:${hasH?a.accent+'aa':'transparent'}">${hasH?`<div class="dot" style="background:${a.accent}"></div>`:''}<div style="display:flex;justify-content:center;margin-bottom:8px">${buildPortraitSVG(a,46)}</div><div style="font-weight:bold;font-size:13px">${a.name}</div><div style="font-size:10px;opacity:0.55">${a.age} · ${a.origin.split('/')[0].trim()}</div><div style="font-size:9px;opacity:0.45;margin-top:4px;line-height:1.3">${a.goal}</div></button>`;}).join('');
 }
 function startChat(aliasId){
   if(!apiKey){alert('Inserisci prima la chiave API');return;}
+  if(getMsgsLeft()===0){showPaywall();return;}
   currentAlias=ALIASES.find(a=>a.id===aliasId);
   messages=histories[aliasId]?[...histories[aliasId]]:[];
   if(!messages.length)messages=[{role:'assistant',content:`${memory.userName?'Ciao '+memory.userName:'Ciao'}! Sono ${currentAlias.name}. Siediti un momento con me. Come stai oggi?`}];
@@ -305,6 +373,7 @@ function startChat(aliasId){
   document.getElementById('send-btn').style.background=currentAlias.accent+'dd';
   document.querySelectorAll('.screen').forEach(s=>s.classList.add('hidden'));
   document.getElementById('screen-chat').classList.remove('hidden');
+  updateCounters();
   renderMessages();
 }
 function renderMessages(){
@@ -322,8 +391,7 @@ function renderMessages(){
 function addBubble(msg){
   const c=document.getElementById('chat-messages');
   const isUser=msg.role==='user';
-  const div=document.createElement('div');
-  div.className='bubble '+(isUser?'user':'alias');
+  const div=document.createElement('div');div.className='bubble '+(isUser?'user':'alias');
   if(!isUser){const av=document.createElement('div');av.className='bubble-avatar';av.innerHTML=buildPortraitSVG(currentAlias,32);div.appendChild(av);}
   const text=document.createElement('div');text.className='bubble-text';text.textContent=msg.content;
   div.appendChild(text);c.appendChild(div);c.scrollTop=c.scrollHeight;
@@ -341,17 +409,17 @@ async function sendMessage(text){
   const input=document.getElementById('chat-input');
   const content=text||input.value.trim();
   if(!content||!currentAlias||!apiKey)return;
+  if(getMsgsLeft()===0){showPaywall();return;}
   input.value='';
   document.getElementById('error-display').innerHTML='';
   const userMsg={role:'user',content};
   messages.push(userMsg);addBubble(userMsg);
   document.querySelector('#chat-messages div[style]')?.remove();
-  if(silentMode)return;
   showTyping();
   try{
     const h=new Date().getHours();
     const tod=h>=5&&h<12?'mattina':h>=12&&h<17?'pomeriggio':h>=17&&h<21?'tramonto':'sera';
-    const system=`Sei ${currentAlias.name}, originario/a di ${currentAlias.origin}, ${currentAlias.gender==='female'?'donna':'uomo'} di ${currentAlias.age} anni. Obiettivo: ${currentAlias.goal}. Personalità: ${currentAlias.personality}. Rispondi in italiano, in modo naturale e breve (2-4 frasi).${memory.userName?'\nNome utente: '+memory.userName+'.':''} Contesto: è ${tod}.`;
+    const system=`Sei ${currentAlias.name}, originario/a di ${currentAlias.origin}, ${currentAlias.gender==='female'?'donna':currentAlias.gender==='male'?'uomo':'persona non binaria'} di ${currentAlias.age} anni. Obiettivo: ${currentAlias.goal}. Personalità: ${currentAlias.personality}. Rispondi in italiano, in modo naturale e breve (2-4 frasi).${memory.userName?'\nNome utente: '+memory.userName+'.':''} Contesto: è ${tod}.`;
     const res=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',
       headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
@@ -366,34 +434,79 @@ async function sendMessage(text){
     messages.push(assistantMsg);addBubble(assistantMsg);
     histories[currentAlias.id]=messages.slice(-40);
     localStorage.setItem('bz_hist',JSON.stringify(histories));
+    if(!isPremium){msgCount++;localStorage.setItem('bz_msgs',msgCount);}
+    updateCounters();
+    if(getMsgsLeft()===0){setTimeout(()=>showPaywall(),1000);}
     const m=content.match(/(?:mi chiamo|sono)\s+([A-Z][a-z]+)/);
     if(m&&!memory.userName){memory.userName=m[1];localStorage.setItem('bz_mem',JSON.stringify(memory));}
     if(voiceMode)speak(reply);
   }catch(e){hideTyping();document.getElementById('error-display').innerHTML=`<div class="error-bar">${e.message}</div>`;}
 }
-function clearHistory(){if(!currentAlias)return;delete histories[currentAlias.id];localStorage.setItem('bz_hist',JSON.stringify(histories));messages=[{role:'assistant',content:`Ciao! Sono ${currentAlias.name}. Ricominciamo. Come stai?`}];renderMessages();}
-function toggleSilent(){silentMode=!silentMode;const btn=document.getElementById('btn-silent');btn.textContent=silentMode?'Silenzio':'Risponde';btn.classList.toggle('active',silentMode);}
-function toggleVoice(){voiceMode=!voiceMode;const btn=document.getElementById('btn-voice');btn.textContent=voiceMode?'Voce ON':'Voce OFF';btn.classList.toggle('active',voiceMode);if(!voiceMode)window.speechSynthesis.cancel();}
-function speak(text){window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang='it-IT';u.rate=0.93;u.pitch=currentAlias?.gender==='female'?1.15:0.85;window.speechSynthesis.speak(u);}
+function clearHistory(){
+  if(!currentAlias)return;
+  delete histories[currentAlias.id];
+  localStorage.setItem('bz_hist',JSON.stringify(histories));
+  messages=[{role:'assistant',content:`Ciao! Sono ${currentAlias.name}. Ricominciamo. Come stai?`}];
+  renderMessages();
+}
+function toggleVoice(){
+  voiceMode=!voiceMode;
+  const btn=document.getElementById('btn-voice');
+  btn.textContent=voiceMode?'Voce ON':'Voce OFF';
+  btn.classList.toggle('active',voiceMode);
+  if(!voiceMode)window.speechSynthesis.cancel();
+}
+function speak(text){
+  window.speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang='it-IT';u.rate=0.93;
+  u.pitch=currentAlias?.gender==='female'?1.15:currentAlias?.gender==='male'?0.85:1.0;
+  window.speechSynthesis.speak(u);
+}
 function startMic(e){
   e.preventDefault();
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
   if(!SR){document.getElementById('error-display').innerHTML='<div class="error-bar">Browser non supporta il microfono</div>';return;}
   micTranscript='';
   const rec=new SR();rec.lang='it-IT';rec.continuous=true;rec.interimResults=true;
-  rec.onresult=ev=>{let interim='';for(let i=ev.resultIndex;i<ev.results.length;i++){if(ev.results[i].isFinal)micTranscript+=ev.results[i][0].transcript;else interim=ev.results[i][0].transcript;}const p=document.getElementById('transcript-preview');p.style.display='block';p.textContent=(micTranscript+interim).trim();};
+  rec.onresult=ev=>{
+    let interim='';
+    for(let i=ev.resultIndex;i<ev.results.length;i++){if(ev.results[i].isFinal)micTranscript+=ev.results[i][0].transcript;else interim=ev.results[i][0].transcript;}
+    const p=document.getElementById('transcript-preview');p.style.display='block';p.textContent=(micTranscript+interim).trim();
+  };
   rec.onerror=()=>{micActive=false;document.getElementById('mic-btn').classList.remove('active');};
   rec.onend=()=>{micActive=false;document.getElementById('mic-btn').classList.remove('active');};
   rec.start();micRec=rec;micActive=true;document.getElementById('mic-btn').classList.add('active');
 }
 function stopMic(e){
   e.preventDefault();if(!micRec||!micActive)return;
-  micRec.stop();micActive=false;document.getElementById('mic-btn').classList.remove('active');
+  micRec.stop();micActive=false;
+  document.getElementById('mic-btn').classList.remove('active');
   document.getElementById('transcript-preview').style.display='none';
   setTimeout(()=>{if(micTranscript.trim())sendMessage(micTranscript.trim());micTranscript='';},300);
 }
-(function(){const canvas=document.getElementById('park-bg');const ctx=canvas.getContext('2d');function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;draw();}function draw(){const h=new Date().getHours();const W=canvas.width,H=canvas.height;let grad;if(h>=5&&h<12){grad=ctx.createLinearGradient(0,0,0,H);grad.addColorStop(0,'#c9e8f5');grad.addColorStop(0.5,'#e8f4fb');grad.addColorStop(1,'#f0e0a0');}else if(h>=12&&h<17){grad=ctx.createLinearGradient(0,0,0,H);grad.addColorStop(0,'#4a8fd4');grad.addColorStop(0.5,'#74aee0');grad.addColorStop(1,'#d8ecf8');}else if(h>=17&&h<21){grad=ctx.createLinearGradient(0,0,0,H);grad.addColorStop(0,'#0d0d28');grad.addColorStop(0.3,'#9e2a1e');grad.addColorStop(0.6,'#d4532a');grad.addColorStop(1,'#ffc88a');}else{grad=ctx.createLinearGradient(0,0,0,H);grad.addColorStop(0,'#010108');grad.addColorStop(0.4,'#060618');grad.addColorStop(1,'#1e1e42');}ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);const grassY=H*0.72;ctx.fillStyle=h<5||h>=21?'#0a140a':h>=17?'#132208':'#3a8a22';ctx.fillRect(0,grassY,W,H-grassY);}window.addEventListener('resize',resize);resize();})();
-(function(){const done=localStorage.getItem('bz_onboarded');if(done&&apiKey)goto('main');else if(done)goto('apisetup');else goto('welcome');})();
+(function(){
+  const canvas=document.getElementById('park-bg');const ctx=canvas.getContext('2d');
+  function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;draw();}
+  function draw(){
+    const h=new Date().getHours();const W=canvas.width,H=canvas.height;let grad;
+    if(h>=5&&h<12){grad=ctx.createLinearGradient(0,0,0,H);grad.addColorStop(0,'#c9e8f5');grad.addColorStop(0.5,'#e8f4fb');grad.addColorStop(1,'#f0e0a0');}
+    else if(h>=12&&h<17){grad=ctx.createLinearGradient(0,0,0,H);grad.addColorStop(0,'#4a8fd4');grad.addColorStop(0.5,'#74aee0');grad.addColorStop(1,'#d8ecf8');}
+    else if(h>=17&&h<21){grad=ctx.createLinearGradient(0,0,0,H);grad.addColorStop(0,'#0d0d28');grad.addColorStop(0.3,'#9e2a1e');grad.addColorStop(0.6,'#d4532a');grad.addColorStop(1,'#ffc88a');}
+    else{grad=ctx.createLinearGradient(0,0,0,H);grad.addColorStop(0,'#010108');grad.addColorStop(0.4,'#060618');grad.addColorStop(1,'#1e1e42');}
+    ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);
+    const grassY=H*0.72;
+    ctx.fillStyle=h<5||h>=21?'#0a140a':h>=17?'#132208':'#3a8a22';
+    ctx.fillRect(0,grassY,W,H-grassY);
+  }
+  window.addEventListener('resize',resize);resize();
+})();
+(function(){
+  const done=localStorage.getItem('bz_onboarded');
+  if(done&&apiKey)goto('main');
+  else if(done)goto('apisetup');
+  else goto('welcome');
+})();
 </script>
 </body>
 </html>
