@@ -1,26 +1,399 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<meta charset="UTF-8">
-<title>Blazone</title>
-</head>
-<body>
-<h1>Test Blazone</h1>
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="it">
-<head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Blazone</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Palatino Linotype', Palatino, serif; background: #0a0a1f; color: white; height: 100vh; overflow: hidden; }
+    .screen { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; transition: opacity 0.4s; }
+    .screen.hidden { opacity: 0; pointer-events: none; }
+    .card { background: rgba(255,255,255,0.1); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.2); border-radius: 28px; padding: 32px 28px; width: 100%; max-width: 420px; animation: fadeUp 0.5s ease both; }
+    .btn-primary { width: 100%; padding: 14px; border-radius: 14px; background: rgba(245,200,66,0.9); border: none; color: #1a1a2e; font-weight: bold; font-size: 16px; cursor: pointer; font-family: inherit; margin-bottom: 10px; }
+    .btn-secondary { width: 100%; padding: 12px; border-radius: 14px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: white; font-size: 14px; cursor: pointer; font-family: inherit; }
+    input[type="password"], input[type="text"] { width: 100%; padding: 12px 16px; border-radius: 12px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); color: white; font-size: 15px; outline: none; font-family: inherit; margin-bottom: 10px; }
+    input::placeholder { color: rgba(255,255,255,0.4); }
+    .progress-bar { height: 4px; background: rgba(255,255,255,0.15); border-radius: 4px; margin-bottom: 24px; }
+    .progress-fill { height: 100%; background: rgba(245,200,66,0.8); border-radius: 4px; transition: width 0.4s ease; }
+    .quiz-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .quiz-option { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 16px; padding: 16px 10px; cursor: pointer; text-align: center; color: white; font-family: inherit; font-size: 13px; line-height: 1.4; transition: all 0.15s; }
+    .alias-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .alias-card { background: rgba(255,255,255,0.09); border: 2px solid transparent; border-radius: 18px; padding: 14px 8px 10px; cursor: pointer; text-align: center; color: white; font-family: inherit; position: relative; }
+    .alias-card .dot { position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; border-radius: 50%; }
+    .swipe-card { background: rgba(255,255,255,0.12); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.2); border-radius: 28px; padding: 32px 24px; max-width: 320px; width: 90%; text-align: center; box-shadow: 0 16px 60px rgba(0,0,0,0.4); transition: transform 0.4s cubic-bezier(0.4,0,0.2,1); }
+    #chat-screen { flex-direction: column; padding: 0; justify-content: flex-start; }
+    .chat-header { width: 100%; display: flex; align-items: center; padding: 12px 14px; background: rgba(0,0,0,0.35); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(255,255,255,0.09); flex-shrink: 0; gap: 10px; }
+    .chat-messages { flex: 1; overflow-y: auto; padding: 14px 0 10px; width: 100%; }
+    .chat-input-bar { width: 100%; display: flex; gap: 8px; align-items: center; padding: 10px 12px; background: rgba(0,0,0,0.42); backdrop-filter: blur(16px); border-top: 1px solid rgba(255,255,255,0.07); flex-shrink: 0; }
+    .chat-input { flex: 1; background: rgba(255,255,255,0.11); border: 1px solid rgba(255,255,255,0.2); border-radius: 22px; padding: 11px 16px; color: white; font-size: 15px; outline: none; font-family: inherit; }
+    .bubble { display: flex; margin-bottom: 10px; padding: 0 14px; animation: bubIn 0.3s cubic-bezier(0.34,1.56,0.64,1) both; }
+    .bubble.user { justify-content: flex-end; }
+    .bubble-text { max-width: 74%; padding: 11px 15px; font-size: 15px; line-height: 1.65; backdrop-filter: blur(14px); font-family: inherit; }
+    .bubble.user .bubble-text { background: rgba(255,255,255,0.94); color: #1a1a2e; border-radius: 20px 20px 5px 20px; }
+    .bubble.alias .bubble-text { background: rgba(15,15,50,0.85); color: #f0ede8; border-radius: 20px 20px 20px 5px; }
+    .bubble-avatar { margin-right: 8px; align-self: flex-end; }
+    .typing-dots { display: flex; gap: 5px; padding: 12px 16px; }
+    .typing-dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,0.55); animation: dot 1.2s infinite ease-in-out; }
+    .send-btn { background: rgba(245,200,66,0.9); border: none; border-radius: 50%; width: 46px; height: 46px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .mic-btn { border: 2px solid rgba(255,255,255,0.25); border-radius: 50%; width: 46px; height: 46px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; background: rgba(255,255,255,0.18); touch-action: none; user-select: none; }
+    .mic-btn.active { background: rgba(220,60,60,0.92); border-color: rgba(255,100,100,0.8); animation: micPulse 1.1s infinite; }
+    .header-btn { background: rgba(255,255,255,0.13); border: none; border-radius: 14px; padding: 5px 9px; cursor: pointer; color: rgba(255,255,255,0.85); font-size: 11px; font-family: inherit; white-space: nowrap; }
+    .header-btn.active { background: rgba(245,200,66,0.82); color: #1a1a2e; }
+    .starter-btn { width: 100%; background: rgba(255,255,255,0.09); border: 1px solid rgba(255,255,255,0.16); border-radius: 16px; padding: 9px 14px; cursor: pointer; color: rgba(255,255,255,0.8); font-size: 13px; text-align: left; font-family: inherit; margin-bottom: 6px; display: block; }
+    .error-bar { margin: 4px 14px; padding: 8px 12px; background: rgba(180,0,0,0.25); border-radius: 10px; color: #ffaaaa; font-size: 12px; }
+    .mic-ring { position: absolute; border-radius: 50%; animation: micRing 2s infinite; }
+    #park-bg { position: fixed; inset: 0; z-index: -1; }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes bubIn { from { opacity:0; transform:scale(0.88) translateY(6px); } to { opacity:1; transform:scale(1) translateY(0); } }
+    @keyframes dot { 0%,80%,100% { transform:scale(0.7); opacity:0.4; } 40% { transform:scale(1); opacity:1; } }
+    @keyframes micPulse { 0% { box-shadow:0 0 0 0 rgba(220,60,60,0.6); } 70% { box-shadow:0 0 0 14px rgba(220,60,60,0); } 100% { box-shadow:0 0 0 0 rgba(220,60,60,0); } }
+    @keyframes micRing { 0% { transform:scale(0.9); opacity:0.7; } 50% { transform:scale(1.1); opacity:0.3; } 100% { transform:scale(0.9); opacity:0.7; } }
+    ::-webkit-scrollbar { width: 3px; } ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
+  </style>
 </head>
-<body style="margin:0;background:#0a0a1f;color:white;font-family:Palatino,serif;display:flex;align-items:center;justify-content:center;height:100vh">
-  <div style="text-align:center;padding:40px;background:rgba(255,255,255,0.1);border-radius:28px;border:1px solid rgba(255,255,255,0.2);max-width:400px">
-    <div style="font-size:56px;margin-bottom:16px">🪑</div>
-    <h1 style="font-size:30px;font-weight:normal;letter-spacing:3px;margin-bottom:12px">Blazone</h1>
+<body>
+<canvas id="park-bg"></canvas>
+<div class="screen" id="screen-welcome">
+  <div class="card" style="text-align:center">
+    <div style="font-size:56px;margin-bottom:10px">🪑</div>
+    <h1 style="font-size:30px;font-weight:normal;letter-spacing:3px;margin-bottom:8px">Blazone</h1>
     <p style="color:rgba(255,255,255,0.6);font-size:15px;line-height:1.7;margin-bottom:28px">Un posto tranquillo dove sedersi.<br>Qualcuno ti ascolterà davvero.</p>
-    <p style="color:rgba(255,255,255,0.4);font-size:13px">App in arrivo presto.</p>
+    <button class="btn-primary" onclick="goto('agegate')">Entra nel parco</button>
+    <p style="color:rgba(255,255,255,0.35);font-size:11px;margin-top:10px">Continuando accetti i Termini di Servizio e la Privacy Policy.</p>
   </div>
+</div>
+<div class="screen hidden" id="screen-agegate">
+  <div class="card" style="text-align:center;max-width:360px">
+    <div style="font-size:42px;margin-bottom:10px">🔒</div>
+    <h2 style="font-weight:normal;font-size:22px;margin-bottom:8px">Prima di entrare</h2>
+    <p style="color:rgba(255,255,255,0.6);font-size:14px;line-height:1.7;margin-bottom:24px">Blazone è uno spazio per adulti.<br>Conferma di avere almeno 18 anni.</p>
+    <button class="btn-primary" onclick="goto('apisetup')">Ho 18 anni o più</button>
+    <button class="btn-secondary" onclick="alert('Questa app è riservata ai maggiorenni.')">Ho meno di 18 anni</button>
+  </div>
+</div>
+<div class="screen hidden" id="screen-apisetup">
+  <div class="card" style="text-align:center;max-width:380px">
+    <div style="font-size:42px;margin-bottom:10px">🔑</div>
+    <h2 style="font-weight:normal;font-size:22px;margin-bottom:8px">Connetti l'intelligenza</h2>
+    <p style="color:rgba(255,255,255,0.6);font-size:14px;line-height:1.7;margin-bottom:20px">Inserisci la tua chiave API Anthropic.</p>
+    <input type="password" id="api-key-input" placeholder="sk-ant-..."/>
+    <button class="btn-primary" onclick="saveApiKey()">Continua</button>
+  </div>
+</div>
+<div class="screen hidden" id="screen-quiz">
+  <div class="card" style="max-width:420px">
+    <div class="progress-bar"><div class="progress-fill" id="quiz-progress" style="width:0%"></div></div>
+    <h2 id="quiz-question" style="font-weight:normal;font-size:20px;margin-bottom:4px;line-height:1.3"></h2>
+    <p id="quiz-subtitle" style="color:rgba(255,255,255,0.5);font-size:13px;margin-bottom:18px"></p>
+    <div class="quiz-grid" id="quiz-options"></div>
+    <button onclick="quizBack()" style="background:none;border:none;color:rgba(255,255,255,0.4);font-size:12px;cursor:pointer;margin-top:16px;font-family:inherit">← Indietro</button>
+  </div>
+</div>
+<div class="screen hidden" id="screen-swipe" style="flex-direction:column;gap:16px">
+  <div style="text-align:center">
+    <p style="font-size:18px;font-weight:normal">Abbiamo trovato qualcuno per te</p>
+    <p id="swipe-counter" style="color:rgba(255,255,255,0.5);font-size:13px;margin-top:4px"></p>
+  </div>
+  <div class="swipe-card" id="swipe-card">
+    <div style="display:flex;justify-content:center;margin-bottom:14px" id="swipe-portrait-wrap"></div>
+    <h2 id="swipe-name" style="font-size:22px;font-weight:normal;margin-bottom:3px"></h2>
+    <p id="swipe-origin" style="font-size:13px;font-style:italic;margin-bottom:4px"></p>
+    <p id="swipe-personality" style="color:rgba(255,255,255,0.6);font-size:13px;line-height:1.5;margin-bottom:16px"></p>
+    <div id="swipe-goal-tag" style="display:inline-block;border-radius:20px;padding:5px 14px;font-size:12px;border:1px solid"></div>
+  </div>
+  <div style="display:flex;gap:24px;align-items:center">
+    <button onclick="swipe('left')" style="width:54px;height:54px;border-radius:50%;border:2px solid rgba(255,100,100,0.6);background:rgba(255,60,60,0.15);cursor:pointer;display:flex;align-items:center;justify-content:center">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><line x1="18" y1="6" x2="6" y2="18" stroke="rgba(255,120,120,0.9)" stroke-width="2.5" stroke-linecap="round"/><line x1="6" y1="6" x2="18" y2="18" stroke="rgba(255,120,120,0.9)" stroke-width="2.5" stroke-linecap="round"/></svg>
+    </button>
+    <button id="swipe-yes-btn" onclick="swipe('right')" style="width:70px;height:70px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;border:2px solid">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path id="swipe-check" d="M20 6L9 17L4 12" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+  <p style="color:rgba(255,255,255,0.35);font-size:11px">Passa a sinistra per vedere il prossimo</p>
+</div>
+<div class="screen hidden" id="screen-micperm">
+  <div class="card" style="text-align:center;max-width:360px">
+    <div style="position:relative;display:inline-flex;align-items:center;justify-content:center;margin-bottom:20px;width:100px;height:100px">
+      <div class="mic-ring" style="width:100px;height:100px;border:2px solid rgba(255,255,255,0.2)"></div>
+      <div class="mic-ring" style="width:70px;height:70px;border:2px solid rgba(245,200,66,0.35);animation-delay:0.5s"></div>
+      <svg width="34" height="34" viewBox="0 0 24 24" fill="none" style="position:relative;z-index:1">
+        <rect x="9" y="2" width="6" height="12" rx="3" fill="rgba(245,200,66,0.9)"/>
+        <path d="M5 10a7 7 0 0014 0" stroke="rgba(245,200,66,0.9)" stroke-width="2" stroke-linecap="round"/>
+        <line x1="12" y1="19" x2="12" y2="22" stroke="rgba(245,200,66,0.9)" stroke-width="2" stroke-linecap="round"/>
+        <line x1="9" y1="22" x2="15" y2="22" stroke="rgba(245,200,66,0.9)" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <h2 id="micperm-title" style="font-weight:normal;font-size:20px;margin-bottom:8px"></h2>
+    <p style="color:rgba(255,255,255,0.6);font-size:14px;line-height:1.7;margin-bottom:24px">Si attiva solo mentre tieni premuto il pulsante. L'audio non viene mai salvato.</p>
+    <button class="btn-primary" onclick="requestMic()">Consenti il microfono</button>
+    <button class="btn-secondary" onclick="completeMicPerm()">Non ora, uso solo il testo</button>
+  </div>
+</div>
+<div class="screen hidden" id="screen-main" style="justify-content:flex-start;padding-top:20px;overflow-y:auto">
+  <div style="width:100%;max-width:500px;padding:0 16px 40px">
+    <div style="text-align:center;margin-bottom:20px">
+      <div style="font-size:36px;margin-bottom:4px">🪑</div>
+      <h1 style="font-size:22px;font-weight:normal;letter-spacing:2px">Blazone</h1>
+      <p id="weather-label" style="color:rgba(255,255,255,0.4);font-size:11px;margin-top:3px"></p>
+    </div>
+    <div id="api-status-bar"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:9px">
+      <p style="font-size:12px;color:rgba(255,255,255,0.5)">Con chi vuoi sederti?</p>
+      <button onclick="goto('quiz')" style="background:none;border:none;color:rgba(255,255,255,0.4);font-size:11px;cursor:pointer;font-family:inherit">Rifai il quiz</button>
+    </div>
+    <div class="alias-grid" id="alias-grid"></div>
+  </div>
+</div>
+<div class="screen hidden" id="screen-chat">
+  <div class="chat-header">
+    <button onclick="goto('main')" style="background:none;border:none;color:white;font-size:20px;cursor:pointer;padding:4px 8px">←</button>
+    <div id="chat-avatar-wrap"></div>
+    <div style="flex:1;min-width:0">
+      <div id="chat-alias-name" style="font-weight:bold;font-size:15px;color:white"></div>
+      <div id="chat-alias-goal" style="font-size:10px;color:rgba(255,255,255,0.5);overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></div>
+    </div>
+    <div style="display:flex;gap:4px;flex-shrink:0">
+      <button id="btn-silent" class="header-btn" onclick="toggleSilent()">Risponde</button>
+      <button id="btn-voice" class="header-btn" onclick="toggleVoice()">Voce OFF</button>
+      <button class="header-btn" onclick="clearHistory()">Azzera</button>
+    </div>
+  </div>
+  <div class="chat-messages" id="chat-messages"></div>
+  <div style="padding:5px 14px;min-height:20px">
+    <div id="transcript-preview" style="display:none;background:rgba(255,255,255,0.1);border-radius:14px;padding:9px 13px;color:rgba(255,255,255,0.75);font-size:13px;font-style:italic"></div>
+    <div id="error-display"></div>
+  </div>
+  <div class="chat-input-bar">
+    <button class="mic-btn" id="mic-btn" onpointerdown="startMic(event)" onpointerup="stopMic(event)" onpointerleave="stopMic(event)">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+        <rect x="9" y="2" width="6" height="12" rx="3" fill="rgba(255,255,255,0.9)"/>
+        <path d="M5 10a7 7 0 0014 0" stroke="rgba(255,255,255,0.9)" stroke-width="2" stroke-linecap="round"/>
+        <line x1="12" y1="19" x2="12" y2="22" stroke="rgba(255,255,255,0.9)" stroke-width="2" stroke-linecap="round"/>
+        <line x1="9" y1="22" x2="15" y2="22" stroke="rgba(255,255,255,0.9)" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </button>
+    <input class="chat-input" id="chat-input" placeholder="Scrivi..." onkeydown="if(event.key==='Enter')sendMessage()"/>
+    <button class="send-btn" id="send-btn" onclick="sendMessage()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+        <path d="M22 2L11 13" stroke="#1a1a2e" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="#1a1a2e" stroke-width="2.5" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
+</div>
+<script>
+const ALIASES = [
+  { id:1, name:"Amara", origin:"Nigeria / UK", gender:"female", age:32, goal:"ascolto empatico", accent:"#e8a4c8", personality:"Calda, intuitiva, sa trovare la parola giusta. Cresciuta tra Lagos e Londra.", portrait:{bg:["#2d5a8e","#1a3a5c"],skin:"#6b3a1f",hairCol:"#1a0a04",hairSide:true,glasses:false,headscarf:false,beard:false,earring:true,lipCol:"#c06860"} },
+  { id:2, name:"Kenji", origin:"Giappone", gender:"male", age:48, goal:"riflessioni e filosofia", accent:"#a4c8e8", personality:"Pacato, preciso, con un umorismo sottile. Insegnante in pensione.", portrait:{bg:["#1a3a5c","#0d2240"],skin:"#f0d8b8",hairCol:"#1a1a1a",hairSide:false,glasses:true,headscarf:false,beard:false,earring:false,lipCol:"#b08070"} },
+  { id:3, name:"Valentina", origin:"Colombia", gender:"female", age:26, goal:"energia e cultura", accent:"#f4c842", personality:"Vivace, creativa, piena di storie colorate. Ama la salsa e la letteratura.", portrait:{bg:["#8b2252","#5a1438"],skin:"#c4845a",hairCol:"#2a1204",hairSide:true,glasses:false,headscarf:false,beard:false,earring:true,lipCol:"#c85848"} },
+  { id:4, name:"Fatou", origin:"Senegal / Francia", gender:"female", age:38, goal:"saggezza e spiritualità", accent:"#d4a4e8", personality:"Profonda, serena, con una saggezza che trascende l'età. Filosofia Ubuntu.", portrait:{bg:["#4a1a6a","#2a0a42"],skin:"#3a1a08",hairCol:"#0a0404",hairSide:false,glasses:false,headscarf:true,scarfCol:"#c84820",beard:false,earring:false,lipCol:"#a06050"} },
+  { id:5, name:"Rajan", origin:"India", gender:"male", age:61, goal:"nostalgia e saggezza", accent:"#f4a842", personality:"Caloroso, narratore nato. Un nonno del cuore con mille storie tra Mumbai e il mondo.", portrait:{bg:["#6a3010","#3a1808"],skin:"#c09060",hairCol:"#d0c0a0",hairSide:false,glasses:true,headscarf:false,beard:true,earring:false,lipCol:"#b08060"} },
+  { id:6, name:"Leila", origin:"Iran / Svezia", gender:"female", age:29, goal:"crescita personale", accent:"#a4e8d4", personality:"Determinata, riflessiva. Una doppia identità diventata forza. Poetessa e coach.", portrait:{bg:["#1a5a4a","#0d3a2a"],skin:"#d4a878",hairCol:"#1a0804",hairSide:true,glasses:false,headscarf:false,beard:false,earring:false,lipCol:"#c07058"} },
+  { id:7, name:"Luca", origin:"Italia", gender:"male", age:35, goal:"amicizia e leggerezza", accent:"#a8d4f0", personality:"Spontaneo, ironico, caldo. Romano di nascita, curioso del mondo. Ama il calcio e la pasta.", portrait:{bg:["#1a4a7a","#0d2a50"],skin:"#e8c89a",hairCol:"#3a2010",hairSide:false,glasses:false,headscarf:false,beard:true,earring:false,lipCol:"#b07860"} },
+];
+const STARTERS = {
+  "ascolto empatico":["Come ti senti oggi, davvero?","C'è qualcosa che ti pesa?","Di cosa hai bisogno adesso?"],
+  "riflessioni e filosofia":["C'è una domanda che non ti lascia in pace?","Cosa ti fa stare bene ultimamente?","Cosa hai imparato di recente?"],
+  "energia e cultura":["Cosa ti ha ispirato questa settimana?","Ultima cosa bella che hai scoperto?","C'è qualcosa che vuoi imparare?"],
+  "saggezza e spiritualità":["Come ti senti dentro, adesso?","Cosa ti dà forza?","Cosa significa stare bene per te?"],
+  "nostalgia e saggezza":["Raccontami un ricordo felice","Cosa diresti al tuo io giovane?","Cosa hai imparato dalla vita?"],
+  "crescita personale":["Cosa vuoi cambiare di te?","Qual è la tua sfida questa settimana?","Di cosa sei orgoglioso/a?"],
+  "amicizia e leggerezza":["Come è andata oggi?","Ultima cosa che ti ha fatto ridere?","Cosa faresti con un giorno libero?"],
+};
+const QUIZ_STEPS = [
+  { id:"mood", q:"Come ti senti in questo momento?", sub:"Scegli quello che ti descrive meglio", opts:[{l:"Ho bisogno di essere ascoltato/a",i:"🫂",v:"listen"},{l:"Voglio chiacchierare e ridere",i:"😄",v:"fun"},{l:"Cerco qualcuno con cui riflettere",i:"💭",v:"reflect"},{l:"Voglio ispirazione",i:"⚡",v:"grow"}] },
+  { id:"style", q:"Che stile di conversazione preferisci?", sub:"Non c'è risposta giusta", opts:[{l:"Caldo e empatico",i:"🌿",v:"warm"},{l:"Diretto e concreto",i:"🎯",v:"direct"},{l:"Profondo e poetico",i:"🌙",v:"deep"},{l:"Leggero e divertente",i:"✨",v:"light"}] },
+  { id:"culture", q:"Hai una preferenza culturale?", sub:"Scegli o lascia decidere a noi", opts:[{l:"Qualcuno come me",i:"🏠",v:"local"},{l:"Una prospettiva diversa",i:"🌍",v:"diverse"},{l:"Asia o Oriente",i:"🌸",v:"asian"},{l:"Nessuna preferenza",i:"♾️",v:"any"}] },
+];
+let apiKey=localStorage.getItem('bz_key')||'';
+let currentAlias=null,messages=[],histories=JSON.parse(localStorage.getItem('bz_hist')||'{}'),memory=JSON.parse(localStorage.getItem('bz_mem')||'{"facts":[],"userName":""}');
+let quizAnswers={},quizStep=0,swipeMatches=[],swipeIdx=0,voiceMode=false,silentMode=false,micRec=null,micActive=false,micTranscript='';
+
+function buildPortraitSVG(a,size){
+  const p=a.portrait;
+  return `<svg width="${size}" height="${size}" viewBox="0 0 100 100" style="border-radius:50%;box-shadow:0 3px 12px rgba(0,0,0,0.35);border:2px solid ${a.accent}40">
+    <defs><linearGradient id="bg${a.id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="${p.bg[0]}"/><stop offset="100%" stop-color="${p.bg[1]}"/></linearGradient></defs>
+    <circle cx="50" cy="50" r="50" fill="url(#bg${a.id})"/>
+    <ellipse cx="50" cy="88" rx="14" ry="16" fill="${p.skin}"/>
+    <ellipse cx="50" cy="108" rx="36" ry="20" fill="${p.bg[0]}"/>
+    <ellipse cx="50" cy="52" rx="22" ry="26" fill="${p.skin}"/>
+    ${p.headscarf?`<ellipse cx="50" cy="38" rx="26" ry="18" fill="${p.scarfCol}" opacity="0.95"/><ellipse cx="50" cy="30" rx="22" ry="12" fill="${p.scarfCol}"/><ellipse cx="30" cy="50" rx="10" ry="16" fill="${p.scarfCol}" opacity="0.9"/><ellipse cx="70" cy="50" rx="10" ry="16" fill="${p.scarfCol}" opacity="0.9"/>`:`<ellipse cx="50" cy="31" rx="23" ry="14" fill="${p.hairCol}"/>${p.hairSide?`<ellipse cx="30" cy="41" rx="10" ry="18" fill="${p.hairCol}" opacity="0.9"/><ellipse cx="70" cy="41" rx="10" ry="18" fill="${p.hairCol}" opacity="0.9"/>`:''}`}
+    ${p.beard?`<ellipse cx="50" cy="68" rx="16" ry="10" fill="${p.hairCol}" opacity="0.75"/>`:''}
+    <ellipse cx="41" cy="51" rx="3.5" ry="4" fill="#1a1010"/>
+    <ellipse cx="59" cy="51" rx="3.5" ry="4" fill="#1a1010"/>
+    <circle cx="42.5" cy="50" r="1.2" fill="white" opacity="0.8"/>
+    <circle cx="60.5" cy="50" r="1.2" fill="white" opacity="0.8"/>
+    <path d="M37,44 Q41,41 45,44" stroke="${p.hairCol}" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M55,44 Q59,41 63,44" stroke="${p.hairCol}" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M43,68 Q50,73 57,68" stroke="${p.lipCol}" stroke-width="2" fill="none" stroke-linecap="round"/>
+    ${p.earring?`<circle cx="28" cy="51" r="2.5" fill="#f0c040"/>`:''}
+    ${p.glasses?`<circle cx="41" cy="51" r="7" fill="none" stroke="#555" stroke-width="1.5" opacity="0.7"/><circle cx="59" cy="51" r="7" fill="none" stroke="#555" stroke-width="1.5" opacity="0.7"/><line x1="48" y1="51" x2="52" y2="51" stroke="#555" stroke-width="1.5"/>`:''}</svg>`;
+}
+
+function goto(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.add('hidden'));
+  document.getElementById('screen-'+id).classList.remove('hidden');
+  if(id==='main')renderMain();
+  if(id==='quiz')renderQuiz();
+}
+function saveApiKey(){
+  const v=document.getElementById('api-key-input').value.trim();
+  if(!v.startsWith('sk-')){alert('Chiave non valida');return;}
+  apiKey=v;localStorage.setItem('bz_key',apiKey);goto('quiz');
+}
+function renderQuiz(){
+  const step=QUIZ_STEPS[quizStep];
+  document.getElementById('quiz-progress').style.width=((quizStep/QUIZ_STEPS.length)*100)+'%';
+  document.getElementById('quiz-question').textContent=step.q;
+  document.getElementById('quiz-subtitle').textContent=step.sub;
+  document.getElementById('quiz-options').innerHTML=step.opts.map(o=>`<button class="quiz-option" onclick="answerQuiz('${step.id}','${o.v}')"><span style="font-size:28px;display:block;margin-bottom:8px">${o.i}</span>${o.l}</button>`).join('');
+}
+function answerQuiz(stepId,value){
+  quizAnswers[stepId]=value;
+  if(quizStep<QUIZ_STEPS.length-1){quizStep++;renderQuiz();}
+  else{computeMatches();goto('swipe');}
+}
+function quizBack(){if(quizStep>0){quizStep--;renderQuiz();}else goto('agegate');}
+function computeMatches(){
+  const sc={};ALIASES.forEach(a=>sc[a.id]=0);
+  const{mood,style,culture}=quizAnswers;
+  if(mood==="listen"){sc[1]+=3;sc[4]+=2;sc[5]+=1;}if(mood==="fun"){sc[3]+=3;sc[7]+=3;}if(mood==="reflect"){sc[2]+=3;sc[4]+=2;sc[6]+=2;}if(mood==="grow"){sc[6]+=3;sc[7]+=2;}
+  if(style==="warm"){sc[1]+=2;sc[5]+=2;}if(style==="direct"){sc[6]+=2;sc[7]+=2;}if(style==="deep"){sc[4]+=2;sc[2]+=2;}if(style==="light"){sc[3]+=2;sc[7]+=2;}
+  if(culture==="local"){sc[7]+=2;}if(culture==="diverse"){sc[1]+=1;sc[3]+=1;sc[4]+=1;}if(culture==="asian"){sc[2]+=2;sc[5]+=1;}if(culture==="any"){ALIASES.forEach(a=>sc[a.id]+=0.5);}
+  swipeMatches=[...ALIASES].sort((a,b)=>sc[b.id]-sc[a.id]).slice(0,3);swipeIdx=0;renderSwipe();
+}
+function renderSwipe(){
+  if(swipeIdx>=swipeMatches.length){goto('micperm');return;}
+  const a=swipeMatches[swipeIdx];
+  document.getElementById('swipe-counter').textContent=(swipeIdx+1)+' di '+swipeMatches.length+' suggeriti';
+  document.getElementById('swipe-portrait-wrap').innerHTML=buildPortraitSVG(a,86);
+  document.getElementById('swipe-name').textContent=a.name+', '+a.age;
+  document.getElementById('swipe-origin').style.color=a.accent;
+  document.getElementById('swipe-origin').textContent=a.origin;
+  document.getElementById('swipe-personality').textContent=a.personality;
+  const tag=document.getElementById('swipe-goal-tag');
+  tag.textContent=a.goal;tag.style.background=a.accent+'22';tag.style.borderColor=a.accent+'66';tag.style.color='white';
+  document.getElementById('swipe-yes-btn').style.borderColor=a.accent+'88';
+  document.getElementById('swipe-yes-btn').style.background=a.accent+'22';
+  document.getElementById('swipe-check').setAttribute('stroke',a.accent);
+  document.getElementById('micperm-title').textContent='Parla con '+a.name;
+  currentAlias=a;
+}
+function swipe(dir){
+  const card=document.getElementById('swipe-card');
+  card.style.transform=dir==='right'?'translateX(120%) rotate(20deg)':'translateX(-120%) rotate(-20deg)';
+  setTimeout(()=>{card.style.transform='none';card.style.transition='none';setTimeout(()=>card.style.transition='',50);if(dir==='right')goto('micperm');else{swipeIdx++;renderSwipe();}},400);
+}
+async function requestMic(){try{await navigator.mediaDevices.getUserMedia({audio:true});}catch(e){}completeMicPerm();}
+function completeMicPerm(){localStorage.setItem('bz_onboarded','1');goto('main');}
+function renderMain(){
+  if(navigator.geolocation){navigator.geolocation.getCurrentPosition(async pos=>{try{const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${pos.coords.latitude}&longitude=${pos.coords.longitude}&current=weathercode,temperature_2m`);const d=await r.json();let desc='sereno';const code=d.current.weathercode;if(code>=1&&code<=3)desc='nuvoloso';if(code>=51)desc='pioggia';if(code>=71)desc='neve';if(code>=80)desc='temporale';document.getElementById('weather-label').textContent='🌡 '+desc+', '+Math.round(d.current.temperature_2m)+'°C';}catch(e){}});}
+  const bar=document.getElementById('api-status-bar');
+  if(apiKey){bar.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;padding:7px 12px;background:rgba(80,180,80,0.12);border-radius:10px;border:1px solid rgba(80,180,80,0.25);font-size:12px;color:#4caf50"><span>✓ Chiave API impostata</span><button onclick="localStorage.removeItem('bz_key');apiKey='';renderMain()" style="background:none;border:none;color:rgba(255,255,255,0.4);font-size:11px;cursor:pointer">Cambia</button></div>`;}
+  else{bar.innerHTML=`<div style="margin-bottom:16px"><input type="password" id="api-key-main" placeholder="sk-ant-..." style="width:100%;padding:12px 16px;border-radius:12px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);color:white;font-size:15px;outline:none;font-family:inherit;margin-bottom:8px"/><button onclick="const v=document.getElementById('api-key-main').value.trim();if(!v.startsWith('sk-')){alert('Chiave non valida');}else{apiKey=v;localStorage.setItem('bz_key',v);renderMain();}" style="width:100%;padding:13px;border-radius:14px;background:rgba(245,200,66,0.88);border:none;color:#1a1a2e;font-weight:bold;font-size:15px;cursor:pointer;font-family:inherit">Salva chiave</button></div>`;}
+  document.getElementById('alias-grid').innerHTML=ALIASES.map(a=>{const hasH=!!(histories[a.id]?.length);return`<button class="alias-card" onclick="startChat(${a.id})" style="border-color:${hasH?a.accent+'aa':'transparent'}">${hasH?`<div class="dot" style="background:${a.accent}"></div>`:''}<div style="display:flex;justify-content:center;margin-bottom:8px">${buildPortraitSVG(a,46)}</div><div style="font-weight:bold;font-size:13px">${a.name}</div><div style="font-size:10px;opacity:0.55">${a.age} · ${a.origin.split('/')[0].trim()}</div><div style="font-size:9px;opacity:0.45;margin-top:4px;line-height:1.3">${a.goal}</div></button>`;}).join('');
+}
+function startChat(aliasId){
+  if(!apiKey){alert('Inserisci prima la chiave API');return;}
+  currentAlias=ALIASES.find(a=>a.id===aliasId);
+  messages=histories[aliasId]?[...histories[aliasId]]:[];
+  if(!messages.length)messages=[{role:'assistant',content:`${memory.userName?'Ciao '+memory.userName:'Ciao'}! Sono ${currentAlias.name}. Siediti un momento con me. Come stai oggi?`}];
+  document.getElementById('chat-alias-name').innerHTML=currentAlias.name+` <span style="font-size:10px;font-weight:normal;opacity:0.5">${currentAlias.origin}</span>`;
+  document.getElementById('chat-alias-goal').textContent=currentAlias.goal;
+  document.getElementById('chat-avatar-wrap').innerHTML=buildPortraitSVG(currentAlias,34);
+  document.getElementById('send-btn').style.background=currentAlias.accent+'dd';
+  document.querySelectorAll('.screen').forEach(s=>s.classList.add('hidden'));
+  document.getElementById('screen-chat').classList.remove('hidden');
+  renderMessages();
+}
+function renderMessages(){
+  const c=document.getElementById('chat-messages');c.innerHTML='';
+  messages.forEach(msg=>addBubble(msg));
+  if(messages.length<=1){
+    const starters=STARTERS[currentAlias.goal]||[];
+    const div=document.createElement('div');
+    div.style.padding='10px 14px';
+    div.innerHTML='<p style="color:rgba(255,255,255,0.42);font-size:12px;margin-bottom:7px">Inizia con…</p>'+starters.map(s=>`<button class="starter-btn" onclick="sendMessage('${s.replace(/'/g,"\\'")}')">${s}</button>`).join('');
+    c.appendChild(div);
+  }
+  c.scrollTop=c.scrollHeight;
+}
+function addBubble(msg){
+  const c=document.getElementById('chat-messages');
+  const isUser=msg.role==='user';
+  const div=document.createElement('div');
+  div.className='bubble '+(isUser?'user':'alias');
+  if(!isUser){const av=document.createElement('div');av.className='bubble-avatar';av.innerHTML=buildPortraitSVG(currentAlias,32);div.appendChild(av);}
+  const text=document.createElement('div');text.className='bubble-text';text.textContent=msg.content;
+  div.appendChild(text);c.appendChild(div);c.scrollTop=c.scrollHeight;
+}
+function showTyping(){
+  const c=document.getElementById('chat-messages');
+  const div=document.createElement('div');div.className='bubble alias';div.id='typing-indicator';
+  const av=document.createElement('div');av.className='bubble-avatar';av.innerHTML=buildPortraitSVG(currentAlias,32);div.appendChild(av);
+  const dots=document.createElement('div');dots.style.cssText='background:rgba(15,15,50,0.85);border-radius:20px 20px 20px 5px;backdrop-filter:blur(14px)';
+  dots.innerHTML='<div class="typing-dots"><div class="typing-dot" style="animation-delay:0s"></div><div class="typing-dot" style="animation-delay:0.22s"></div><div class="typing-dot" style="animation-delay:0.44s"></div></div>';
+  div.appendChild(dots);c.appendChild(div);c.scrollTop=c.scrollHeight;
+}
+function hideTyping(){const t=document.getElementById('typing-indicator');if(t)t.remove();}
+async function sendMessage(text){
+  const input=document.getElementById('chat-input');
+  const content=text||input.value.trim();
+  if(!content||!currentAlias||!apiKey)return;
+  input.value='';
+  document.getElementById('error-display').innerHTML='';
+  const userMsg={role:'user',content};
+  messages.push(userMsg);addBubble(userMsg);
+  document.querySelector('#chat-messages div[style]')?.remove();
+  if(silentMode)return;
+  showTyping();
+  try{
+    const h=new Date().getHours();
+    const tod=h>=5&&h<12?'mattina':h>=12&&h<17?'pomeriggio':h>=17&&h<21?'tramonto':'sera';
+    const system=`Sei ${currentAlias.name}, originario/a di ${currentAlias.origin}, ${currentAlias.gender==='female'?'donna':'uomo'} di ${currentAlias.age} anni. Obiettivo: ${currentAlias.goal}. Personalità: ${currentAlias.personality}. Rispondi in italiano, in modo naturale e breve (2-4 frasi).${memory.userName?'\nNome utente: '+memory.userName+'.':''} Contesto: è ${tod}.`;
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:280,system,messages:messages.slice(-10)})
+    });
+    const data=await res.json();
+    if(!res.ok)throw new Error(data?.error?.message||'Errore API');
+    const reply=data.content?.[0]?.text;
+    if(!reply)throw new Error('Nessuna risposta');
+    hideTyping();
+    const assistantMsg={role:'assistant',content:reply};
+    messages.push(assistantMsg);addBubble(assistantMsg);
+    histories[currentAlias.id]=messages.slice(-40);
+    localStorage.setItem('bz_hist',JSON.stringify(histories));
+    const m=content.match(/(?:mi chiamo|sono)\s+([A-Z][a-z]+)/);
+    if(m&&!memory.userName){memory.userName=m[1];localStorage.setItem('bz_mem',JSON.stringify(memory));}
+    if(voiceMode)speak(reply);
+  }catch(e){hideTyping();document.getElementById('error-display').innerHTML=`<div class="error-bar">${e.message}</div>`;}
+}
+function clearHistory(){if(!currentAlias)return;delete histories[currentAlias.id];localStorage.setItem('bz_hist',JSON.stringify(histories));messages=[{role:'assistant',content:`Ciao! Sono ${currentAlias.name}. Ricominciamo. Come stai?`}];renderMessages();}
+function toggleSilent(){silentMode=!silentMode;const btn=document.getElementById('btn-silent');btn.textContent=silentMode?'Silenzio':'Risponde';btn.classList.toggle('active',silentMode);}
+function toggleVoice(){voiceMode=!voiceMode;const btn=document.getElementById('btn-voice');btn.textContent=voiceMode?'Voce ON':'Voce OFF';btn.classList.toggle('active',voiceMode);if(!voiceMode)window.speechSynthesis.cancel();}
+function speak(text){window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang='it-IT';u.rate=0.93;u.pitch=currentAlias?.gender==='female'?1.15:0.85;window.speechSynthesis.speak(u);}
+function startMic(e){
+  e.preventDefault();
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){document.getElementById('error-display').innerHTML='<div class="error-bar">Browser non supporta il microfono</div>';return;}
+  micTranscript='';
+  const rec=new SR();rec.lang='it-IT';rec.continuous=true;rec.interimResults=true;
+  rec.onresult=ev=>{let interim='';for(let i=ev.resultIndex;i<ev.results.length;i++){if(ev.results[i].isFinal)micTranscript+=ev.results[i][0].transcript;else interim=ev.results[i][0].transcript;}const p=document.getElementById('transcript-preview');p.style.display='block';p.textContent=(micTranscript+interim).trim();};
+  rec.onerror=()=>{micActive=false;document.getElementById('mic-btn').classList.remove('active');};
+  rec.onend=()=>{micActive=false;document.getElementById('mic-btn').classList.remove('active');};
+  rec.start();micRec=rec;micActive=true;document.getElementById('mic-btn').classList.add('active');
+}
+function stopMic(e){
+  e.preventDefault();if(!micRec||!micActive)return;
+  micRec.stop();micActive=false;document.getElementById('mic-btn').classList.remove('active');
+  document.getElementById('transcript-preview').style.display='none';
+  setTimeout(()=>{if(micTranscript.trim())sendMessage(micTranscript.trim());micTranscript='';},300);
+}
+(function(){const canvas=document.getElementById('park-bg');const ctx=canvas.getContext('2d');function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;draw();}function draw(){const h=new Date().getHours();const W=canvas.width,H=canvas.height;let grad;if(h>=5&&h<12){grad=ctx.createLinearGradient(0,0,0,H);grad.addColorStop(0,'#c9e8f5');grad.addColorStop(0.5,'#e8f4fb');grad.addColorStop(1,'#f0e0a0');}else if(h>=12&&h<17){grad=ctx.createLinearGradient(0,0,0,H);grad.addColorStop(0,'#4a8fd4');grad.addColorStop(0.5,'#74aee0');grad.addColorStop(1,'#d8ecf8');}else if(h>=17&&h<21){grad=ctx.createLinearGradient(0,0,0,H);grad.addColorStop(0,'#0d0d28');grad.addColorStop(0.3,'#9e2a1e');grad.addColorStop(0.6,'#d4532a');grad.addColorStop(1,'#ffc88a');}else{grad=ctx.createLinearGradient(0,0,0,H);grad.addColorStop(0,'#010108');grad.addColorStop(0.4,'#060618');grad.addColorStop(1,'#1e1e42');}ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);const grassY=H*0.72;ctx.fillStyle=h<5||h>=21?'#0a140a':h>=17?'#132208':'#3a8a22';ctx.fillRect(0,grassY,W,H-grassY);}window.addEventListener('resize',resize);resize();})();
+(function(){const done=localStorage.getItem('bz_onboarded');if(done&&apiKey)goto('main');else if(done)goto('apisetup');else goto('welcome');})();
+</script>
 </body>
 </html>
