@@ -422,7 +422,7 @@ async function sendMessage(text){
     const system=`Sei ${currentAlias.name}, originario/a di ${currentAlias.origin}, ${currentAlias.gender==='female'?'donna':currentAlias.gender==='male'?'uomo':'persona non binaria'} di ${currentAlias.age} anni. Obiettivo: ${currentAlias.goal}. Personalità: ${currentAlias.personality}. Rispondi in italiano, in modo naturale e breve (2-4 frasi).${memory.userName?'\nNome utente: '+memory.userName+'.':''} Contesto: è ${tod}.`;
     const res=await fetch('/api/chat',{
       method:'POST',
-      headers:{'Content-Type':'application/json'}
+      headers:{'Content-Type':'application/json'},
       body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:280,system,messages:messages.slice(-10)})
     });
     const data=await res.json();
