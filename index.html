@@ -46,8 +46,9 @@
     .paywall-screen.show { display: flex; }
     .paywall-card { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 28px; padding: 32px 28px; max-width: 400px; width: 100%; text-align: center; }
     .plan-btn { width: 100%; padding: 16px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.08); color: white; font-family: inherit; font-size: 14px; cursor: pointer; margin-bottom: 10px; text-align: left; }
-    .plan-btn:hover { background: rgba(255,255,255,0.15); }
     .msg-counter { font-size: 11px; color: rgba(255,255,255,0.5); text-align: center; padding: 4px 0; }
+    .terms-screen { position: fixed; inset: 0; background: rgba(0,0,0,0.92); backdrop-filter: blur(20px); display: none; flex-direction: column; align-items: center; justify-content: center; padding: 24px; z-index: 200; }
+    .terms-screen.show { display: flex; }
     .mic-ring { position: absolute; border-radius: 50%; animation: micRing 2s infinite; }
     #park-bg { position: fixed; inset: 0; z-index: -1; }
     @keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
@@ -60,6 +61,22 @@
 </head>
 <body>
 <canvas id="park-bg"></canvas>
+<div class="terms-screen show" id="screen-terms">
+  <div class="card" style="max-width:400px;text-align:center">
+    <div style="font-size:36px;margin-bottom:12px">📋</div>
+    <h2 style="font-weight:normal;font-size:22px;margin-bottom:12px">Termini e Privacy</h2>
+    <div style="text-align:left;color:rgba(255,255,255,0.7);font-size:13px;line-height:1.7;margin-bottom:20px;max-height:200px;overflow-y:auto;padding:12px;background:rgba(255,255,255,0.05);border-radius:12px">
+      <p style="margin-bottom:8px"><strong style="color:white">Termini di Servizio</strong></p>
+      <p style="margin-bottom:8px">Blazone è un servizio di compagnia virtuale tramite intelligenza artificiale. I personaggi sono alias AI e non persone reali. Le conversazioni sono simulate.</p>
+      <p style="margin-bottom:8px"><strong style="color:white">Privacy (GDPR)</strong></p>
+      <p style="margin-bottom:8px">Le tue conversazioni sono salvate solo sul tuo dispositivo (localStorage). Non raccogliamo dati personali sui nostri server. La chiave API è gestita in modo sicuro.</p>
+      <p style="margin-bottom:8px"><strong style="color:white">Uso responsabile</strong></p>
+      <p>Blazone è pensato per adulti (+18). Non sostituisce supporto psicologico professionale. In caso di difficoltà, contatta un professionista.</p>
+    </div>
+    <button class="btn-primary" onclick="acceptTerms()">Accetto i Termini e la Privacy Policy</button>
+    <p style="color:rgba(255,255,255,0.35);font-size:11px;margin-top:8px">Cliccando accetti il trattamento dei dati come descritto sopra.</p>
+  </div>
+</div>
 <div class="screen" id="screen-welcome">
   <div class="card" style="text-align:center">
     <div style="font-size:56px;margin-bottom:10px">🪑</div>
@@ -213,42 +230,42 @@ const ALIASES = [
   { id:4, name:"Fatou", origin:"Senegal / Francia", gender:"female", age:38, goal:"saggezza e spiritualità", accent:"#d4a4e8", personality:"Profonda, serena, con una saggezza che trascende l'età. Filosofia Ubuntu.", portrait:{bg:["#4a1a6a","#2a0a42"],skin:"#3a1a08",hairCol:"#0a0404",hairSide:false,glasses:false,headscarf:true,scarfCol:"#c84820",beard:false,earring:false,lipCol:"#a06050"} },
   { id:5, name:"Rajan", origin:"India", gender:"male", age:61, goal:"nostalgia e saggezza", accent:"#f4a842", personality:"Caloroso, narratore nato. Un nonno del cuore con mille storie tra Mumbai e il mondo.", portrait:{bg:["#6a3010","#3a1808"],skin:"#c09060",hairCol:"#d0c0a0",hairSide:false,glasses:true,headscarf:false,beard:true,earring:false,lipCol:"#b08060"} },
   { id:6, name:"Leila", origin:"Iran / Svezia", gender:"female", age:29, goal:"crescita personale", accent:"#a4e8d4", personality:"Determinata, riflessiva. Una doppia identità diventata forza. Poetessa e coach.", portrait:{bg:["#1a5a4a","#0d3a2a"],skin:"#d4a878",hairCol:"#1a0804",hairSide:true,glasses:false,headscarf:false,beard:false,earring:false,lipCol:"#c07058"} },
-  { id:7, name:"Luca", origin:"Italia", gender:"male", age:35, goal:"amicizia e leggerezza", accent:"#a8d4f0", personality:"Egocentrico simpatico e sbarazzino. Romano DOC, si vanta un po' ma fa ridere. La sua missione è smontare le tue paranoie con ironia. Dice sempre 'fidati de Luca'.", portrait:{bg:["#1a4a7a","#0d2a50"],skin:"#e8c89a",hairCol:"#3a2010",hairSide:false,glasses:false,headscarf:false,beard:true,earring:false,lipCol:"#b07860"} },
-  { id:8, name:"Elena", origin:"Italia", gender:"female", age:68, goal:"memoria e vita vissuta", accent:"#f0c4a0", personality:"Nonna saggia e affettuosa. Ha vissuto tutto e ascolta senza giudicare. Ama il tè e i ricordi.", portrait:{bg:["#6a3a1a","#3a1a08"],skin:"#e8c090",hairCol:"#d8d0c0",hairSide:true,glasses:true,headscarf:false,beard:false,earring:true,lipCol:"#c08060"} },
-  { id:9, name:"George", origin:"Giamaica / UK", gender:"male", age:72, goal:"saggezza e storie di vita", accent:"#a0d4a0", personality:"Anziano gentiluomo con il ritmo dell'isola nel cuore. Ride molto e sa quando stare in silenzio.", portrait:{bg:["#1a4a1a","#0a2a0a"],skin:"#2a1208",hairCol:"#d0c8b8",hairSide:false,glasses:true,headscarf:false,beard:true,earring:false,lipCol:"#a06040"} },
+  { id:7, name:"Luca", origin:"Italia", gender:"male", age:35, goal:"amicizia e leggerezza", accent:"#a8d4f0", personality:"Egocentrico simpatico e sbarazzino. Romano DOC, si vanta un po' ma fa ridere. La sua missione e smontare le tue paranoie con ironia. Dice sempre fidati de Luca.", portrait:{bg:["#1a4a7a","#0d2a50"],skin:"#e8c89a",hairCol:"#3a2010",hairSide:false,glasses:false,headscarf:false,beard:true,earring:false,lipCol:"#b07860"} },
+  { id:8, name:"Elena", origin:"Italia", gender:"female", age:68, goal:"memoria e vita vissuta", accent:"#f0c4a0", personality:"Nonna saggia e affettuosa. Ha vissuto tutto e ascolta senza giudicare. Ama il te e i ricordi.", portrait:{bg:["#6a3a1a","#3a1a08"],skin:"#e8c090",hairCol:"#d8d0c0",hairSide:true,glasses:true,headscarf:false,beard:false,earring:true,lipCol:"#c08060"} },
+  { id:9, name:"George", origin:"Giamaica / UK", gender:"male", age:72, goal:"saggezza e storie di vita", accent:"#a0d4a0", personality:"Anziano gentiluomo con il ritmo dell isola nel cuore. Ride molto e sa quando stare in silenzio.", portrait:{bg:["#1a4a1a","#0a2a0a"],skin:"#2a1208",hairCol:"#d0c8b8",hairSide:false,glasses:true,headscarf:false,beard:true,earring:false,lipCol:"#a06040"} },
   { id:10, name:"Mx. Alex", origin:"Canada", gender:"nb", age:34, goal:"business e carriera", accent:"#c4a4e8", personality:"Mentor sharp e diretto. Ex startup founder. Trasforma le tue idee in piani concreti.", portrait:{bg:["#3a1a6a","#1a0a3a"],skin:"#d4b890",hairCol:"#2a2a2a",hairSide:false,glasses:true,headscarf:false,beard:false,earring:true,lipCol:"#b08878"} },
-  { id:11, name:"River", origin:"Nuova Zelanda", gender:"nb", age:29, goal:"ecologia e green living", accent:"#a0e8b0", personality:"Attivista appassionato e concreto. Trasforma l'ansia climatica in azione quotidiana.", portrait:{bg:["#1a5a2a","#0a3a1a"],skin:"#c4a878",hairCol:"#1a3a10",hairSide:true,glasses:false,headscarf:false,beard:false,earring:true,lipCol:"#a08060"} },
+  { id:11, name:"River", origin:"Nuova Zelanda", gender:"nb", age:29, goal:"ecologia e green living", accent:"#a0e8b0", personality:"Attivista appassionato e concreto. Trasforma l ansia climatica in azione quotidiana.", portrait:{bg:["#1a5a2a","#0a3a1a"],skin:"#c4a878",hairCol:"#1a3a10",hairSide:true,glasses:false,headscarf:false,beard:false,earring:true,lipCol:"#a08060"} },
   { id:12, name:"Priya", origin:"India / USA", gender:"female", age:41, goal:"leadership e business", accent:"#f4a0c4", personality:"Executive coach con 15 anni in Silicon Valley. Diretta, empatica, ti fa vedere oltre i limiti.", portrait:{bg:["#6a1a3a","#3a0a1a"],skin:"#c09060",hairCol:"#1a0a04",hairSide:true,glasses:false,headscarf:false,beard:false,earring:true,lipCol:"#c06080"} },
-];{ id:13, name:"Roberto", origin:"Milano", gender:"male", age:75, goal:"ispirazione attraverso cinema arte e storia", accent:"#c8a870", personality:"Ex regista indipendente con carriera internazionale tra Milano, Parigi, New York e Tokyo. Risponde sempre con analogie tra cinema mondiale, arte e storia. Cita Kubrick, Bergman, Kurosawa, Fellini. Colto, provocatorio, affascinante. Trasforma ogni problema in una scena di un film.", portrait:{bg:["#2a1a0a","#1a0a00"],skin:"#d4a870",hairCol:"#f0f0f0",hairSide:true,glasses:false,headscarf:false,beard:true,earring:false,lipCol:"#b08060"} },
+  { id:13, name:"Roberto", origin:"Milano", gender:"male", age:75, goal:"ispirazione attraverso cinema arte e storia", accent:"#c8a870", personality:"Ex regista indipendente con carriera internazionale tra Milano, Parigi, New York e Tokyo. Risponde sempre con analogie tra cinema mondiale, arte e storia. Cita Kubrick, Bergman, Kurosawa, Fellini. Trasforma ogni problema in una scena di un film.", portrait:{bg:["#2a1a0a","#1a0a00"],skin:"#d4a870",hairCol:"#f0f0f0",hairSide:true,glasses:false,headscarf:false,beard:true,earring:false,lipCol:"#b08060"} },
+];
 
 const STARTERS = {
-  "ascolto empatico":["Come ti senti oggi, davvero?","C'è qualcosa che ti pesa?","Di cosa hai bisogno adesso?"],
-  "riflessioni e filosofia":["C'è una domanda che non ti lascia in pace?","Cosa ti fa stare bene ultimamente?","Cosa hai imparato di recente?"],
-  "energia e cultura":["Cosa ti ha ispirato questa settimana?","Ultima cosa bella che hai scoperto?","C'è qualcosa che vuoi imparare?"],
-  "saggezza e spiritualità":["Come ti senti dentro, adesso?","Cosa ti dà forza?","Cosa significa stare bene per te?"],
+  "ascolto empatico":["Come ti senti oggi, davvero?","C e qualcosa che ti pesa?","Di cosa hai bisogno adesso?"],
+  "riflessioni e filosofia":["C e una domanda che non ti lascia in pace?","Cosa ti fa stare bene ultimamente?","Cosa hai imparato di recente?"],
+  "energia e cultura":["Cosa ti ha ispirato questa settimana?","Ultima cosa bella che hai scoperto?","C e qualcosa che vuoi imparare?"],
+  "saggezza e spiritualita":["Come ti senti dentro, adesso?","Cosa ti da forza?","Cosa significa stare bene per te?"],
   "nostalgia e saggezza":["Raccontami un ricordo felice","Cosa diresti al tuo io giovane?","Cosa hai imparato dalla vita?"],
-  "crescita personale":["Cosa vuoi cambiare di te?","Qual è la tua sfida questa settimana?","Di cosa sei orgoglioso/a?"],
-  "amicizia e leggerezza":["Come è andata oggi?","Ultima cosa che ti ha fatto ridere?","Cosa faresti con un giorno libero?"],
-  "memoria e vita vissuta":["Raccontami di un posto che hai amato","Cosa ti manca di quando eri giovane?","Qual è il consiglio più grande che hai ricevuto?"],
-  "saggezza e storie di vita":["Qual è stata la tua avventura più grande?","Cosa hai imparato dagli errori?","Di cosa sei più orgoglioso nella vita?"],
-  "business e carriera":["Qual è la tua sfida professionale adesso?","Cosa ti blocca dal fare il prossimo passo?","Parlami del tuo progetto più importante."],
-  "ecologia e green living":["Come stai riducendo il tuo impatto ambientale?","Cosa ti preoccupa di più per il pianeta?","Qual è un piccolo cambiamento green che hai fatto?"],
-  "leadership e business":["Qual è la decisione più difficile che hai preso?","Come gestisci un team in difficoltà?","Cosa definisce per te un buon leader?"],
+  "crescita personale":["Cosa vuoi cambiare di te?","Qual e la tua sfida questa settimana?","Di cosa sei orgoglioso?"],
+  "amicizia e leggerezza":["Come e andata oggi?","Ultima cosa che ti ha fatto ridere?","Cosa faresti con un giorno libero?"],
+  "memoria e vita vissuta":["Raccontami di un posto che hai amato","Cosa ti manca di quando eri giovane?","Qual e il consiglio piu grande che hai ricevuto?"],
+  "saggezza e storie di vita":["Qual e stata la tua avventura piu grande?","Cosa hai imparato dagli errori?","Di cosa sei piu orgoglioso nella vita?"],
+  "business e carriera":["Qual e la tua sfida professionale adesso?","Cosa ti blocca dal fare il prossimo passo?","Parlami del tuo progetto piu importante."],
+  "ecologia e green living":["Come stai riducendo il tuo impatto ambientale?","Cosa ti preoccupa di piu per il pianeta?","Qual e un piccolo cambiamento green che hai fatto?"],
+  "leadership e business":["Qual e la decisione piu difficile che hai preso?","Come gestisci un team in difficolta?","Cosa definisce per te un buon leader?"],
+  "ispirazione attraverso cinema arte e storia":["Quale film ti ha cambiato la vita?","Se la tua vita fosse un film, in che scena saresti?","Quale opera d arte ti ha emozionato di piu?"],
 };
 
 const QUIZ_STEPS = [
-  { id:"mood", q:"Come ti senti in questo momento?", sub:"Scegli quello che ti descrive meglio", opts:[{l:"Ho bisogno di essere ascoltato/a",i:"🫂",v:"listen"},{l:"Voglio chiacchierare e ridere",i:"😄",v:"fun"},{l:"Cerco qualcuno con cui riflettere",i:"💭",v:"reflect"},{l:"Voglio crescere o imparare",i:"⚡",v:"grow"}] },
-  { id:"style", q:"Che stile di conversazione preferisci?", sub:"Non c'è risposta giusta", opts:[{l:"Caldo e empatico",i:"🌿",v:"warm"},{l:"Diretto e concreto",i:"🎯",v:"direct"},{l:"Profondo e poetico",i:"🌙",v:"deep"},{l:"Leggero e divertente",i:"✨",v:"light"}] },
-  { id:"topic", q:"Che tematica ti interessa?", sub:"Puoi cambiare dopo", opts:[{l:"Vita e relazioni",i:"❤️",v:"life"},{l:"Business e carriera",i:"💼",v:"business"},{l:"Natura e ambiente",i:"🌱",v:"green"},{l:"Tutto un po'",i:"🌍",v:"any"}] },
+  { id:"mood", q:"Come ti senti in questo momento?", sub:"Scegli quello che ti descrive meglio", opts:[{l:"Ho bisogno di essere ascoltato",i:"🫂",v:"listen"},{l:"Voglio chiacchierare e ridere",i:"😄",v:"fun"},{l:"Cerco qualcuno con cui riflettere",i:"💭",v:"reflect"},{l:"Voglio crescere o imparare",i:"⚡",v:"grow"}] },
+  { id:"style", q:"Che stile di conversazione preferisci?", sub:"Non c e risposta giusta", opts:[{l:"Caldo e empatico",i:"🌿",v:"warm"},{l:"Diretto e concreto",i:"🎯",v:"direct"},{l:"Profondo e poetico",i:"🌙",v:"deep"},{l:"Leggero e divertente",i:"✨",v:"light"}] },
+  { id:"topic", q:"Che tematica ti interessa?", sub:"Puoi cambiare dopo", opts:[{l:"Vita e relazioni",i:"❤️",v:"life"},{l:"Business e carriera",i:"💼",v:"business"},{l:"Natura e ambiente",i:"🌱",v:"green"},{l:"Arte e cinema",i:"🎬",v:"art"}] },
 ];
 
-// STATO
 let apiKey=localStorage.getItem('bz_key')||'';
 let currentAlias=null,messages=[],histories=JSON.parse(localStorage.getItem('bz_hist')||'{}');
 let memory=JSON.parse(localStorage.getItem('bz_mem')||'{"facts":[],"userName":""}');
 let quizAnswers={},quizStep=0,swipeMatches=[],swipeIdx=0;
 let voiceMode=false,micRec=null,micActive=false,micTranscript='';
-// PAYWALL
 const FREE_MSGS=15;
 let msgCount=parseInt(localStorage.getItem('bz_msgs')||'0');
 let isPremium=localStorage.getItem('bz_premium')==='true';
@@ -262,10 +279,13 @@ function updateCounters(){
   if(el1)el1.textContent=txt;
   if(el2)el2.textContent=txt;
 }
-function activatePremium(){isPremium=true;localStorage.setItem('bz_premium','true');closePaywall();updateCounters();alert('Piano Premium attivato! Chat illimitata.');}
+function activatePremium(){isPremium=true;localStorage.setItem('bz_premium','true');closePaywall();updateCounters();alert('Piano Premium attivato!');}
 function buyCredits(){msgCount=Math.max(0,msgCount-50);localStorage.setItem('bz_msgs',msgCount);closePaywall();updateCounters();alert('50 messaggi aggiunti!');}
 function closePaywall(){document.getElementById('paywall-screen').classList.remove('show');}
 function showPaywall(){document.getElementById('paywall-screen').classList.add('show');}
+function acceptTerms(){localStorage.setItem('bz_terms','1');document.getElementById('screen-terms').classList.remove('show');}
+</script>
+<script>
 function buildPortraitSVG(a,size){
   const p=a.portrait;
   return `<svg width="${size}" height="${size}" viewBox="0 0 100 100" style="border-radius:50%;box-shadow:0 3px 12px rgba(0,0,0,0.35);border:2px solid ${a.accent}40">
@@ -320,12 +340,12 @@ function computeMatches(){
   if(mood==="grow"){sc[10]+=3;sc[12]+=3;sc[6]+=2;}
   if(style==="warm"){sc[1]+=2;sc[8]+=2;sc[5]+=2;}
   if(style==="direct"){sc[10]+=2;sc[12]+=2;sc[6]+=1;}
-  if(style==="deep"){sc[4]+=2;sc[2]+=2;sc[11]+=2;}
+  if(style==="deep"){sc[4]+=2;sc[2]+=2;sc[13]+=2;}
   if(style==="light"){sc[3]+=2;sc[7]+=2;sc[9]+=2;}
   if(topic==="life"){sc[1]+=2;sc[8]+=2;sc[9]+=2;sc[5]+=2;}
-  if(topic==="business"){sc[10]+=3;sc[12]+=3;sc[6]+=1;}
+  if(topic==="business"){sc[10]+=3;sc[12]+=3;}
   if(topic==="green"){sc[11]+=3;sc[4]+=1;}
-  if(topic==="any"){ALIASES.forEach(a=>sc[a.id]+=0.5);}
+  if(topic==="art"){sc[13]+=3;sc[2]+=2;sc[6]+=1;}
   swipeMatches=[...ALIASES].sort((a,b)=>sc[b.id]-sc[a.id]).slice(0,3);
   swipeIdx=0;renderSwipe();
 }
@@ -356,7 +376,7 @@ function completeMicPerm(){localStorage.setItem('bz_onboarded','1');goto('main')
 function renderMain(){
   if(navigator.geolocation){navigator.geolocation.getCurrentPosition(async pos=>{try{const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${pos.coords.latitude}&longitude=${pos.coords.longitude}&current=weathercode,temperature_2m`);const d=await r.json();let desc='sereno';const code=d.current.weathercode;if(code>=1&&code<=3)desc='nuvoloso';if(code>=51)desc='pioggia';if(code>=71)desc='neve';if(code>=80)desc='temporale';document.getElementById('weather-label').textContent='🌡 '+desc+', '+Math.round(d.current.temperature_2m)+'°C';}catch(e){}});}
   const bar=document.getElementById('api-status-bar');
-  if(apiKey){bar.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;padding:7px 12px;background:rgba(80,180,80,0.12);border-radius:10px;border:1px solid rgba(80,180,80,0.25);font-size:12px;color:#4caf50"><span>✓ Chiave API impostata</span><button onclick="localStorage.removeItem('bz_key');apiKey='';renderMain()" style="background:none;border:none;color:rgba(255,255,255,0.4);font-size:11px;cursor:pointer">Cambia</button></div>`;}
+  if(apiKey){bar.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;padding:7px 12px;background:rgba(80,180,80,0.12);border-radius:10px;border:1px solid rgba(80,180,80,0.25);font-size:12px;color:#4caf50"><span>Chiave API impostata</span><button onclick="localStorage.removeItem('bz_key');apiKey='';renderMain()" style="background:none;border:none;color:rgba(255,255,255,0.4);font-size:11px;cursor:pointer">Cambia</button></div>`;}
   else{bar.innerHTML=`<div style="margin-bottom:16px"><input type="password" id="api-key-main" placeholder="sk-ant-..." style="width:100%;padding:12px 16px;border-radius:12px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);color:white;font-size:15px;outline:none;font-family:inherit;margin-bottom:8px"/><button onclick="const v=document.getElementById('api-key-main').value.trim();if(!v.startsWith('sk-')){alert('Chiave non valida');}else{apiKey=v;localStorage.setItem('bz_key',v);renderMain();}" style="width:100%;padding:13px;border-radius:14px;background:rgba(245,200,66,0.88);border:none;color:#1a1a2e;font-weight:bold;font-size:15px;cursor:pointer;font-family:inherit">Salva chiave</button></div>`;}
   updateCounters();
   document.getElementById('alias-grid').innerHTML=ALIASES.map(a=>{const hasH=!!(histories[a.id]?.length);return`<button class="alias-card" onclick="startChat(${a.id})" style="border-color:${hasH?a.accent+'aa':'transparent'}">${hasH?`<div class="dot" style="background:${a.accent}"></div>`:''}<div style="display:flex;justify-content:center;margin-bottom:8px">${buildPortraitSVG(a,46)}</div><div style="font-weight:bold;font-size:13px">${a.name}</div><div style="font-size:10px;opacity:0.55">${a.age} · ${a.origin.split('/')[0].trim()}</div><div style="font-size:9px;opacity:0.45;margin-top:4px;line-height:1.3">${a.goal}</div></button>`;}).join('');
@@ -383,7 +403,7 @@ function renderMessages(){
     const starters=STARTERS[currentAlias.goal]||[];
     const div=document.createElement('div');
     div.style.padding='10px 14px';
-    div.innerHTML='<p style="color:rgba(255,255,255,0.42);font-size:12px;margin-bottom:7px">Inizia con…</p>'+starters.map(s=>`<button class="starter-btn" onclick="sendMessage('${s.replace(/'/g,"\\'")}')">${s}</button>`).join('');
+    div.innerHTML='<p style="color:rgba(255,255,255,0.42);font-size:12px;margin-bottom:7px">Inizia con...</p>'+starters.map(s=>`<button class="starter-btn" onclick="sendMessage('${s.replace(/'/g,"\\'")}')">${s}</button>`).join('');
     c.appendChild(div);
   }
   c.scrollTop=c.scrollHeight;
@@ -405,6 +425,8 @@ function showTyping(){
   div.appendChild(dots);c.appendChild(div);c.scrollTop=c.scrollHeight;
 }
 function hideTyping(){const t=document.getElementById('typing-indicator');if(t)t.remove();}
+</script>
+<script>
 async function sendMessage(text){
   const input=document.getElementById('chat-input');
   const content=text||input.value.trim();
@@ -419,7 +441,7 @@ async function sendMessage(text){
   try{
     const h=new Date().getHours();
     const tod=h>=5&&h<12?'mattina':h>=12&&h<17?'pomeriggio':h>=17&&h<21?'tramonto':'sera';
-    const system=`Sei ${currentAlias.name}, originario/a di ${currentAlias.origin}, ${currentAlias.gender==='female'?'donna':currentAlias.gender==='male'?'uomo':'persona non binaria'} di ${currentAlias.age} anni. Obiettivo: ${currentAlias.goal}. Personalità: ${currentAlias.personality}. Rispondi in italiano, in modo naturale e breve (2-4 frasi).${memory.userName?'\nNome utente: '+memory.userName+'.':''} Contesto: è ${tod}.`;
+    const system=`Sei ${currentAlias.name}, originario/a di ${currentAlias.origin}, ${currentAlias.gender==='female'?'donna':currentAlias.gender==='male'?'uomo':'persona non binaria'} di ${currentAlias.age} anni. Obiettivo: ${currentAlias.goal}. Personalita: ${currentAlias.personality}. Rispondi in italiano, in modo naturale e breve (2-4 frasi).${memory.userName?'\nNome utente: '+memory.userName+'.':''} Contesto: e ${tod}.`;
     const res=await fetch('/api/chat',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
@@ -502,6 +524,7 @@ function stopMic(e){
   window.addEventListener('resize',resize);resize();
 })();
 (function(){
+  if(!localStorage.getItem('bz_terms')){document.getElementById('screen-terms').classList.add('show');return;}
   const done=localStorage.getItem('bz_onboarded');
   if(done&&apiKey)goto('main');
   else if(done)goto('apisetup');
