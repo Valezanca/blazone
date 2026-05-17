@@ -420,9 +420,9 @@ async function sendMessage(text){
     const h=new Date().getHours();
     const tod=h>=5&&h<12?'mattina':h>=12&&h<17?'pomeriggio':h>=17&&h<21?'tramonto':'sera';
     const system=`Sei ${currentAlias.name}, originario/a di ${currentAlias.origin}, ${currentAlias.gender==='female'?'donna':currentAlias.gender==='male'?'uomo':'persona non binaria'} di ${currentAlias.age} anni. Obiettivo: ${currentAlias.goal}. Personalità: ${currentAlias.personality}. Rispondi in italiano, in modo naturale e breve (2-4 frasi).${memory.userName?'\nNome utente: '+memory.userName+'.':''} Contesto: è ${tod}.`;
-    const res=await fetch('https://api.anthropic.com/v1/messages',{
+    const res=await fetch('/api/chat',{
       method:'POST',
-      headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      headers:{'Content-Type':'application/json'}
       body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:280,system,messages:messages.slice(-10)})
     });
     const data=await res.json();
