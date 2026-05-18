@@ -481,8 +481,38 @@ function toggleVoice(){
 function speak(text){
   window.speechSynthesis.cancel();
   const u=new SpeechSynthesisUtterance(text);
-  u.lang='it-IT';u.rate=0.93;
-  u.pitch=currentAlias?.gender==='female'?1.15:currentAlias?.gender==='male'?0.85:1.0;
+  
+  // Voce personalizzata per ogni personaggio
+  const voiceProfiles = {
+    1:  {lang:'en-GB', rate:0.90, pitch:1.15, name:'female'},   // Amara - inglese british femminile
+    2:  {lang:'ja-JP', rate:0.80, pitch:0.80, name:'male'},      // Kenji - giapponese
+    3:  {lang:'es-CO', rate:1.10, pitch:1.20, name:'female'},    // Valentina - spagnolo colombiano
+    4:  {lang:'fr-FR', rate:0.85, pitch:1.05, name:'female'},    // Fatou - francese
+    5:  {lang:'hi-IN', rate:0.80, pitch:0.75, name:'male'},      // Rajan - hindi
+    6:  {lang:'sv-SE', rate:0.95, pitch:1.10, name:'female'},    // Leila - svedese
+    7:  {lang:'it-IT', rate:1.15, pitch:1.00, name:'male'},      // Luca - italiano veloce
+    8:  {lang:'it-IT', rate:0.75, pitch:1.20, name:'female'},    // Elena - italiano lento dolce
+    9:  {lang:'en-JM', rate:0.85, pitch:0.70, name:'male'},      // George - inglese giamaicano
+    10: {lang:'en-CA', rate:1.05, pitch:0.95, name:'nb'},        // Mx Alex - inglese canadese
+    11: {lang:'en-NZ', rate:0.95, pitch:1.05, name:'nb'},        // River - inglese neozelandese
+    12: {lang:'en-IN', rate:1.00, pitch:1.10, name:'female'},    // Priya - inglese indiano
+    13: {lang:'it-IT', rate:0.70, pitch:0.65, name:'male'},      // Roberto - italiano lento profondo
+  };
+
+  const profile = voiceProfiles[currentAlias?.id] || {lang:'it-IT', rate:0.93, pitch:1.0};
+  u.lang = profile.lang;
+  u.rate = profile.rate;
+  u.pitch = profile.pitch;
+
+  // Cerca la voce giusta tra quelle disponibili nel browser
+  const voices = window.speechSynthesis.getVoices();
+  const match = voices.find(v => v.lang.startsWith(profile.lang.split('-')[0]) && 
+    (profile.name === 'nb' || 
+     (profile.name === 'female' && v.name.toLowerCase().includes('female')) ||
+     (profile.name === 'male' && v.name.toLowerCase().includes('male')) ||
+     true));
+  if(match) u.voice = match;
+
   window.speechSynthesis.speak(u);
 }
 function startMic(e){
