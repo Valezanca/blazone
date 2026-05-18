@@ -482,22 +482,74 @@ function speak(text){
   window.speechSynthesis.cancel();
   const u=new SpeechSynthesisUtterance(text);
   
-  // Voce personalizzata per ogni personaggio
   const voiceProfiles = {
-    1:  {lang:'en-GB', rate:0.90, pitch:1.15, name:'female'},   // Amara - inglese british femminile
-    2:  {lang:'ja-JP', rate:0.80, pitch:0.80, name:'male'},      // Kenji - giapponese
-    3:  {lang:'es-CO', rate:1.10, pitch:1.20, name:'female'},    // Valentina - spagnolo colombiano
-    4:  {lang:'fr-FR', rate:0.85, pitch:1.05, name:'female'},    // Fatou - francese
-    5:  {lang:'hi-IN', rate:0.80, pitch:0.75, name:'male'},      // Rajan - hindi
-    6:  {lang:'sv-SE', rate:0.95, pitch:1.10, name:'female'},    // Leila - svedese
-    7:  {lang:'it-IT', rate:1.15, pitch:1.00, name:'male'},      // Luca - italiano veloce
-    8:  {lang:'it-IT', rate:0.75, pitch:1.20, name:'female'},    // Elena - italiano lento dolce
-    9:  {lang:'en-JM', rate:0.85, pitch:0.70, name:'male'},      // George - inglese giamaicano
-    10: {lang:'en-CA', rate:1.05, pitch:0.95, name:'nb'},        // Mx Alex - inglese canadese
-    11: {lang:'en-NZ', rate:0.95, pitch:1.05, name:'nb'},        // River - inglese neozelandese
-    12: {lang:'en-IN', rate:1.00, pitch:1.10, name:'female'},    // Priya - inglese indiano
-    13: {lang:'it-IT', rate:0.70, pitch:0.65, name:'male'},      // Roberto - italiano lento profondo
+    1:  {lang:'en-GB', rate:0.90, pitch:1.15, gender:'female'},
+    2:  {lang:'it-IT', rate:0.80, pitch:0.80, gender:'male'},
+    3:  {lang:'it-IT', rate:1.10, pitch:1.20, gender:'female'},
+    4:  {lang:'fr-FR', rate:0.85, pitch:1.05, gender:'female'},
+    5:  {lang:'it-IT', rate:0.80, pitch:0.75, gender:'male'},
+    6:  {lang:'it-IT', rate:0.95, pitch:1.10, gender:'female'},
+    7:  {lang:'it-IT', rate:1.20, pitch:1.10, gender:'male'},
+    8:  {lang:'it-IT', rate:0.75, pitch:1.25, gender:'female'},
+    9:  {lang:'en-GB', rate:0.85, pitch:0.70, gender:'male'},
+    10: {lang:'en-US', rate:1.05, pitch:0.95, gender:'male'},
+    11: {lang:'en-US', rate:0.95, pitch:1.05, gender:'female'},
+    12: {lang:'en-US', rate:1.00, pitch:1.10, gender:'female'},
+    13: {lang:'it-IT', rate:0.65, pitch:0.60, gender:'male'},
   };
+
+  const profile = voiceProfiles[currentAlias?.id] || {lang:'it-IT', rate:0.93, pitch:1.0, gender:'male'};
+  u.lang = profile.lang;
+  u.rate = profile.rate;
+  u.pitch = profile.pitch;
+
+  // Carica voci e cerca la migliore
+  function assignVoice(){
+    const voices = window.speechSynthesis.getVoices();
+    const langVoices = voices.filter(v => v.lang.startsWith(profile.lang.split('-')[0]));
+    
+    // Prova a trovare voce per genere
+    let best = null;
+    if(profile.gender === 'male'){
+      best = langVoices.find(v => 
+        v.name.toLowerCase().includes('male') ||
+        v.name.toLowerCase().includes('uomo') ||
+        v.name.toLowerCase().includes('luca') ||
+        v.name.toLowerCase().includes('matteo') ||
+        v.name.toLowerCase().includes('giorgio') ||
+        v.name.toLowerCase().includes('daniel') ||
+        v.name.toLowerCase().includes('david') ||
+        v.name.toLowerCase().includes('thomas') ||
+        v.name.toLowerCase().includes('alex')
+      );
+    } else {
+      best = langVoices.find(v =>
+        v.name.toLowerCase().includes('female') ||
+        v.name.toLowerCase().includes('donna') ||
+        v.name.toLowerCase().includes('alice') ||
+        v.name.toLowerCase().includes('sara') ||
+        v.name.toLowerCase().includes('anna') ||
+        v.name.toLowerCase().includes('samantha') ||
+        v.name.toLowerCase().includes('karen')
+      );
+    }
+    
+    // Se non trova, prende la prima disponibile per quella lingua
+    if(!best && langVoices.length > 0){
+      best = profile.gender === 'male' ? langVoices[langVoices.length-1] : langVoices[0];
+    }
+    
+    if(best) u.voice = best;
+    window.speechSynthesis.speak(u);
+  }
+
+  // Le voci potrebbero non essere ancora caricate
+  if(window.speechSynthesis.getVoices().length > 0){
+    assignVoice();
+  } else {
+    window.speechSynthesis.onvoiceschanged = assignVoice;
+  }
+}
 
   const profile = voiceProfiles[currentAlias?.id] || {lang:'it-IT', rate:0.93, pitch:1.0};
   u.lang = profile.lang;
