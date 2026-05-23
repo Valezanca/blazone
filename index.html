@@ -307,7 +307,7 @@ let voiceMode = false, micRec = null, micActive = false, micTranscript = '';
 let micPermission = false;
 
 // PAYWALL
-const FREE_MSGS = 15;
+var userId = localStorage.getItem('bz_uid') || (function(){ var id = 'u_' + Math.random().toString(36).substr(2,9); localStorage.setItem('bz_uid', id); return id; })();const FREE_MSGS = 15;
 let msgCount = parseInt(localStorage.getItem('bz_msgs')||'0');
 let isPremium = localStorage.getItem('bz_premium') === 'true';
 
@@ -549,8 +549,7 @@ Contesto: e ${tod}.`;
     const res = await fetch('/api/chat',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'claude-haiku-4-5-20251001', max_tokens:300, system, messages:messages.slice(-10)})
-    });
+body: JSON.stringify({model: 'claude-haiku-4-5-20251001', max_tokens: 300, system: system, messages: messages.slice(-10), userId: userId, aliasId: currentAlias.id})    });
     const data = await res.json();
     if(!res.ok) throw new Error(data?.error?.message||'Errore API');
     const reply = data.content?.[0]?.text;
