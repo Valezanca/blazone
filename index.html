@@ -74,8 +74,7 @@
 <body>
 <canvas id="park-bg"></canvas>
 
-<div class="terms-overlay show" id="screen-auth" style="z-index:400">
-  <div class="card" style="max-width:380px">
+<div class="terms-overlay show" id="screen-auth" style="z-index:400;pointer-events:all">  <div class="card" style="max-width:380px">
     <div style="text-align:center;margin-bottom:20px">
       <div style="font-size:40px;margin-bottom:8px">&#128761;</div>
       <h1 style="font-size:22px;font-weight:normal;letter-spacing:2px">Il Parco del Blazone</h1>
@@ -92,8 +91,7 @@
     <button class="btn-primary" id="auth-btn" onclick="handleAuth()">Accedi</button>
     <div id="forgot-wrap" style="text-align:center;margin-top:8px">
       <div style="text-align:center;margin:12px 0 4px">
-      <button onclick="enterAsGuest()" style="background:none;border:none;color:rgba(255,255,255,0.45);font-size:12px;cursor:pointer;font-family:inherit;text-decoration:underline">Entra senza account →</button>
-    </div>
+<button onclick="enterAsGuest()" style="background:none;border:none;color:rgba(255,255,255,0.45);font-size:12px;cursor:pointer;font-family:inherit;text-decoration:underline;position:relative;z-index:500">Entra senza account →</button>    </div>
       <button onclick="handleForgot()" style="background:none;border:none;color:rgba(255,255,255,0.4);font-size:12px;cursor:pointer;font-family:inherit">Password dimenticata?</button>
     </div>
     <p style="color:rgba(255,255,255,0.3);font-size:10px;text-align:center;margin-top:16px">Continuando accetti i Termini di Servizio e la Privacy Policy.</p>
