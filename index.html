@@ -16,8 +16,8 @@
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
     body { font-family: 'Palatino Linotype', Palatino, serif; background: #0a0a1f; color: white; height: 100vh; overflow: hidden; }
     .screen { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; transition: opacity 0.4s; overflow-y: auto; }
-    .screen.hidden { opacity: 0; pointer-events: none; }
-    .card { background: rgba(255,255,255,0.1); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.2); border-radius: 28px; padding: 28px 24px; width: 100%; max-width: 440px; animation: fadeUp 0.5s ease both; }
+.screen.hidden { opacity: 0; pointer-events: none; }
+    .screen { pointer-events: auto; }    .card { background: rgba(255,255,255,0.1); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.2); border-radius: 28px; padding: 28px 24px; width: 100%; max-width: 440px; animation: fadeUp 0.5s ease both; }
     .btn-primary { width: 100%; padding: 14px; border-radius: 14px; background: rgba(245,200,66,0.9); border: none; color: #1a1a2e; font-weight: bold; font-size: 16px; cursor: pointer; font-family: inherit; margin-bottom: 10px; }
     .btn-secondary { width: 100%; padding: 12px; border-radius: 14px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: white; font-size: 14px; cursor: pointer; font-family: inherit; }
     input[type="password"] { width: 100%; padding: 12px 16px; border-radius: 12px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); color: white; font-size: 15px; outline: none; font-family: inherit; margin-bottom: 10px; }
@@ -60,8 +60,7 @@
     .paywall-card { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 28px; padding: 28px 24px; max-width: 400px; width: 100%; text-align: center; }
     .plan-btn { width: 100%; padding: 16px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.25); background: rgba(255,255,255,0.08); color: white; font-family: inherit; font-size: 14px; cursor: pointer; margin-bottom: 10px; text-align: left; }
     .terms-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.92); backdrop-filter: blur(20px); display: none; flex-direction: column; align-items: center; justify-content: center; padding: 24px; z-index: 200; }
-    .terms-overlay.show { display: flex; }
-    .mic-ring { position: absolute; border-radius: 50%; animation: micRing 2s infinite; }
+.terms-overlay.show { display: flex; pointer-events: all; }    .mic-ring { position: absolute; border-radius: 50%; animation: micRing 2s infinite; }
     #park-bg { position: fixed; inset: 0; z-index: -1; }
     @keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
     @keyframes bubIn { from { opacity:0; transform:scale(0.88) translateY(6px); } to { opacity:1; transform:scale(1) translateY(0); } }
