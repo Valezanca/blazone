@@ -4,6 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Il Parco del Blazone</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="/icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Blazone">
+  <meta name="theme-color" content="#0a1a0a">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
     body { font-family: 'Palatino Linotype', Palatino, serif; background: #0a0a1f; color: white; height: 100vh; overflow: hidden; }
@@ -13,7 +19,9 @@
     .btn-primary { width: 100%; padding: 14px; border-radius: 14px; background: rgba(245,200,66,0.9); border: none; color: #1a1a2e; font-weight: bold; font-size: 16px; cursor: pointer; font-family: inherit; margin-bottom: 10px; }
     .btn-secondary { width: 100%; padding: 12px; border-radius: 14px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: white; font-size: 14px; cursor: pointer; font-family: inherit; }
     input[type="password"] { width: 100%; padding: 12px 16px; border-radius: 12px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); color: white; font-size: 15px; outline: none; font-family: inherit; margin-bottom: 10px; }
-    input::placeholder { color: rgba(255,255,255,0.4); }
+    input[type="email"], input[type="text"] { width: 100%; padding: 12px 16px; border-radius: 12px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); color: white; font-size: 15px; outline: none; font-family: inherit; margin-bottom: 10px; }
+    .auth-tab { flex: 1; padding: 10px; background: none; border: none; color: rgba(255,255,255,0.5); font-family: inherit; font-size: 14px; cursor: pointer; border-bottom: 2px solid transparent; }
+    .auth-tab.active { color: white; border-bottom: 2px solid rgba(245,200,66,0.9); }
     .progress-bar { height: 4px; background: rgba(255,255,255,0.15); border-radius: 4px; margin-bottom: 24px; }
     .progress-fill { height: 100%; background: rgba(245,200,66,0.8); border-radius: 4px; transition: width 0.4s ease; }
     .quiz-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -63,6 +71,30 @@
 </head>
 <body>
 <canvas id="park-bg"></canvas>
+
+<div class="terms-overlay show" id="screen-auth" style="z-index:400">
+  <div class="card" style="max-width:380px">
+    <div style="text-align:center;margin-bottom:20px">
+      <div style="font-size:40px;margin-bottom:8px">&#128761;</div>
+      <h1 style="font-size:22px;font-weight:normal;letter-spacing:2px">Il Parco del Blazone</h1>
+      <p style="color:rgba(255,255,255,0.5);font-size:13px;margin-top:4px">Accedi o crea il tuo account</p>
+    </div>
+    <div style="display:flex;border-bottom:1px solid rgba(255,255,255,0.15);margin-bottom:20px">
+      <button class="auth-tab active" id="tab-login" onclick="switchTab('login')">Accedi</button>
+      <button class="auth-tab" id="tab-signup" onclick="switchTab('signup')">Registrati</button>
+    </div>
+    <div id="auth-error" style="display:none;background:rgba(180,0,0,0.25);border-radius:10px;padding:10px 14px;color:#ffaaaa;font-size:13px;margin-bottom:14px"></div>
+    <div id="auth-success" style="display:none;background:rgba(0,150,0,0.25);border-radius:10px;padding:10px 14px;color:#a0ffb0;font-size:13px;margin-bottom:14px"></div>
+    <input type="email" id="auth-email" placeholder="Email" style="margin-bottom:10px"/>
+    <input type="password" id="auth-password" placeholder="Password (min. 6 caratteri)" style="margin-bottom:16px"/>
+    <button class="btn-primary" id="auth-btn" onclick="handleAuth()">Accedi</button>
+    <div id="forgot-wrap" style="text-align:center;margin-top:8px">
+      <button onclick="handleForgot()" style="background:none;border:none;color:rgba(255,255,255,0.4);font-size:12px;cursor:pointer;font-family:inherit">Password dimenticata?</button>
+    </div>
+    <p style="color:rgba(255,255,255,0.3);font-size:10px;text-align:center;margin-top:16px">Continuando accetti i Termini di Servizio e la Privacy Policy.</p>
+  </div>
+</div>
+
 <div class="terms-overlay" id="screen-lang" style="z-index:300">
   <div class="card" style="max-width:400px;text-align:center">
     <div style="font-size:36px;margin-bottom:10px">&#127760;</div>
@@ -83,7 +115,7 @@
   <div class="card" style="max-width:400px;text-align:center">
     <div style="font-size:36px;margin-bottom:10px">&#127908;</div>
     <h2 style="font-weight:normal;font-size:22px;margin-bottom:6px">Scegli la voce</h2>
-    <p style="color:rgba(255,255,255,0.5);font-size:13px;margin-bottom:16px">Passa sopra per sentire un'anteprima</p>
+    <p style="color:rgba(255,255,255,0.5);font-size:13px;margin-bottom:16px">Seleziona la voce che preferisci per i personaggi</p>
     <div id="voice-list" style="max-height:260px;overflow-y:auto;margin-bottom:16px;display:flex;flex-direction:column;gap:8px"></div>
     <button class="btn-secondary" onclick="skipVoice()">Salta — usa voce predefinita</button>
   </div>
@@ -186,7 +218,7 @@
       </svg>
     </div>
     <h2 id="micperm-title" style="font-weight:normal;font-size:20px;margin-bottom:8px"></h2>
-    <p style="color:rgba(255,255,255,0.6);font-size:13px;line-height:1.7;margin-bottom:20px">Si attiva solo mentre tieni premuto il pulsante.<br><span style="color:rgba(245,200,66,0.8);font-size:12px">Il microfono e disponibile solo per gli utenti Premium.</span></p>
+    <p style="color:rgba(255,255,255,0.6);font-size:13px;line-height:1.7;margin-bottom:20px">Si attiva solo mentre tieni premuto il pulsante. L'audio non viene mai salvato.<br><span style="color:rgba(245,200,66,0.8);font-size:12px">Il microfono e disponibile solo per gli utenti Premium.</span></p>
     <button class="btn-primary" onclick="requestMic()">Consenti il microfono</button>
     <button class="btn-secondary" onclick="completeMicPerm()">Non ora, uso solo il testo</button>
   </div>
@@ -203,6 +235,7 @@
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:9px">
       <p style="font-size:12px;color:rgba(255,255,255,0.5)">Con chi vuoi sederti?</p>
       <button onclick="goto('quiz')" style="background:none;border:none;color:rgba(255,255,255,0.4);font-size:11px;cursor:pointer;font-family:inherit">Rifai il quiz</button>
+      <button onclick="logout()" style="background:none;border:none;color:rgba(255,255,255,0.3);font-size:11px;cursor:pointer;font-family:inherit">Esci</button>
     </div>
     <div class="alias-grid" id="alias-grid"></div>
   </div>
@@ -262,6 +295,7 @@
     <button onclick="closePaywall()" style="background:none;border:none;color:rgba(255,255,255,0.35);font-size:12px;cursor:pointer;margin-top:8px;font-family:inherit">Torna al parco</button>
   </div>
 </div>
+
 <script>
 var ALIASES = [
   { id:1,  name:"Amara",    origin:"Nigeria / UK",     gender:"female", age:32, goal:"ascolto empatico",                  accent:"#e8a4c8", personality:"Calda, intuitiva, sa trovare la parola giusta. Cresciuta tra Lagos e Londra.", portrait:{bg:["#2d5a8e","#1a3a5c"],skin:"#6b3a1f",hairCol:"#1a0a04",hairSide:true, glasses:false,headscarf:false,beard:false,earring:true, lipCol:"#c06860"} },
@@ -317,13 +351,128 @@ var userLang = localStorage.getItem('bz_lang') || 'it';
 var selectedVoiceName = localStorage.getItem('bz_voice') || '';
 var userId = localStorage.getItem('bz_uid') || (function(){ var id = 'u_' + Math.random().toString(36).substr(2,9); localStorage.setItem('bz_uid', id); return id; })();
 
+// SUPABASE AUTH
+var SUPABASE_URL = 'https://ybdzcbgqpgexgfjazeji.supabase.co';
+var SUPABASE_KEY = 'sb_publishable_jYYNeX2TdWmH5f7icdj3Yg_ELa-Z6_E';
+var currentUser = null;
+var authMode = 'login';
+
+function supabaseReq(path, method, body, token) {
+  var headers = {'Content-Type': 'application/json', 'apikey': SUPABASE_KEY};
+  if (token) headers['Authorization'] = 'Bearer ' + token;
+  return fetch(SUPABASE_URL + path, {method: method || 'GET', headers: headers, body: body ? JSON.stringify(body) : undefined}).then(function(r) { return r.json(); });
+}
+
+function switchTab(mode) {
+  authMode = mode;
+  document.getElementById('tab-login').classList.toggle('active', mode === 'login');
+  document.getElementById('tab-signup').classList.toggle('active', mode === 'signup');
+  document.getElementById('auth-btn').textContent = mode === 'login' ? 'Accedi' : 'Crea account';
+  document.getElementById('forgot-wrap').style.display = mode === 'login' ? 'block' : 'none';
+  document.getElementById('auth-error').style.display = 'none';
+  document.getElementById('auth-success').style.display = 'none';
+}
+
+function showAuthError(msg) {
+  var el = document.getElementById('auth-error');
+  el.textContent = msg; el.style.display = 'block';
+  document.getElementById('auth-success').style.display = 'none';
+}
+
+function showAuthSuccess(msg) {
+  var el = document.getElementById('auth-success');
+  el.textContent = msg; el.style.display = 'block';
+  document.getElementById('auth-error').style.display = 'none';
+}
+
+function handleAuth() {
+  var email = document.getElementById('auth-email').value.trim();
+  var password = document.getElementById('auth-password').value;
+  if (!email || !password) { showAuthError('Inserisci email e password.'); return; }
+  if (password.length < 6) { showAuthError('La password deve avere almeno 6 caratteri.'); return; }
+  var btn = document.getElementById('auth-btn');
+  btn.textContent = 'Caricamento...'; btn.disabled = true;
+  var endpoint = authMode === 'login' ? '/auth/v1/token?grant_type=password' : '/auth/v1/signup';
+  supabaseReq(endpoint, 'POST', {email: email, password: password}).then(function(data) {
+    btn.disabled = false;
+    if (data.error || data.error_description || data.msg) {
+      var err = data.error_description || data.msg || data.error || 'Errore di autenticazione';
+      if (err.includes('Invalid login')) err = 'Email o password non corretti.';
+      if (err.includes('already registered')) err = 'Email gia registrata. Prova ad accedere.';
+      if (err.includes('not confirmed')) err = 'Conferma la tua email prima di accedere.';
+      showAuthError(err);
+      btn.textContent = authMode === 'login' ? 'Accedi' : 'Crea account';
+      return;
+    }
+    if (authMode === 'signup' && !data.access_token) {
+      showAuthSuccess('Account creato! Controlla la tua email per confermare.');
+      btn.textContent = 'Crea account';
+      return;
+    }
+    if (data.access_token) {
+      currentUser = data.user;
+      userId = data.user.id;
+      localStorage.setItem('bz_uid', userId);
+      localStorage.setItem('bz_token', data.access_token);
+      document.getElementById('screen-auth').classList.remove('show');
+      startAfterAuth();
+    }
+  }).catch(function() {
+    btn.disabled = false;
+    btn.textContent = authMode === 'login' ? 'Accedi' : 'Crea account';
+    showAuthError('Errore di connessione. Riprova.');
+  });
+}
+
+function handleForgot() {
+  var email = document.getElementById('auth-email').value.trim();
+  if (!email) { showAuthError('Inserisci la tua email prima.'); return; }
+  supabaseReq('/auth/v1/recover', 'POST', {email: email}).then(function() {
+    showAuthSuccess('Email di recupero inviata! Controlla la tua casella.');
+  });
+}
+
+function checkExistingSession() {
+  var token = localStorage.getItem('bz_token');
+  if (!token) { document.getElementById('screen-auth').classList.add('show'); return; }
+  supabaseReq('/auth/v1/user', 'GET', null, token).then(function(data) {
+    if (data.id) {
+      currentUser = data; userId = data.id;
+      document.getElementById('screen-auth').classList.remove('show');
+      startAfterAuth();
+    } else {
+      localStorage.removeItem('bz_token');
+      document.getElementById('screen-auth').classList.add('show');
+    }
+  }).catch(function() { document.getElementById('screen-auth').classList.add('show'); });
+}
+
+function startAfterAuth() {
+  var done = localStorage.getItem('bz_onboarded');
+  var terms = localStorage.getItem('bz_terms');
+  var lang = localStorage.getItem('bz_lang');
+  var voice = localStorage.getItem('bz_voice');
+  if (!lang) { document.getElementById('screen-lang').classList.add('show'); }
+  else if (!voice && !terms) { showVoiceSelection(); }
+  else if (!terms) { document.getElementById('screen-terms').classList.add('show'); }
+  else if (done) { goto('main'); }
+  else { goto('welcome'); }
+}
+
+function logout() {
+  localStorage.removeItem('bz_token');
+  currentUser = null;
+  document.getElementById('screen-auth').classList.add('show');
+  document.querySelectorAll('.screen').forEach(function(s) { s.classList.add('hidden'); });
+}
+
 var LANG_CONFIG = {
-  it: { name:'Italiano', respond:'Rispondi sempre in italiano, in modo naturale e breve (2-4 frasi max).', park:'Sei nel Parco del Blazone, seduto su una panchina.' },
-  en: { name:'English',  respond:'Always reply in English, naturally and briefly (2-4 sentences max).', park:'You are in the Blazone Park, sitting on a bench.' },
-  es: { name:'Espanol',  respond:'Responde siempre en espanol, de forma natural y breve (2-4 frases max).', park:'Estas en el Parque Blazone, sentado en un banco.' },
-  fr: { name:'Francais', respond:'Reponds toujours en francais, de facon naturelle et breve (2-4 phrases max).', park:'Tu es dans le Parc Blazone, assis sur un banc.' },
-  de: { name:'Deutsch',  respond:'Antworte immer auf Deutsch, naturlich und kurz (2-4 Satze max).', park:'Du bist im Blazone Park, auf einer Bank sitzend.' },
-  pt: { name:'Portugues',respond:'Responda sempre em portugues, de forma natural e breve (2-4 frases max).', park:'Voce esta no Parque Blazone, sentado num banco.' }
+  it: { name:'Italiano', flag:'&#127470;&#127481;', respond:'Rispondi sempre in italiano, in modo naturale e breve (2-4 frasi max).', park:'Sei nel Parco del Blazone, seduto su una panchina.' },
+  en: { name:'English',  flag:'&#127468;&#127463;', respond:'Always reply in English, naturally and briefly (2-4 sentences max).', park:'You are in the Blazone Park, sitting on a bench.' },
+  es: { name:'Espanol',  flag:'&#127466;&#127480;', respond:'Responde siempre en espanol, de forma natural y breve (2-4 frases max).', park:'Estas en el Parque Blazone, sentado en un banco.' },
+  fr: { name:'Francais', flag:'&#127467;&#127479;', respond:'Reponds toujours en francais, de facon naturelle et breve (2-4 phrases max).', park:'Tu es dans le Parc Blazone, assis sur un banc.' },
+  de: { name:'Deutsch',  flag:'&#127465;&#127466;', respond:'Antworte immer auf Deutsch, naturlich und kurz (2-4 Satze max).', park:'Du bist im Blazone Park, auf einer Bank sitzend.' },
+  pt: { name:'Portugues',flag:'&#127477;&#127481;', respond:'Responda sempre em portugues, de forma natural e breve (2-4 frases max).', park:'Voce esta no Parque Blazone, sentado num banco.' }
 };
 
 function getMsgsLeft() { return isPremium ? 9999 : Math.max(0, FREE_MSGS - msgCount); }
@@ -343,14 +492,13 @@ function updateCounters() {
   }
 }
 
-function activatePremium() { isPremium = true; localStorage.setItem('bz_premium', 'true'); closePaywall(); updateCounters(); alert('Piano Premium attivato!'); }
+function activatePremium() { isPremium = true; localStorage.setItem('bz_premium', 'true'); closePaywall(); updateCounters(); alert('Piano Premium attivato! Microfono e chat illimitata sbloccati.'); }
 function buyCredits() { msgCount = Math.max(0, msgCount - 50); localStorage.setItem('bz_msgs', msgCount); closePaywall(); updateCounters(); alert('50 messaggi aggiunti!'); }
 function closePaywall() { document.getElementById('paywall-screen').classList.remove('show'); }
 function showPaywall() { document.getElementById('paywall-screen').classList.add('show'); }
-function acceptTerms() { localStorage.setItem('bz_terms', '1'); document.getElementById('screen-terms').classList.remove('show'); }
-
 function setLang(lang) {
-  userLang = lang; localStorage.setItem('bz_lang', lang);
+  userLang = lang;
+  localStorage.setItem('bz_lang', lang);
   document.getElementById('screen-lang').classList.remove('show');
   showVoiceSelection();
 }
@@ -364,9 +512,10 @@ function showVoiceSelection() {
   }
   var list = document.getElementById('voice-list');
   list.innerHTML = '';
-  var langCode = userLang;
-  var langVoices = voices.filter(function(v) { return v.lang.startsWith(langCode); });
-  var otherVoices = voices.filter(function(v) { return !v.lang.startsWith(langCode); }).slice(0, 5);
+  var langCode = (LANG_CONFIG[userLang] || LANG_CONFIG['it']).lang || userLang;
+  // Prima mostra voci della lingua scelta, poi le altre
+  var langVoices = voices.filter(function(v) { return v.lang.startsWith(langCode.split('-')[0]); });
+  var otherVoices = voices.filter(function(v) { return !v.lang.startsWith(langCode.split('-')[0]); }).slice(0, 5);
   var showVoices = langVoices.concat(otherVoices).slice(0, 12);
   if (!showVoices.length) showVoices = voices.slice(0, 10);
   showVoices.forEach(function(v) {
@@ -374,9 +523,10 @@ function showVoiceSelection() {
     btn.style.cssText = 'background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:12px;padding:10px 14px;color:white;font-family:inherit;font-size:13px;cursor:pointer;text-align:left;';
     btn.innerHTML = '<strong>' + v.name + '</strong><br><span style="color:rgba(255,255,255,0.5);font-size:11px">' + v.lang + '</span>';
     btn.onclick = function() { selectVoice(v.name); };
+    // Test preview
     btn.onmouseenter = function() {
       window.speechSynthesis.cancel();
-      var u = new SpeechSynthesisUtterance('Ciao, sono qui per te nel Parco del Blazone');
+      var u = new SpeechSynthesisUtterance('Ciao, sono qui per te');
       u.voice = v; u.rate = 0.95; window.speechSynthesis.speak(u);
     };
     list.appendChild(btn);
@@ -385,7 +535,8 @@ function showVoiceSelection() {
 }
 
 function selectVoice(name) {
-  selectedVoiceName = name; localStorage.setItem('bz_voice', name);
+  selectedVoiceName = name;
+  localStorage.setItem('bz_voice', name);
   window.speechSynthesis.cancel();
   document.getElementById('screen-voice').classList.remove('show');
   document.getElementById('screen-terms').classList.add('show');
@@ -396,6 +547,8 @@ function skipVoice() {
   document.getElementById('screen-voice').classList.remove('show');
   document.getElementById('screen-terms').classList.add('show');
 }
+
+function acceptTerms() { localStorage.setItem('bz_terms', '1'); document.getElementById('screen-terms').classList.remove('show'); }
 
 function goto(id) {
   document.querySelectorAll('.screen').forEach(function(s) { s.classList.add('hidden'); });
@@ -469,8 +622,10 @@ function computeMatches() {
   if (topic === 'green')    { sc[11]+=3; sc[4]+=1; }
   if (topic === 'art')      { sc[13]+=3; sc[2]+=2; }
   swipeMatches = ALIASES.slice().sort(function(a, b) { return sc[b.id] - sc[a.id]; }).slice(0, 3);
-  swipeIdx = 0; renderSwipe();
+  swipeIdx = 0;
+  renderSwipe();
 }
+
 function renderSwipe() {
   if (swipeIdx >= swipeMatches.length) { goto('micperm'); return; }
   var a = swipeMatches[swipeIdx];
@@ -603,11 +758,11 @@ function sendMessage(text) {
   var h = new Date().getHours();
   var tod = h >= 5 && h < 12 ? 'mattina' : h >= 12 && h < 17 ? 'pomeriggio' : h >= 17 && h < 21 ? 'tramonto' : 'sera';
   var lc = LANG_CONFIG[userLang] || LANG_CONFIG['it'];
-  var system = 'You are ' + currentAlias.name + ', from ' + currentAlias.origin + ', ' + currentAlias.age + ' years old. Goal: ' + currentAlias.goal + '. Personality: ' + currentAlias.personality + '. ' + lc.respond + ' ' + lc.park + ' Context: it is ' + tod + '.';
+  var system = 'You are ' + currentAlias.name + ', from ' + currentAlias.origin + ', ' + currentAlias.age + ' years old.\nGoal: ' + currentAlias.goal + '.\nPersonality: ' + currentAlias.personality + '\n' + lc.respond + ' ' + lc.park + '\nContext: it is ' + tod + '.';
   fetch('/api/chat', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({model: 'claude-haiku-4-5-20251001', max_tokens: 300, system: system, messages: messages.slice(-10), userId: userId, aliasId: currentAlias.id})
+    body: JSON.stringify({model: 'claude-haiku-4-5-20251001', max_tokens: 300, system: system, messages: messages.slice(-10)})
   }).then(function(res) {
     return res.json().then(function(data) { return {ok: res.ok, data: data}; });
   }).then(function(result) {
@@ -649,19 +804,27 @@ function speak(text) {
   window.speechSynthesis.cancel();
   var u = new SpeechSynthesisUtterance(text);
   var profiles = {
-    1:{rate:0.90,pitch:1.15},2:{rate:0.78,pitch:0.78},3:{rate:1.12,pitch:1.22},
-    4:{rate:0.85,pitch:1.05},5:{rate:0.78,pitch:0.72},6:{rate:0.95,pitch:1.12},
-    7:{rate:1.18,pitch:1.08},8:{rate:0.72,pitch:1.28},9:{rate:0.82,pitch:0.68},
-    10:{rate:1.05,pitch:0.92},11:{rate:0.95,pitch:1.05},12:{rate:1.02,pitch:1.12},
-    13:{rate:0.62,pitch:0.58}
+    1:{lang:'en',rate:0.90,pitch:1.15},2:{lang:'it',rate:0.78,pitch:0.78},
+    3:{lang:'it',rate:1.12,pitch:1.22},4:{lang:'fr',rate:0.85,pitch:1.05},
+    5:{lang:'it',rate:0.78,pitch:0.72},6:{lang:'it',rate:0.95,pitch:1.12},
+    7:{lang:'it',rate:1.18,pitch:1.08},8:{lang:'it',rate:0.72,pitch:1.28},
+    9:{lang:'en',rate:0.82,pitch:0.68},10:{lang:'en',rate:1.05,pitch:0.92},
+    11:{lang:'en',rate:0.95,pitch:1.05},12:{lang:'en',rate:1.02,pitch:1.12},
+    13:{lang:'it',rate:0.62,pitch:0.58}
   };
-  var profile = currentAlias && profiles[currentAlias.id] ? profiles[currentAlias.id] : {rate:0.93,pitch:1.0};
+  var profile = currentAlias && profiles[currentAlias.id] ? profiles[currentAlias.id] : {lang:'it',rate:0.93,pitch:1.0};
   u.rate = profile.rate; u.pitch = profile.pitch;
   function assignAndSpeak() {
     var voices = window.speechSynthesis.getVoices();
     var best = null;
+    // Usa la voce scelta dall'utente se disponibile
     if (selectedVoiceName) {
       best = voices.filter(function(v) { return v.name === selectedVoiceName; })[0];
+    }
+    // Altrimenti cerca per lingua del personaggio
+    if (!best) {
+      var langVoices = voices.filter(function(v) { return v.lang.startsWith(profile.lang); });
+      best = langVoices[0];
     }
     if (!best && voices.length) best = voices[0];
     if (best) { u.voice = best; u.lang = best.lang; }
@@ -675,7 +838,8 @@ function startMic(e) {
   e.preventDefault();
   if (!isPremium) {
     document.getElementById('error-display').innerHTML = '<div class="error-bar">Il microfono e disponibile solo per gli utenti Premium!</div>';
-    setTimeout(showPaywall, 1500); return;
+    setTimeout(showPaywall, 1500);
+    return;
   }
   var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SR) { document.getElementById('error-display').innerHTML = '<div class="error-bar">Browser non supporta il microfono</div>'; return; }
@@ -705,6 +869,7 @@ function stopMic(e) {
   document.getElementById('transcript-preview').style.display = 'none';
   setTimeout(function() { if (micTranscript.trim()) sendMessage(micTranscript.trim()); micTranscript = ''; }, 300);
 }
+
 // SFONDO PARCO - Stile fumetto ricco
 (function() {
   var canvas = document.getElementById('park-bg');
@@ -722,6 +887,7 @@ function stopMic(e) {
     var isDay = !isNight && !isSunset;
     var sc = Math.min(W, H) / 700;
 
+    // CIELO con sfumatura ricca
     var grad = ctx.createLinearGradient(0, 0, 0, H * 0.72);
     if (h >= 5 && h < 12) {
       grad.addColorStop(0, '#7ec8e3'); grad.addColorStop(0.4, '#a8ddf0'); grad.addColorStop(0.8, '#d4eef7'); grad.addColorStop(1, '#f5f0d0');
@@ -734,31 +900,39 @@ function stopMic(e) {
     }
     ctx.fillStyle = grad; ctx.fillRect(0, 0, W, H);
 
+    // NUVOLE (solo di giorno)
     if (isDay) {
       function drawCloud(cx, cy, s, alpha) {
-        ctx.save(); ctx.globalAlpha = alpha; ctx.fillStyle = '#ffffff';
-        [[0,0,s],[s*0.6,s*0.15,s*0.75],[-(s*0.55),s*0.1,s*0.7],[s*0.15,-(s*0.3),s*0.65],[-(s*0.2),-(s*0.25),s*0.5]].forEach(function(c) {
+        ctx.save(); ctx.globalAlpha = alpha;
+        ctx.fillStyle = '#ffffff';
+        [[0,0,s*1.0],[s*0.6,s*0.15,s*0.75],[s*-0.55,s*0.1,s*0.7],[s*0.15,s*-0.3,s*0.65],[s*-0.2,s*-0.25,s*0.5]].forEach(function(c) {
           ctx.beginPath(); ctx.arc(cx+c[0], cy+c[1], c[2], 0, Math.PI*2); ctx.fill();
         });
         ctx.restore();
       }
-      drawCloud(W*0.12, H*0.08, 28*sc, 0.85);
-      drawCloud(W*0.42, H*0.05, 22*sc, 0.75);
-      drawCloud(W*0.72, H*0.10, 32*sc, 0.80);
+      drawCloud(W*0.15, H*0.08, 28*sc, 0.85);
+      drawCloud(W*0.45, H*0.05, 22*sc, 0.75);
+      drawCloud(W*0.75, H*0.10, 32*sc, 0.80);
       drawCloud(W*0.88, H*0.06, 18*sc, 0.70);
     }
 
+    // STELLE di notte
     if (isNight) {
-      [[0.08,0.05],[0.19,0.03],[0.33,0.08],[0.52,0.04],[0.64,0.10],[0.78,0.03],[0.44,0.02],[0.26,0.07],[0.57,0.09],[0.87,0.05],[0.71,0.06]].forEach(function(s) {
+      [[0.08,0.05],[0.19,0.03],[0.33,0.08],[0.52,0.04],[0.64,0.10],[0.78,0.03],[0.44,0.02],[0.26,0.07],[0.57,0.09],[0.87,0.05],[0.71,0.06],[0.13,0.12],[0.91,0.14]].forEach(function(s) {
         ctx.beginPath(); ctx.arc(s[0]*W, s[1]*H, 1.8, 0, Math.PI*2);
         ctx.fillStyle = 'rgba(255,255,255,0.9)'; ctx.fill();
       });
-      ctx.beginPath(); ctx.arc(W*0.82, H*0.1, 18*sc, 0, Math.PI*2); ctx.fillStyle = '#f5f0d0'; ctx.fill();
-      ctx.beginPath(); ctx.arc(W*0.85, H*0.09, 14*sc, 0, Math.PI*2); ctx.fillStyle = '#050510'; ctx.fill();
+      // Luna
+      ctx.beginPath(); ctx.arc(W*0.82, H*0.1, 18*sc, 0, Math.PI*2);
+      ctx.fillStyle = '#f5f0d0'; ctx.fill();
+      ctx.beginPath(); ctx.arc(W*0.84, H*0.09, 14*sc, 0, Math.PI*2);
+      ctx.fillStyle = isNight ? '#0a0a20' : '#1a1a3e'; ctx.fill();
     }
 
+    // SOLE
     if (isDay) {
-      var sunX = h < 12 ? W*0.2 : W*0.75, sunY = H*0.1;
+      var sunX = h < 12 ? W*0.2 : W*0.75;
+      var sunY = h < 12 ? H*0.12 : H*0.08;
       var sunGlow = ctx.createRadialGradient(sunX, sunY, 5, sunX, sunY, 40*sc);
       sunGlow.addColorStop(0, 'rgba(255,240,100,0.6)'); sunGlow.addColorStop(1, 'rgba(255,200,0,0)');
       ctx.fillStyle = sunGlow; ctx.beginPath(); ctx.arc(sunX, sunY, 40*sc, 0, Math.PI*2); ctx.fill();
@@ -768,15 +942,18 @@ function stopMic(e) {
 
     var grassY = H * 0.68;
 
+    // COLLINE sullo sfondo (stile fumetto)
     ctx.beginPath(); ctx.ellipse(W*0.2, grassY+10, W*0.35, H*0.12, 0, 0, Math.PI*2);
     ctx.fillStyle = isNight ? '#0a1a08' : isSunset ? '#1a3010' : '#3a8020'; ctx.fill();
     ctx.beginPath(); ctx.ellipse(W*0.8, grassY+15, W*0.3, H*0.10, 0, 0, Math.PI*2);
     ctx.fillStyle = isNight ? '#081508' : isSunset ? '#152808' : '#2e7018'; ctx.fill();
 
+    // PRATO principale - strati
     ctx.fillStyle = isNight ? '#081408' : isSunset ? '#102008' : '#28681a'; ctx.fillRect(0, grassY, W, H - grassY);
     ctx.fillStyle = isNight ? '#0c1c0c' : isSunset ? '#162e10' : '#348022'; ctx.fillRect(0, grassY, W, H*0.06);
     ctx.fillStyle = isNight ? '#102410' : isSunset ? '#1e3a14' : '#44a02c'; ctx.fillRect(0, grassY, W, H*0.025);
 
+    // TEXTURE prato - ciuffi d'erba
     for (var gi = 0; gi < 22; gi++) {
       var gx = (gi / 22) * W * 1.05;
       var gy2 = grassY + Math.sin(gi * 3.7) * 4;
@@ -790,178 +967,316 @@ function stopMic(e) {
       }
     }
 
+    // VIALETTO ghiaia
     ctx.beginPath();
     ctx.moveTo(W*0.35, H); ctx.lineTo(W*0.65, H);
     ctx.lineTo(W*0.58, grassY+H*0.02); ctx.lineTo(W*0.42, grassY+H*0.02);
     ctx.closePath();
     ctx.fillStyle = isNight ? 'rgba(40,35,20,0.6)' : isSunset ? 'rgba(70,50,20,0.5)' : 'rgba(200,175,120,0.45)'; ctx.fill();
+    // bordi vialetto
+    ctx.strokeStyle = isNight ? 'rgba(60,50,30,0.4)' : 'rgba(150,120,70,0.4)';
+    ctx.lineWidth = 2; ctx.stroke();
 
-    function drawBush(x, y, s, c1, c2, fc) {
-      ctx.beginPath(); ctx.ellipse(x, y, s*1.4, s*0.9, 0, 0, Math.PI*2); ctx.fillStyle = c1; ctx.fill();
-      ctx.beginPath(); ctx.ellipse(x-s*0.7, y-s*0.2, s*0.9, s*0.7, 0, 0, Math.PI*2); ctx.fillStyle = c2; ctx.fill();
-      ctx.beginPath(); ctx.ellipse(x+s*0.7, y-s*0.15, s*0.85, s*0.65, 0, 0, Math.PI*2); ctx.fillStyle = c2; ctx.fill();
-      ctx.beginPath(); ctx.ellipse(x, y-s*0.5, s*0.8, s*0.6, 0, 0, Math.PI*2); ctx.fillStyle = c2; ctx.fill();
-      if (isDay && fc) {
+    // CESPUGLI colorati
+    function drawBush(x, y, s, color1, color2, flowerColor) {
+      ctx.beginPath(); ctx.ellipse(x, y, s*1.4, s*0.9, 0, 0, Math.PI*2); ctx.fillStyle = color1; ctx.fill();
+      ctx.beginPath(); ctx.ellipse(x-s*0.7, y-s*0.2, s*0.9, s*0.7, 0, 0, Math.PI*2); ctx.fillStyle = color2; ctx.fill();
+      ctx.beginPath(); ctx.ellipse(x+s*0.7, y-s*0.15, s*0.85, s*0.65, 0, 0, Math.PI*2); ctx.fillStyle = color2; ctx.fill();
+      ctx.beginPath(); ctx.ellipse(x, y-s*0.5, s*0.8, s*0.6, 0, 0, Math.PI*2); ctx.fillStyle = color2; ctx.fill();
+      // Fiori sul cespuglio
+      if (isDay && flowerColor) {
         for (var fi = 0; fi < 5; fi++) {
-          var fx2 = x + Math.cos(fi*1.26)*s*0.8, fy2 = y + Math.sin(fi*1.26)*s*0.5 - s*0.2;
-          ctx.beginPath(); ctx.arc(fx2, fy2, s*0.18, 0, Math.PI*2); ctx.fillStyle = fc; ctx.fill();
+          var fx2 = x + Math.cos(fi * 1.26) * s * 0.8;
+          var fy2 = y + Math.sin(fi * 1.26) * s * 0.5 - s * 0.2;
+          ctx.beginPath(); ctx.arc(fx2, fy2, s*0.18, 0, Math.PI*2); ctx.fillStyle = flowerColor; ctx.fill();
           ctx.beginPath(); ctx.arc(fx2, fy2, s*0.09, 0, Math.PI*2); ctx.fillStyle = '#fff8a0'; ctx.fill();
         }
       }
     }
+
     var b1 = isNight ? '#0a1a08' : isSunset ? '#142208' : '#2a6018';
     var b2 = isNight ? '#0e2210' : isSunset ? '#1c3010' : '#368024';
-    drawBush(W*0.07, grassY+H*0.03, 22*sc, b1, b2, '#ff9090');
-    drawBush(W*0.17, grassY+H*0.04, 16*sc, b2, b1, '#ffb0d0');
-    drawBush(W*0.27, grassY+H*0.035, 14*sc, b1, b2, '#90d090');
-    drawBush(W*0.73, grassY+H*0.035, 15*sc, b2, b1, '#ffb060');
-    drawBush(W*0.83, grassY+H*0.04, 18*sc, b1, b2, '#d090ff');
-    drawBush(W*0.93, grassY+H*0.03, 20*sc, b2, b1, '#ff9090');
-    drawBush(W*0.50, grassY+H*0.06, 12*sc, b1, b2, '#90c0ff');
 
+    drawBush(W*0.08, grassY+H*0.03, 22*sc, b1, b2, '#ff9090');
+    drawBush(W*0.18, grassY+H*0.04, 16*sc, b2, b1, '#ffb0d0');
+    drawBush(W*0.28, grassY+H*0.035, 14*sc, b1, b2, '#90d090');
+    drawBush(W*0.72, grassY+H*0.035, 15*sc, b2, b1, '#ffb060');
+    drawBush(W*0.82, grassY+H*0.04, 18*sc, b1, b2, '#d090ff');
+    drawBush(W*0.92, grassY+H*0.03, 20*sc, b2, b1, '#ff9090');
+    drawBush(W*0.5, grassY+H*0.06, 12*sc, b1, b2, '#90c0ff');
+
+    // FIORI nel prato
     if (!isNight) {
-      [[0.22,0.73,'#ff8080'],[0.27,0.76,'#fff'],[0.32,0.74,'#ffb0d0'],[0.56,0.74,'#c0e0ff'],[0.61,0.76,'#fff'],[0.66,0.74,'#ffb0d0'],[0.71,0.77,'#ffe080'],[0.76,0.75,'#d0a0ff']].forEach(function(f) {
-        var fx3=f[0]*W, fy3=f[1]*H;
-        ctx.strokeStyle='#50a030'; ctx.lineWidth=1.5;
-        ctx.beginPath(); ctx.moveTo(fx3,fy3+6); ctx.lineTo(fx3,fy3+2); ctx.stroke();
-        for (var p=0;p<5;p++) {
-          ctx.beginPath(); ctx.ellipse(fx3+Math.cos(p*1.26)*5,fy3+Math.sin(p*1.26)*5,4,2.5,p*1.26,0,Math.PI*2);
-          ctx.fillStyle=f[2]; ctx.fill();
+      var flowerData = [
+        [0.22,0.73,'#ff8080'],[0.26,0.76,'#ffffff'],[0.31,0.74,'#ffb0d0'],[0.35,0.77,'#ffe080'],
+        [0.40,0.75,'#ff8080'],[0.55,0.74,'#c0e0ff'],[0.60,0.76,'#ffffff'],[0.64,0.74,'#ffb0d0'],
+        [0.68,0.77,'#ffe080'],[0.73,0.75,'#d0a0ff'],[0.15,0.78,'#ffffff'],[0.85,0.78,'#ffb060']
+      ];
+      flowerData.forEach(function(f) {
+        var fx3 = f[0]*W, fy3 = f[1]*H;
+        // stelo
+        ctx.strokeStyle = '#50a030'; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.moveTo(fx3, fy3+6); ctx.lineTo(fx3, fy3+2); ctx.stroke();
+        // petali
+        for (var p = 0; p < 5; p++) {
+          ctx.beginPath();
+          ctx.ellipse(fx3 + Math.cos(p*1.26)*5, fy3 + Math.sin(p*1.26)*5, 4, 2.5, p*1.26, 0, Math.PI*2);
+          ctx.fillStyle = f[2]; ctx.fill();
         }
-        ctx.beginPath(); ctx.arc(fx3,fy3,2.5,0,Math.PI*2); ctx.fillStyle='#ffe840'; ctx.fill();
+        ctx.beginPath(); ctx.arc(fx3, fy3, 2.5, 0, Math.PI*2); ctx.fillStyle = '#ffe840'; ctx.fill();
       });
     }
 
+    // LAMPIONI stile fumetto
     var lit = isNight || isSunset;
     var lc = isNight ? '#ffe060' : '#ffd040';
 
     function drawLamp(x, y) {
-      ctx.strokeStyle='#2a2a2a'; ctx.lineWidth=6*sc;
-      ctx.beginPath(); ctx.moveTo(x,y+H*0.25); ctx.lineTo(x,y); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(x,y); ctx.quadraticCurveTo(x+5*sc,y-22*sc,x+28*sc,y-24*sc);
-      ctx.strokeStyle='#2a2a2a'; ctx.lineWidth=5*sc; ctx.stroke();
-      ctx.fillStyle='#1a1a1a';
-      ctx.beginPath(); ctx.moveTo(x+16*sc,y-28*sc); ctx.lineTo(x+40*sc,y-28*sc); ctx.lineTo(x+38*sc,y-18*sc); ctx.lineTo(x+18*sc,y-18*sc); ctx.closePath(); ctx.fill();
+      // palo
+      ctx.strokeStyle = '#2a2a2a'; ctx.lineWidth = 6*sc;
+      ctx.beginPath(); ctx.moveTo(x, y + H*0.25); ctx.lineTo(x, y); ctx.stroke();
+      // braccio curvo
+      ctx.beginPath(); ctx.moveTo(x, y);
+      ctx.quadraticCurveTo(x+5*sc, y-22*sc, x+28*sc, y-24*sc);
+      ctx.strokeStyle = '#2a2a2a'; ctx.lineWidth = 5*sc; ctx.stroke();
+      // cappuccio lampione
+      ctx.beginPath();
+      ctx.moveTo(x+16*sc, y-28*sc); ctx.lineTo(x+40*sc, y-28*sc);
+      ctx.lineTo(x+38*sc, y-18*sc); ctx.lineTo(x+18*sc, y-18*sc);
+      ctx.closePath(); ctx.fillStyle = '#1a1a1a'; ctx.fill();
+      // luce
       if (lit) {
-        var glow=ctx.createRadialGradient(x+28*sc,y-23*sc,3,x+28*sc,y-23*sc,45*sc);
-        glow.addColorStop(0,'rgba(255,220,80,0.5)'); glow.addColorStop(1,'rgba(255,200,50,0)');
-        ctx.beginPath(); ctx.arc(x+28*sc,y-23*sc,45*sc,0,Math.PI*2); ctx.fillStyle=glow; ctx.fill();
+        var glow = ctx.createRadialGradient(x+28*sc, y-23*sc, 3, x+28*sc, y-23*sc, 45*sc);
+        glow.addColorStop(0, 'rgba(255,220,80,0.5)'); glow.addColorStop(1, 'rgba(255,200,50,0)');
+        ctx.beginPath(); ctx.arc(x+28*sc, y-23*sc, 45*sc, 0, Math.PI*2); ctx.fillStyle = glow; ctx.fill();
       }
-      ctx.beginPath(); ctx.ellipse(x+28*sc,y-20*sc,6*sc,4*sc,0,0,Math.PI*2);
-      ctx.fillStyle=lit?lc:'#888'; ctx.fill();
+      ctx.beginPath(); ctx.ellipse(x+28*sc, y-20*sc, 6*sc, 4*sc, 0, 0, Math.PI*2);
+      ctx.fillStyle = lit ? lc : '#888'; ctx.fill();
     }
 
+    // ALBERI stile fumetto con foglie dettagliate
     function drawTree(x, y, s, variant) {
-      var tc = isNight ? ['#081808','#0c2010','#102814','#0e2210'] : isSunset ? ['#1a3008','#223810','#1e3408','#283e0c'] : ['#1a5208','#228810','#2a9c14','#1e7010','#30a018','#38b820'];
-      var trunkG = ctx.createLinearGradient(x-6*s,0,x+6*s,0);
-      trunkG.addColorStop(0,isNight?'#120806':'#2e1606'); trunkG.addColorStop(0.5,isNight?'#1e1008':'#4a2810'); trunkG.addColorStop(1,isNight?'#120806':'#2e1606');
-      ctx.fillStyle=trunkG;
-      ctx.beginPath(); ctx.moveTo(x-5*s,y+50*s); ctx.quadraticCurveTo(x-6*s,y+20*s,x-4*s,y); ctx.lineTo(x+4*s,y); ctx.quadraticCurveTo(x+6*s,y+20*s,x+5*s,y+50*s); ctx.closePath(); ctx.fill();
-      [[0,-15*s,42*s,50*s,0],[-(12*s),-(32*s),30*s,38*s,1],[10*s,-(38*s),26*s,34*s,2],[-(4*s),-(50*s),20*s,26*s,3],[8*s,-(20*s),22*s,30*s,4],[-(18*s),-(18*s),18*s,26*s,5]].forEach(function(lp) {
-        ctx.beginPath(); ctx.ellipse(x+lp[0],y+lp[1],lp[2],lp[3],0,0,Math.PI*2);
-        ctx.fillStyle=tc[lp[4]%tc.length]; ctx.fill();
-        ctx.strokeStyle='rgba(0,40,0,0.15)'; ctx.lineWidth=1.5*s; ctx.stroke();
+      var trunkColor = isNight ? '#1a0c06' : '#3d1f08';
+      var colors = isNight
+        ? ['#081808','#0c2010','#102814','#0e2210']
+        : isSunset
+        ? ['#1a3008','#223810','#1e3408','#283e0c']
+        : ['#1a5208','#228810','#2a9c14','#1e7010','#30a018','#38b820'];
+
+      // Tronco con texture
+      var trunkGrad = ctx.createLinearGradient(x-6*s, 0, x+6*s, 0);
+      trunkGrad.addColorStop(0, isNight ? '#120806' : '#2e1606');
+      trunkGrad.addColorStop(0.5, isNight ? '#1e1008' : '#4a2810');
+      trunkGrad.addColorStop(1, isNight ? '#120806' : '#2e1606');
+      ctx.fillStyle = trunkGrad;
+      ctx.beginPath();
+      ctx.moveTo(x-5*s, y+50*s); ctx.quadraticCurveTo(x-6*s, y+20*s, x-4*s, y);
+      ctx.lineTo(x+4*s, y); ctx.quadraticCurveTo(x+6*s, y+20*s, x+5*s, y+50*s);
+      ctx.closePath(); ctx.fill();
+
+      // Radici
+      ctx.strokeStyle = trunkColor; ctx.lineWidth = 3*s;
+      [[-8,12],[8,10],[-14,6],[14,8]].forEach(function(r) {
+        ctx.beginPath(); ctx.moveTo(x, y+48*s);
+        ctx.quadraticCurveTo(x+r[0]*s*0.5, y+50*s, x+r[0]*s, y+r[1]*s+48*s); ctx.stroke();
       });
+
+      // Chioma con molti strati di foglie
+      var leafPositions = [
+        [0,-15*s,42*s,50*s,0],[−12*s,-32*s,30*s,38*s,1],[10*s,-38*s,26*s,34*s,2],
+        [-4*s,-50*s,20*s,26*s,3],[8*s,-20*s,22*s,30*s,4],[−18*s,-18*s,18*s,26*s,5]
+      ];
+      if (variant === 2) {
+        leafPositions = [
+          [0,-18*s,38*s,45*s,0],[-14*s,-35*s,28*s,36*s,1],[12*s,-40*s,24*s,32*s,2],
+          [-2*s,-54*s,18*s,24*s,3],[10*s,-22*s,20*s,28*s,4]
+        ];
+      }
+      leafPositions.forEach(function(lp) {
+        ctx.beginPath();
+        ctx.ellipse(x+lp[0], y+lp[1], lp[2], lp[3], 0, 0, Math.PI*2);
+        ctx.fillStyle = colors[lp[4] % colors.length]; ctx.fill();
+        // Contorno fumetto
+        ctx.strokeStyle = isNight ? 'rgba(0,0,0,0.3)' : 'rgba(0,50,0,0.2)';
+        ctx.lineWidth = 1.5*s; ctx.stroke();
+      });
+
+      // Foglie singole sporgenti (stile fumetto)
       if (!isNight) {
-        for (var li=0;li<6;li++) {
-          var ang=li*1.047, dist=(30+li*5)*s;
-          var lx=x+Math.cos(ang)*dist, ly=y-18*s+Math.sin(ang)*dist*0.5;
-          ctx.save(); ctx.translate(lx,ly); ctx.rotate(ang+0.5);
-          ctx.beginPath(); ctx.moveTo(0,-5*s); ctx.quadraticCurveTo(6*s,0,0,5*s); ctx.quadraticCurveTo(-6*s,0,0,-5*s);
-          ctx.fillStyle=tc[2]; ctx.fill(); ctx.restore();
+        var leafColor = colors[2];
+        for (var li = 0; li < 8; li++) {
+          var angle = li * 0.785;
+          var dist = (32 + li * 4) * s;
+          var lx = x + Math.cos(angle) * dist;
+          var ly = y - 20*s + Math.sin(angle) * dist * 0.6;
+          ctx.save(); ctx.translate(lx, ly); ctx.rotate(angle + 0.5);
+          ctx.beginPath();
+          ctx.moveTo(0, -5*s); ctx.quadraticCurveTo(6*s, 0, 0, 5*s);
+          ctx.quadraticCurveTo(-6*s, 0, 0, -5*s);
+          ctx.fillStyle = leafColor; ctx.fill();
+          ctx.strokeStyle = 'rgba(0,80,0,0.3)'; ctx.lineWidth = s; ctx.stroke();
+          ctx.restore();
         }
       }
-      if (isDay && variant===1) {
-        for (var fr=0;fr<3;fr++) {
-          var fa=fr*2.09+0.5;
-          ctx.beginPath(); ctx.arc(x+Math.cos(fa)*20*s,y-22*s+Math.sin(fa)*14*s,4*s,0,Math.PI*2);
-          ctx.fillStyle='#ff4040'; ctx.fill();
+
+      // Frutti/fiori sull'albero (solo di giorno)
+      if (isDay && variant === 1) {
+        for (var fr = 0; fr < 4; fr++) {
+          var fangle = fr * 1.57 + 0.5;
+          ctx.beginPath();
+          ctx.arc(x + Math.cos(fangle)*22*s, y - 25*s + Math.sin(fangle)*16*s, 4*s, 0, Math.PI*2);
+          ctx.fillStyle = '#ff4040'; ctx.fill();
         }
       }
     }
 
+    // PANCHINE stile fumetto
     function drawBench(x, y, s) {
-      var wood=isNight?'#3a2810':isSunset?'#4a3214':'#6b4520', wHL=isNight?'#4a3818':'#8a5a30', iron='#1a1a1a';
-      ctx.beginPath(); ctx.ellipse(x+32*s,y+32*s,38*s,8*s,0,0,Math.PI*2); ctx.fillStyle='rgba(0,0,0,0.2)'; ctx.fill();
-      [0,58].forEach(function(ox) { ctx.fillStyle=iron; ctx.fillRect(x+ox*s,y,5*s,30*s); });
-      ctx.fillStyle=iron; ctx.fillRect(x+2*s,y+18*s,58*s,4*s);
-      for (var di=0;di<4;di++) { ctx.fillStyle=wood; ctx.fillRect(x-4*s,y-28*s+di*9*s,70*s,7*s); ctx.fillStyle=wHL; ctx.fillRect(x-4*s,y-28*s+di*9*s,70*s,2*s); }
-      [0,60].forEach(function(ox) { ctx.fillStyle=iron; ctx.fillRect(x-2*s+ox*s,y-62*s,5*s,38*s); });
-      ctx.fillStyle=iron; ctx.fillRect(x+26*s,y-62*s,5*s,38*s);
-      [0,1].forEach(function(bi) { ctx.fillStyle=wood; ctx.fillRect(x-4*s,y-57*s+bi*13*s,70*s,7*s); ctx.fillStyle=wHL; ctx.fillRect(x-4*s,y-57*s+bi*13*s,70*s,2*s); });
-    }
+      var wood = isNight ? '#3a2810' : isSunset ? '#4a3214' : '#6b4520';
+      var iron = '#1a1a1a';
+      var woodHL = isNight ? '#4a3818' : '#8a5a30';
 
-    function drawFence(x1,x2,y) {
-      ctx.fillStyle='#1a1a1a'; ctx.fillRect(x1,y-4,x2-x1,4); ctx.fillRect(x1,y-18*sc,x2-x1,3);
-      for (var fx=x1+4;fx<x2-4;fx+=22*sc) {
-        ctx.fillRect(fx,y-26*sc,3*sc,26*sc);
-        ctx.beginPath(); ctx.moveTo(fx+1.5*sc,y-30*sc); ctx.lineTo(fx+4.5*sc,y-24*sc); ctx.lineTo(fx-1.5*sc,y-24*sc);
-        ctx.fillStyle='#2a2a2a'; ctx.fill(); ctx.fillStyle='#1a1a1a';
+      // Ombra
+      ctx.beginPath(); ctx.ellipse(x+32*s, y+32*s, 38*s, 8*s, 0, 0, Math.PI*2);
+      ctx.fillStyle = 'rgba(0,0,0,0.2)'; ctx.fill();
+
+      // Gambe ferro
+      [0, 58].forEach(function(ox) {
+        ctx.fillStyle = iron;
+        ctx.beginPath(); ctx.roundRect(x+ox*s, y, 5*s, 30*s, 2); ctx.fill();
+      });
+      // Traversa
+      ctx.fillStyle = iron; ctx.beginPath(); ctx.roundRect(x+2*s, y+18*s, 58*s, 4*s, 1); ctx.fill();
+
+      // Doghe seduta con ombreggiatura fumetto
+      for (var di = 0; di < 4; di++) {
+        ctx.fillStyle = wood;
+        ctx.beginPath(); ctx.roundRect(x-4*s, y-28*s+di*9*s, 70*s, 7*s, 2); ctx.fill();
+        ctx.fillStyle = woodHL;
+        ctx.beginPath(); ctx.roundRect(x-4*s, y-28*s+di*9*s, 70*s, 2*s, 1); ctx.fill();
       }
-    }
 
-    if (isDay) {
-      var bOff=Math.sin(animFrame*0.02)*3;
-      [[W*0.30,H*0.15],[W*0.33,H*0.13],[W*0.65,H*0.12],[W*0.68,H*0.14]].forEach(function(b) {
-        ctx.strokeStyle='#333'; ctx.lineWidth=1.5;
-        ctx.beginPath(); ctx.moveTo(b[0],b[1]+bOff*0.3); ctx.quadraticCurveTo(b[0]-6,b[1]-2+bOff,b[0]-12,b[1]+bOff*0.3);
-        ctx.moveTo(b[0],b[1]+bOff*0.3); ctx.quadraticCurveTo(b[0]+6,b[1]-2+bOff*0.8,b[0]+12,b[1]+bOff*0.3); ctx.stroke();
+      // Schienale
+      [0, 60].forEach(function(ox) {
+        ctx.fillStyle = iron;
+        ctx.beginPath(); ctx.roundRect(x-2*s+ox*s, y-62*s, 5*s, 38*s, 2); ctx.fill();
+      });
+      ctx.fillStyle = iron;
+      ctx.beginPath(); ctx.roundRect(x+26*s, y-62*s, 5*s, 38*s, 2); ctx.fill();
+
+      [0, 1].forEach(function(bi) {
+        ctx.fillStyle = wood;
+        ctx.beginPath(); ctx.roundRect(x-4*s, y-57*s+bi*13*s, 70*s, 7*s, 2); ctx.fill();
+        ctx.fillStyle = woodHL;
+        ctx.beginPath(); ctx.roundRect(x-4*s, y-57*s+bi*13*s, 70*s, 2*s, 1); ctx.fill();
       });
     }
 
+    // RECINZIONE ferro battuto
+    function drawFence(x1, x2, y) {
+      ctx.fillStyle = '#1a1a1a';
+      ctx.beginPath(); ctx.roundRect(x1, y-4, x2-x1, 4, 1); ctx.fill();
+      ctx.beginPath(); ctx.roundRect(x1, y-18*sc, x2-x1, 3, 1); ctx.fill();
+      for (var fx = x1+4; fx < x2-4; fx += 22*sc) {
+        ctx.fillStyle = '#1a1a1a';
+        ctx.beginPath(); ctx.roundRect(fx, y-26*sc, 3*sc, 26*sc, 1); ctx.fill();
+        // Punta lancia
+        ctx.beginPath();
+        ctx.moveTo(fx+1.5*sc, y-30*sc); ctx.lineTo(fx+4.5*sc, y-24*sc); ctx.lineTo(fx-1.5*sc, y-24*sc);
+        ctx.fillStyle = '#2a2a2a'; ctx.fill();
+      }
+    }
+
+    // UCCELLINI (solo di giorno, animati)
     if (isDay) {
-      var btOff=animFrame*0.04;
-      [[0.35,0.72,'#ff80c0','#ff40a0'],[0.62,0.71,'#80c0ff','#4090ff'],[0.48,0.75,'#ffc060','#ff8020']].forEach(function(b,bi) {
-        var bx=b[0]*W+Math.sin(btOff+bi*2)*15, by=b[1]*H+Math.cos(btOff*0.7+bi)*8;
-        var wing=Math.sin(btOff*3+bi)*0.4;
-        ctx.save(); ctx.translate(bx,by);
-        [[1,1],[-1,1]].forEach(function(side) {
-          ctx.save(); ctx.scale(side[0],side[1]);
-          ctx.beginPath(); ctx.ellipse(6,-4,9,6,wing,0,Math.PI*2); ctx.fillStyle=b[2]; ctx.globalAlpha=0.85; ctx.fill();
-          ctx.beginPath(); ctx.ellipse(5,4,7,5,-wing*0.5,0,Math.PI*2); ctx.fillStyle=b[3]; ctx.fill();
+      var birdOffset = Math.sin(animFrame * 0.02) * 3;
+      function drawBird(bx, by, sz) {
+        ctx.strokeStyle = '#333'; ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(bx, by + birdOffset * 0.3);
+        ctx.quadraticCurveTo(bx - sz*3, by - sz*2 + birdOffset, bx - sz*6, by + birdOffset * 0.3);
+        ctx.moveTo(bx, by + birdOffset * 0.3);
+        ctx.quadraticCurveTo(bx + sz*3, by - sz*2 + birdOffset * 0.8, bx + sz*6, by + birdOffset * 0.3);
+        ctx.stroke();
+      }
+      drawBird(W*0.3, H*0.15, 1.2);
+      drawBird(W*0.33, H*0.13, 1.0);
+      drawBird(W*0.65, H*0.12, 1.1);
+      drawBird(W*0.68, H*0.14, 0.9);
+    }
+
+    // FARFALLE (solo di giorno)
+    if (isDay) {
+      var btOffset = animFrame * 0.04;
+      [[0.35, 0.72, '#ff80c0','#ff40a0'],[0.62, 0.71, '#80c0ff','#4090ff'],[0.48, 0.75, '#ffc060','#ff8020']].forEach(function(b, bi) {
+        var bx = b[0]*W + Math.sin(btOffset + bi*2) * 15;
+        var by = b[1]*H + Math.cos(btOffset*0.7 + bi) * 8;
+        var wing = Math.sin(btOffset*3 + bi) * 0.4;
+        ctx.save(); ctx.translate(bx, by);
+        [[1,1],[−1,1]].forEach(function(side) {
+          ctx.save(); ctx.scale(side[0], side[1]);
+          ctx.beginPath();
+          ctx.ellipse(6, -4, 9, 6, wing, 0, Math.PI*2);
+          ctx.fillStyle = b[2]; ctx.globalAlpha = 0.85; ctx.fill();
+          ctx.beginPath();
+          ctx.ellipse(5, 4, 7, 5, -wing*0.5, 0, Math.PI*2);
+          ctx.fillStyle = b[3]; ctx.fill();
           ctx.restore();
         });
-        ctx.globalAlpha=1; ctx.restore();
+        ctx.restore();
+        ctx.globalAlpha = 1;
       });
     }
 
-    drawTree(W*0.03,grassY-H*0.22,sc*1.05,0); drawTree(W*0.13,grassY-H*0.15,sc*0.85,1);
-    drawTree(W*0.22,grassY-H*0.10,sc*0.65,2); drawTree(W*0.78,grassY-H*0.10,sc*0.68,1);
-    drawTree(W*0.87,grassY-H*0.16,sc*0.88,0); drawTree(W*0.97,grassY-H*0.22,sc*1.08,2);
-    drawTree(W*0.42,grassY-H*0.07,sc*0.55,1); drawTree(W*0.58,grassY-H*0.07,sc*0.52,2);
+    // DISEGNA TUTTO nell'ordine corretto
 
-    drawLamp(W*0.15,grassY-H*0.25); drawLamp(W*0.85,grassY-H*0.25);
-    drawLamp(W*0.36,grassY-H*0.19); drawLamp(W*0.64,grassY-H*0.19);
+    // Alberi di sfondo (più piccoli)
+    drawTree(W*0.03, grassY-H*0.22, sc*1.1, 0);
+    drawTree(W*0.13, grassY-H*0.15, sc*0.85, 1);
+    drawTree(W*0.22, grassY-H*0.10, sc*0.65, 2);
+    drawTree(W*0.78, grassY-H*0.10, sc*0.68, 1);
+    drawTree(W*0.87, grassY-H*0.16, sc*0.88, 0);
+    drawTree(W*0.97, grassY-H*0.22, sc*1.08, 2);
+    // Alberi in mezzo
+    drawTree(W*0.42, grassY-H*0.07, sc*0.55, 1);
+    drawTree(W*0.58, grassY-H*0.07, sc*0.52, 2);
 
-    drawBench(W*0.31,grassY-H*0.065,sc*0.88); drawBench(W*0.51,grassY-H*0.065,sc*0.88);
-    drawBench(W*0.11,grassY-H*0.045,sc*0.68); drawBench(W*0.73,grassY-H*0.045,sc*0.68);
+    // Lampioni
+    drawLamp(W*0.15, grassY-H*0.25);
+    drawLamp(W*0.85, grassY-H*0.25);
+    drawLamp(W*0.36, grassY-H*0.19);
+    drawLamp(W*0.64, grassY-H*0.19);
 
-    drawFence(W*0.01,W*0.23,grassY-H*0.005); drawFence(W*0.77,W*0.99,grassY-H*0.005);
+    // Panchine
+    drawBench(W*0.31, grassY-H*0.065, sc*0.88);
+    drawBench(W*0.51, grassY-H*0.065, sc*0.88);
+    drawBench(W*0.11, grassY-H*0.045, sc*0.68);
+    drawBench(W*0.73, grassY-H*0.045, sc*0.68);
+
+    // Recinzioni
+    drawFence(W*0.01, W*0.23, grassY-H*0.005);
+    drawFence(W*0.77, W*0.99, grassY-H*0.005);
   }
 
-  function animate() { draw(); requestAnimationFrame(animate); }
+  // Animazione per farfalle e uccelli
+  function animate() {
+    draw();
+    requestAnimationFrame(animate);
+  }
+
   window.addEventListener('resize', resize);
   resize();
+  // Avvia animazione solo se non è notte (ottimizzazione)
   var h0 = new Date().getHours();
-  if (h0 >= 5 && h0 < 21) animate(); else resize();
+  if (h0 >= 5 && h0 < 21) animate();
 })();
 
+// INIT
 (function() {
-  var done = localStorage.getItem('bz_onboarded');
-  var terms = localStorage.getItem('bz_terms');
-  var lang = localStorage.getItem('bz_lang');
-  var voice = localStorage.getItem('bz_voice');
-  if (!lang) {
-    document.getElementById('screen-lang').classList.add('show');
-  } else if (!voice && !terms) {
-    showVoiceSelection();
-  } else if (!terms) {
-    document.getElementById('screen-terms').classList.add('show');
-  } else if (done) {
-    goto('main');
-  } else {
-    goto('welcome');
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').catch(function() {});
   }
+  checkExistingSession();
 })();
 </script>
 </body>
