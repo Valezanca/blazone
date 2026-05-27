@@ -1,3 +1,5 @@
+<<<<<<< HEAD
+=======
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -110,7 +112,10 @@
     </div>
   </div>
 </div>
+>>>>>>> 339247620e25127e8151eb16a5f4aba46ac51891
 
+<<<<<<< HEAD
+=======
 <div class="terms-overlay" id="screen-voice" style="z-index:250">
   <div class="card" style="max-width:400px;text-align:center">
     <div style="font-size:36px;margin-bottom:10px">&#127908;</div>
@@ -702,7 +707,21 @@ function startChat(aliasId) {
   document.querySelectorAll('.screen').forEach(function(s) { s.classList.add('hidden'); });
   document.getElementById('screen-chat').classList.remove('hidden');
   updateCounters();
-  renderMessages();
+  // Carica memoria da Supabase
+  var token = localStorage.getItem('bz_token');
+  var sbHeaders = {'Content-Type':'application/json','apikey':SUPABASE_KEY};
+  if (token) sbHeaders['Authorization'] = 'Bearer ' + token;
+  fetch(SUPABASE_URL + '/rest/v1/memory?user_id=eq.' + userId + '&alias_id=eq.' + aliasId + '&select=facts,user_name,conversation_count', {headers: sbHeaders})
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data && data[0]) {
+        if (data[0].user_name) memory.userName = data[0].user_name;
+        if (data[0].facts && data[0].facts.length) memory.facts = data[0].facts;
+        memory.convCount = data[0].conversation_count || 0;
+      }
+      renderMessages();
+    }).catch(function() { renderMessages(); });
+}
 }
 
 function renderMessages() {
@@ -758,13 +777,15 @@ function sendMessage(text) {
   var h = new Date().getHours();
   var tod = h >= 5 && h < 12 ? 'mattina' : h >= 12 && h < 17 ? 'pomeriggio' : h >= 17 && h < 21 ? 'tramonto' : 'sera';
   var lc = LANG_CONFIG[userLang] || LANG_CONFIG['it'];
-  var system = 'You are ' + currentAlias.name + ', from ' + currentAlias.origin + ', ' + currentAlias.age + ' years old.\nGoal: ' + currentAlias.goal + '.\nPersonality: ' + currentAlias.personality + '\n' + lc.respond + ' ' + lc.park + '\nContext: it is ' + tod + '.';
-  fetch('/api/chat', {
+var memoryContext = '';
+  if (memory.facts && memory.facts.length) memoryContext = '\nCose che sai di questa persona: ' + memory.facts.join('. ') + '.';
+  if (memory.userName) memoryContext += '\nIl suo nome e: ' + memory.userName + '.';
+  var convLevel = memory.convCount || 0;
+  var tone = convLevel < 5 ? 'Sei cordiale ma ancora in fase di conoscenza.' : convLevel < 20 ? 'Conosci gia questa persona, sei piu caldo e familiare.' : 'Sei un amico/conoscente di lunga data, molto intimo e personale.';
+  var system = 'You are ' + currentAlias.name + ', from ' + currentAlias.origin + ', ' + currentAlias.age + ' years old.\nGoal: ' + currentAlias.goal + '.\nPersonality: ' + currentAlias.personality + '\n' + tone + '\n' + lc.respond + ' ' + lc.park + '\nContext: it is ' + tod + '.' + memoryContext;  fetch('/api/chat', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({model: 'claude-haiku-4-5-20251001', max_tokens: 300, system: system, messages: messages.slice(-10)})
-  }).then(function(res) {
-    return res.json().then(function(data) { return {ok: res.ok, data: data}; });
+body: JSON.stringify({model: 'claude-haiku-4-5-20251001', max_tokens: 300, system: system, messages: messages.slice(-10), userId: userId, aliasId: currentAlias.id, extractMemory: true})    return res.json().then(function(data) { return {ok: res.ok, data: data}; });
   }).then(function(result) {
     hideTyping();
     if (!result.ok) throw new Error(result.data && result.data.error ? result.data.error.message : 'Errore API');
@@ -1281,3 +1302,5 @@ function stopMic(e) {
 </script>
 </body>
 </html>
+
+>>>>>>> 339247620e25127e8151eb16a5f4aba46ac51891
