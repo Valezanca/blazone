@@ -1,0 +1,1274 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Il Parco del Blazone</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    body { font-family: 'Palatino Linotype', Palatino, serif; background: #0a0a1f; color: white; height: 100vh; overflow: hidden; }
+    .screen { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; transition: opacity 0.4s; overflow-y: auto; }
+    .screen.hidden { opacity: 0; pointer-events: none; }
+    .card { background: rgba(255,255,255,0.1); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.2); border-radius: 28px; padding: 28px 24px; width: 100%; max-width: 440px; animation: fadeUp 0.5s ease both; }
+    .btn-primary { width: 100%; padding: 14px; border-radius: 14px; background: rgba(245,200,66,0.9); border: none; color: #1a1a2e; font-weight: bold; font-size: 16px; cursor: pointer; font-family: inherit; margin-bottom: 10px; }
+    .btn-secondary { width: 100%; padding: 12px; border-radius: 14px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: white; font-size: 14px; cursor: pointer; font-family: inherit; }
+    input[type="password"] { width: 100%; padding: 12px 16px; border-radius: 12px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); color: white; font-size: 15px; outline: none; font-family: inherit; margin-bottom: 10px; }
+    input[type="email"], input[type="text"] { width: 100%; padding: 12px 16px; border-radius: 12px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); color: white; font-size: 15px; outline: none; font-family: inherit; margin-bottom: 10px; }
+    .auth-tab { flex: 1; padding: 10px; background: none; border: none; color: rgba(255,255,255,0.5); font-family: inherit; font-size: 14px; cursor: pointer; border-bottom: 2px solid transparent; }
+    .auth-tab.active { color: white; border-bottom: 2px solid rgba(245,200,66,0.9); }
+    .progress-bar { height: 4px; background: rgba(255,255,255,0.15); border-radius: 4px; margin-bottom: 24px; }
+    .progress-fill { height: 100%; background: rgba(245,200,66,0.8); border-radius: 4px; transition: width 0.4s ease; }
+    .quiz-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .quiz-option { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 16px; padding: 16px 10px; cursor: pointer; text-align: center; color: white; font-family: inherit; font-size: 13px; line-height: 1.4; }
+    .alias-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .alias-card { background: rgba(255,255,255,0.09); border: 2px solid transparent; border-radius: 18px; padding: 14px 8px 10px; cursor: pointer; text-align: center; color: white; font-family: inherit; position: relative; }
+    .alias-card .dot { position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; border-radius: 50%; }
+    .swipe-card { background: rgba(255,255,255,0.12); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.2); border-radius: 28px; padding: 28px 22px; max-width: 320px; width: 90%; text-align: center; box-shadow: 0 16px 60px rgba(0,0,0,0.4); transition: transform 0.4s cubic-bezier(0.4,0,0.2,1); }
+    #chat-screen { flex-direction: column; padding: 0; justify-content: flex-start; overflow: hidden; }
+    .chat-header { width: 100%; display: flex; align-items: center; padding: 10px 12px; background: rgba(0,0,0,0.4); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(255,255,255,0.09); flex-shrink: 0; gap: 8px; }
+    .chat-messages { flex: 1; overflow-y: auto; padding: 12px 0 8px; width: 100%; -webkit-overflow-scrolling: touch; }
+    .chat-input-bar { width: 100%; display: flex; gap: 8px; align-items: center; padding: 10px 12px; background: rgba(0,0,0,0.45); backdrop-filter: blur(16px); border-top: 1px solid rgba(255,255,255,0.07); flex-shrink: 0; }
+    .chat-input { flex: 1; background: rgba(255,255,255,0.11); border: 1px solid rgba(255,255,255,0.2); border-radius: 22px; padding: 11px 16px; color: white; font-size: 15px; outline: none; font-family: inherit; }
+    .bubble { display: flex; margin-bottom: 10px; padding: 0 12px; animation: bubIn 0.3s cubic-bezier(0.34,1.56,0.64,1) both; }
+    .bubble.user { justify-content: flex-end; }
+    .bubble-text { max-width: 76%; padding: 11px 15px; font-size: 15px; line-height: 1.65; font-family: inherit; border-radius: 18px; }
+    .bubble.user .bubble-text { background: rgba(255,255,255,0.94); color: #1a1a2e; border-bottom-right-radius: 5px; }
+    .bubble.alias .bubble-text { background: rgba(10,10,40,0.88); color: #f0ede8; border-bottom-left-radius: 5px; }
+    .bubble-avatar { margin-right: 8px; align-self: flex-end; flex-shrink: 0; }
+    .typing-dots { display: flex; gap: 5px; padding: 12px 16px; align-items: center; }
+    .typing-dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,0.55); animation: dot 1.2s infinite ease-in-out; }
+    .send-btn { border: none; border-radius: 50%; width: 46px; height: 46px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .mic-btn { border: 2px solid rgba(255,255,255,0.25); border-radius: 50%; width: 46px; height: 46px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; background: rgba(255,255,255,0.18); touch-action: none; user-select: none; }
+    .mic-btn.active { background: rgba(220,60,60,0.92); border-color: rgba(255,100,100,0.8); animation: micPulse 1.1s infinite; }
+    .mic-btn.locked { background: rgba(80,80,80,0.4); border-color: rgba(120,120,120,0.4); }
+    .header-btn { background: rgba(255,255,255,0.13); border: none; border-radius: 12px; padding: 5px 8px; cursor: pointer; color: rgba(255,255,255,0.85); font-size: 10px; font-family: inherit; white-space: nowrap; }
+    .header-btn.active { background: rgba(245,200,66,0.82); color: #1a1a2e; }
+    .starter-btn { width: 100%; background: rgba(255,255,255,0.09); border: 1px solid rgba(255,255,255,0.16); border-radius: 16px; padding: 9px 14px; cursor: pointer; color: rgba(255,255,255,0.8); font-size: 13px; text-align: left; font-family: inherit; margin-bottom: 6px; display: block; }
+    .error-bar { margin: 4px 12px; padding: 8px 12px; background: rgba(180,0,0,0.25); border-radius: 10px; color: #ffaaaa; font-size: 12px; }
+    .msg-counter { font-size: 10px; color: rgba(255,255,255,0.5); text-align: center; padding: 2px 0; }
+    .msg-counter.warning { color: rgba(245,160,66,0.9); font-weight: bold; }
+    .paywall-screen { position: fixed; inset: 0; background: rgba(0,0,0,0.88); backdrop-filter: blur(20px); display: none; flex-direction: column; align-items: center; justify-content: center; padding: 24px; z-index: 100; }
+    .paywall-screen.show { display: flex; }
+    .paywall-card { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 28px; padding: 28px 24px; max-width: 400px; width: 100%; text-align: center; }
+    .plan-btn { width: 100%; padding: 16px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.25); background: rgba(255,255,255,0.08); color: white; font-family: inherit; font-size: 14px; cursor: pointer; margin-bottom: 10px; text-align: left; }
+    .terms-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.92); backdrop-filter: blur(20px); display: none; flex-direction: column; align-items: center; justify-content: center; padding: 24px; z-index: 200; }
+    .terms-overlay.show { display: flex; }
+    .mic-ring { position: absolute; border-radius: 50%; animation: micRing 2s infinite; }
+    #park-bg { position: fixed; inset: 0; z-index: -1; }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes bubIn { from { opacity:0; transform:scale(0.88) translateY(6px); } to { opacity:1; transform:scale(1) translateY(0); } }
+    @keyframes dot { 0%,80%,100% { transform:scale(0.7); opacity:0.4; } 40% { transform:scale(1); opacity:1; } }
+    @keyframes micPulse { 0% { box-shadow:0 0 0 0 rgba(220,60,60,0.6); } 70% { box-shadow:0 0 0 14px rgba(220,60,60,0); } 100% { box-shadow:0 0 0 0 rgba(220,60,60,0); } }
+    @keyframes micRing { 0% { transform:scale(0.9); opacity:0.7; } 50% { transform:scale(1.1); opacity:0.3; } 100% { transform:scale(0.9); opacity:0.7; } }
+    ::-webkit-scrollbar { width: 3px; } ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
+  </style>
+</head>
+<body>
+<canvas id="park-bg"></canvas>
+
+<div class="terms-overlay show" id="screen-auth" style="z-index:400">
+  <div class="card" style="max-width:380px">
+    <div style="text-align:center;margin-bottom:20px">
+      <div style="font-size:40px;margin-bottom:8px">&#128761;</div>
+      <h1 style="font-size:22px;font-weight:normal;letter-spacing:2px">Il Parco del Blazone</h1>
+      <p style="color:rgba(255,255,255,0.5);font-size:13px;margin-top:4px">Accedi o crea il tuo account</p>
+    </div>
+    <div style="display:flex;border-bottom:1px solid rgba(255,255,255,0.15);margin-bottom:20px">
+      <button class="auth-tab active" id="tab-login" onclick="switchTab('login')">Accedi</button>
+      <button class="auth-tab" id="tab-signup" onclick="switchTab('signup')">Registrati</button>
+    </div>
+    <div id="auth-error" style="display:none;background:rgba(180,0,0,0.25);border-radius:10px;padding:10px 14px;color:#ffaaaa;font-size:13px;margin-bottom:14px"></div>
+    <div id="auth-success" style="display:none;background:rgba(0,150,0,0.25);border-radius:10px;padding:10px 14px;color:#a0ffb0;font-size:13px;margin-bottom:14px"></div>
+    <input type="email" id="auth-email" placeholder="Email" style="margin-bottom:10px"/>
+    <input type="password" id="auth-password" placeholder="Password (min. 6 caratteri)" style="margin-bottom:16px"/>
+    <button class="btn-primary" id="auth-btn" onclick="handleAuth()">Accedi</button>
+    <div id="forgot-wrap" style="text-align:center;margin-top:8px">
+      <button onclick="handleForgot()" style="background:none;border:none;color:rgba(255,255,255,0.4);font-size:12px;cursor:pointer;font-family:inherit">Password dimenticata?</button>
+    </div>
+    <p style="color:rgba(255,255,255,0.3);font-size:10px;text-align:center;margin-top:16px">Continuando accetti i Termini di Servizio e la Privacy Policy.</p>
+  </div>
+</div>
+
+<div class="terms-overlay" id="screen-lang" style="z-index:300">
+  <div class="card" style="max-width:400px;text-align:center">
+    <div style="font-size:36px;margin-bottom:10px">&#127760;</div>
+    <h2 style="font-weight:normal;font-size:22px;margin-bottom:6px">Scegli la tua lingua</h2>
+    <p style="color:rgba(255,255,255,0.5);font-size:13px;margin-bottom:20px">Choose your language</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <button class="quiz-option" style="font-size:15px;padding:14px" onclick="setLang('it')">&#127470;&#127481; Italiano</button>
+      <button class="quiz-option" style="font-size:15px;padding:14px" onclick="setLang('en')">&#127468;&#127463; English</button>
+      <button class="quiz-option" style="font-size:15px;padding:14px" onclick="setLang('es')">&#127466;&#127480; Espanol</button>
+      <button class="quiz-option" style="font-size:15px;padding:14px" onclick="setLang('fr')">&#127467;&#127479; Francais</button>
+      <button class="quiz-option" style="font-size:15px;padding:14px" onclick="setLang('de')">&#127465;&#127466; Deutsch</button>
+      <button class="quiz-option" style="font-size:15px;padding:14px" onclick="setLang('pt')">&#127477;&#127481; Portugues</button>
+    </div>
+  </div>
+</div>
+
+<div class="terms-overlay" id="screen-voice" style="z-index:250">
+  <div class="card" style="max-width:400px;text-align:center">
+    <div style="font-size:36px;margin-bottom:10px">&#127908;</div>
+    <h2 style="font-weight:normal;font-size:22px;margin-bottom:6px">Scegli la voce</h2>
+    <p style="color:rgba(255,255,255,0.5);font-size:13px;margin-bottom:16px">Seleziona la voce che preferisci per i personaggi</p>
+    <div id="voice-list" style="max-height:260px;overflow-y:auto;margin-bottom:16px;display:flex;flex-direction:column;gap:8px"></div>
+    <button class="btn-secondary" onclick="skipVoice()">Salta — usa voce predefinita</button>
+  </div>
+</div>
+
+<div class="terms-overlay show" id="screen-terms">
+  <div class="card" style="max-width:400px">
+    <div style="text-align:center;margin-bottom:16px">
+      <div style="font-size:36px;margin-bottom:8px">&#128203;</div>
+      <h2 style="font-weight:normal;font-size:20px">Termini e Privacy</h2>
+    </div>
+    <div style="color:rgba(255,255,255,0.7);font-size:12px;line-height:1.7;margin-bottom:18px;max-height:180px;overflow-y:auto;padding:12px;background:rgba(255,255,255,0.05);border-radius:12px">
+      <p style="margin-bottom:8px"><strong style="color:white">Termini di Servizio</strong></p>
+      <p style="margin-bottom:8px">Blazone e un servizio di compagnia virtuale tramite intelligenza artificiale. I personaggi sono alias AI e non persone reali. Le conversazioni sono simulate e non costituiscono supporto psicologico professionale.</p>
+      <p style="margin-bottom:8px"><strong style="color:white">Privacy (GDPR)</strong></p>
+      <p style="margin-bottom:8px">I tuoi messaggi non vengono mai salvati sui nostri server. Le conversazioni restano solo sul tuo dispositivo. Non raccogliamo dati personali.</p>
+      <p style="margin-bottom:8px"><strong style="color:white">Messaggi gratuiti</strong></p>
+      <p>Hai a disposizione 15 messaggi gratuiti per scoprire il Parco del Blazone. Dopo potrai scegliere un piano per continuare.</p>
+    </div>
+    <button class="btn-primary" onclick="acceptTerms()">Accetto - Entra nel Parco</button>
+    <p style="color:rgba(255,255,255,0.3);font-size:10px;text-align:center;margin-top:8px">Solo per maggiorenni (+18) - In conformita al GDPR</p>
+  </div>
+</div>
+
+<div class="screen hidden" id="screen-welcome">
+  <div class="card" style="text-align:center;max-width:440px">
+    <div style="font-size:48px;margin-bottom:10px">&#128761;</div>
+    <h1 style="font-size:26px;font-weight:normal;letter-spacing:2px;margin-bottom:6px">Il Parco del Blazone</h1>
+    <p style="color:rgba(245,200,66,0.9);font-size:13px;font-style:italic;margin-bottom:18px">C'e un parco dove il tempo rallenta.</p>
+    <div style="text-align:left;color:rgba(255,255,255,0.75);font-size:13px;line-height:1.8;margin-bottom:18px;padding:14px;background:rgba(255,255,255,0.06);border-radius:16px;border:1px solid rgba(255,255,255,0.1)">
+      <p style="margin-bottom:10px">Nel Parco del Blazone troverai sempre qualcuno seduto su una panchina, pronto ad ascoltarti.</p>
+      <p style="margin-bottom:10px"><strong style="color:white">Non e una normale intelligenza artificiale</strong> - e qualcuno che ti sta accanto, per quanto possibile, come un amico o un conoscente di vecchia data.</p>
+      <p>Ogni alias ha una storia, un carattere, un modo di ascoltarti che e solo suo. Alcuni ti faranno ridere. Altri ti aiuteranno a riflettere. Tutti saranno presenti, a modo loro.</p>
+    </div>
+    <div style="background:rgba(245,200,66,0.1);border:1px solid rgba(245,200,66,0.3);border-radius:12px;padding:12px;margin-bottom:18px;text-align:left">
+      <p style="font-size:12px;color:rgba(255,255,255,0.8);line-height:1.8">
+        &#10003; I primi <strong style="color:rgba(245,200,66,0.9)">15 messaggi sono gratuiti</strong><br>
+        &#10003; I tuoi messaggi <strong style="color:white">non vengono mai salvati</strong> sui nostri server<br>
+        &#10003; Dopo i 15 messaggi potrai scegliere un piano<br>
+        &#10007; Non sostituisce il supporto professionale
+      </p>
+    </div>
+    <button class="btn-primary" style="font-size:17px;padding:16px" onclick="goto('agegate')">Entra nel Parco del Blazone</button>
+  </div>
+</div>
+
+<div class="screen hidden" id="screen-agegate">
+  <div class="card" style="text-align:center;max-width:360px">
+    <div style="font-size:40px;margin-bottom:10px">&#128274;</div>
+    <h2 style="font-weight:normal;font-size:22px;margin-bottom:8px">Prima di entrare</h2>
+    <p style="color:rgba(255,255,255,0.6);font-size:14px;line-height:1.7;margin-bottom:24px">Il Parco del Blazone e uno spazio per adulti.<br>Conferma di avere almeno 18 anni.</p>
+    <button class="btn-primary" onclick="goto('quiz')">Ho 18 anni o piu - Entra</button>
+    <button class="btn-secondary" onclick="alert('Il Parco del Blazone e riservato ai maggiorenni.')">Ho meno di 18 anni</button>
+  </div>
+</div>
+
+<div class="screen hidden" id="screen-quiz">
+  <div class="card" style="max-width:420px">
+    <div class="progress-bar"><div class="progress-fill" id="quiz-progress" style="width:0%"></div></div>
+    <h2 id="quiz-question" style="font-weight:normal;font-size:20px;margin-bottom:4px;line-height:1.3"></h2>
+    <p id="quiz-subtitle" style="color:rgba(255,255,255,0.5);font-size:13px;margin-bottom:18px"></p>
+    <div class="quiz-grid" id="quiz-options"></div>
+    <button onclick="quizBack()" style="background:none;border:none;color:rgba(255,255,255,0.4);font-size:12px;cursor:pointer;margin-top:16px;font-family:inherit">&#8592; Indietro</button>
+  </div>
+</div>
+
+<div class="screen hidden" id="screen-swipe" style="flex-direction:column;gap:14px">
+  <div style="text-align:center">
+    <p style="font-size:17px;font-weight:normal">Abbiamo trovato qualcuno per te</p>
+    <p id="swipe-counter" style="color:rgba(255,255,255,0.5);font-size:12px;margin-top:3px"></p>
+  </div>
+  <div class="swipe-card" id="swipe-card">
+    <div style="display:flex;justify-content:center;margin-bottom:12px" id="swipe-portrait-wrap"></div>
+    <h2 id="swipe-name" style="font-size:22px;font-weight:normal;margin-bottom:3px"></h2>
+    <p id="swipe-origin" style="font-size:12px;font-style:italic;margin-bottom:6px"></p>
+    <p id="swipe-personality" style="color:rgba(255,255,255,0.6);font-size:12px;line-height:1.5;margin-bottom:14px"></p>
+    <div id="swipe-goal-tag" style="display:inline-block;border-radius:20px;padding:4px 14px;font-size:11px;border:1px solid"></div>
+  </div>
+  <div style="display:flex;gap:24px;align-items:center">
+    <button onclick="swipe('left')" style="width:54px;height:54px;border-radius:50%;border:2px solid rgba(255,100,100,0.6);background:rgba(255,60,60,0.15);cursor:pointer;display:flex;align-items:center;justify-content:center">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><line x1="18" y1="6" x2="6" y2="18" stroke="rgba(255,120,120,0.9)" stroke-width="2.5" stroke-linecap="round"/><line x1="6" y1="6" x2="18" y2="18" stroke="rgba(255,120,120,0.9)" stroke-width="2.5" stroke-linecap="round"/></svg>
+    </button>
+    <button id="swipe-yes-btn" onclick="swipe('right')" style="width:70px;height:70px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;border:2px solid">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path id="swipe-check" d="M20 6L9 17L4 12" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+  <p style="color:rgba(255,255,255,0.35);font-size:11px">Passa a sinistra per vedere il prossimo</p>
+</div>
+
+<div class="screen hidden" id="screen-micperm">
+  <div class="card" style="text-align:center;max-width:360px">
+    <div style="position:relative;display:inline-flex;align-items:center;justify-content:center;margin-bottom:20px;width:100px;height:100px">
+      <div class="mic-ring" style="width:100px;height:100px;border:2px solid rgba(255,255,255,0.2)"></div>
+      <div class="mic-ring" style="width:70px;height:70px;border:2px solid rgba(245,200,66,0.35);animation-delay:0.5s"></div>
+      <svg width="34" height="34" viewBox="0 0 24 24" fill="none" style="position:relative;z-index:1">
+        <rect x="9" y="2" width="6" height="12" rx="3" fill="rgba(245,200,66,0.9)"/>
+        <path d="M5 10a7 7 0 0014 0" stroke="rgba(245,200,66,0.9)" stroke-width="2" stroke-linecap="round"/>
+        <line x1="12" y1="19" x2="12" y2="22" stroke="rgba(245,200,66,0.9)" stroke-width="2" stroke-linecap="round"/>
+        <line x1="9" y1="22" x2="15" y2="22" stroke="rgba(245,200,66,0.9)" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <h2 id="micperm-title" style="font-weight:normal;font-size:20px;margin-bottom:8px"></h2>
+    <p style="color:rgba(255,255,255,0.6);font-size:13px;line-height:1.7;margin-bottom:20px">Si attiva solo mentre tieni premuto il pulsante. L'audio non viene mai salvato.<br><span style="color:rgba(245,200,66,0.8);font-size:12px">Il microfono e disponibile solo per gli utenti Premium.</span></p>
+    <button class="btn-primary" onclick="requestMic()">Consenti il microfono</button>
+    <button class="btn-secondary" onclick="completeMicPerm()">Non ora, uso solo il testo</button>
+  </div>
+</div>
+
+<div class="screen hidden" id="screen-main" style="justify-content:flex-start;padding-top:16px">
+  <div style="width:100%;max-width:500px;padding:0 16px 40px">
+    <div style="text-align:center;margin-bottom:14px">
+      <div style="font-size:30px;margin-bottom:3px">&#128761;</div>
+      <h1 style="font-size:19px;font-weight:normal;letter-spacing:2px">Il Parco del Blazone</h1>
+      <p id="weather-label" style="color:rgba(255,255,255,0.4);font-size:11px;margin-top:3px"></p>
+    </div>
+    <div id="msg-counter-main" class="msg-counter" style="margin-bottom:10px"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:9px">
+      <p style="font-size:12px;color:rgba(255,255,255,0.5)">Con chi vuoi sederti?</p>
+      <button onclick="goto('quiz')" style="background:none;border:none;color:rgba(255,255,255,0.4);font-size:11px;cursor:pointer;font-family:inherit">Rifai il quiz</button>
+      <button onclick="logout()" style="background:none;border:none;color:rgba(255,255,255,0.3);font-size:11px;cursor:pointer;font-family:inherit">Esci</button>
+    </div>
+    <div class="alias-grid" id="alias-grid"></div>
+  </div>
+</div>
+
+<div class="screen hidden" id="screen-chat">
+  <div class="chat-header">
+    <button onclick="goto('main')" style="background:none;border:none;color:white;font-size:20px;cursor:pointer;padding:4px 6px;flex-shrink:0">&#8592;</button>
+    <div id="chat-avatar-wrap" style="flex-shrink:0"></div>
+    <div style="flex:1;min-width:0">
+      <div id="chat-alias-name" style="font-weight:bold;font-size:14px;color:white;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></div>
+      <div id="chat-alias-goal" style="font-size:9px;color:rgba(255,255,255,0.5);overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></div>
+    </div>
+    <div style="display:flex;gap:4px;flex-shrink:0;align-items:center">
+      <div id="msg-counter-chat" class="msg-counter"></div>
+      <button id="btn-voice" class="header-btn" onclick="toggleVoice()">Voce OFF</button>
+      <button class="header-btn" onclick="clearHistory()">Azzera</button>
+    </div>
+  </div>
+  <div class="chat-messages" id="chat-messages"></div>
+  <div style="min-height:20px">
+    <div id="transcript-preview" style="display:none;margin:4px 12px;padding:8px 13px;background:rgba(255,255,255,0.1);border-radius:14px;color:rgba(255,255,255,0.75);font-size:13px;font-style:italic"></div>
+    <div id="error-display"></div>
+  </div>
+  <div class="chat-input-bar">
+    <button class="mic-btn" id="mic-btn" onpointerdown="startMic(event)" onpointerup="stopMic(event)" onpointerleave="stopMic(event)">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+        <rect x="9" y="2" width="6" height="12" rx="3" fill="rgba(255,255,255,0.9)"/>
+        <path d="M5 10a7 7 0 0014 0" stroke="rgba(255,255,255,0.9)" stroke-width="2" stroke-linecap="round"/>
+        <line x1="12" y1="19" x2="12" y2="22" stroke="rgba(255,255,255,0.9)" stroke-width="2" stroke-linecap="round"/>
+        <line x1="9" y1="22" x2="15" y2="22" stroke="rgba(255,255,255,0.9)" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </button>
+    <input class="chat-input" id="chat-input" placeholder="Scrivi..." onkeydown="if(event.key==='Enter'&&!event.shiftKey)sendMessage()"/>
+    <button class="send-btn" id="send-btn" onclick="sendMessage()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+        <path d="M22 2L11 13" stroke="#1a1a2e" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="#1a1a2e" stroke-width="2.5" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
+</div>
+
+<div class="paywall-screen" id="paywall-screen">
+  <div class="paywall-card">
+    <div style="font-size:40px;margin-bottom:12px">&#127795;</div>
+    <h2 style="font-weight:normal;font-size:22px;margin-bottom:6px">Il parco ti aspetta ancora</h2>
+    <p style="color:rgba(255,255,255,0.6);font-size:13px;line-height:1.7;margin-bottom:20px">Hai usato i tuoi 15 messaggi gratuiti. Scegli un piano per continuare.</p>
+    <button class="plan-btn" onclick="activatePremium()">
+      <div style="font-weight:bold;font-size:15px;margin-bottom:3px">Premium - 9,99 euro/mese</div>
+      <div style="color:rgba(255,255,255,0.6);font-size:12px">Chat illimitata + microfono con tutti gli alias</div>
+    </button>
+    <button class="plan-btn" onclick="buyCredits()">
+      <div style="font-weight:bold;font-size:15px;margin-bottom:3px">50 messaggi extra - 2,99 euro</div>
+      <div style="color:rgba(255,255,255,0.6);font-size:12px">Pacchetto una tantum, solo testo</div>
+    </button>
+    <button onclick="closePaywall()" style="background:none;border:none;color:rgba(255,255,255,0.35);font-size:12px;cursor:pointer;margin-top:8px;font-family:inherit">Torna al parco</button>
+  </div>
+</div>
+
+<script>
+var ALIASES = [
+  { id:1,  name:"Amara",    origin:"Nigeria / UK",     gender:"female", age:32, goal:"ascolto empatico",                  accent:"#e8a4c8", personality:"Calda, intuitiva, sa trovare la parola giusta. Cresciuta tra Lagos e Londra.", portrait:{bg:["#2d5a8e","#1a3a5c"],skin:"#6b3a1f",hairCol:"#1a0a04",hairSide:true, glasses:false,headscarf:false,beard:false,earring:true, lipCol:"#c06860"} },
+  { id:2,  name:"Kenji",    origin:"Giappone",          gender:"male",   age:48, goal:"riflessioni e filosofia",           accent:"#a4c8e8", personality:"Pacato, preciso, con un umorismo sottile. Insegnante in pensione.", portrait:{bg:["#1a3a5c","#0d2240"],skin:"#f0d8b8",hairCol:"#1a1a1a",hairSide:false,glasses:true, headscarf:false,beard:false,earring:false,lipCol:"#b08070"} },
+  { id:3,  name:"Valentina",origin:"Colombia",           gender:"female", age:26, goal:"energia e cultura",                accent:"#f4c842", personality:"Vivace, creativa, piena di storie colorate. Ama la salsa e la letteratura.", portrait:{bg:["#8b2252","#5a1438"],skin:"#c4845a",hairCol:"#2a1204",hairSide:true, glasses:false,headscarf:false,beard:false,earring:true, lipCol:"#c85848"} },
+  { id:4,  name:"Fatou",    origin:"Senegal / Francia", gender:"female", age:38, goal:"saggezza e spiritualita",          accent:"#d4a4e8", personality:"Profonda, serena, con una saggezza che trascende l eta. Filosofia Ubuntu.", portrait:{bg:["#4a1a6a","#2a0a42"],skin:"#3a1a08",hairCol:"#0a0404",hairSide:false,glasses:false,headscarf:true,scarfCol:"#c84820",beard:false,earring:false,lipCol:"#a06050"} },
+  { id:5,  name:"Rajan",    origin:"India",             gender:"male",   age:61, goal:"nostalgia e saggezza",             accent:"#f4a842", personality:"Caloroso, narratore nato. Un nonno del cuore con mille storie tra Mumbai e il mondo.", portrait:{bg:["#6a3010","#3a1808"],skin:"#c09060",hairCol:"#d0c0a0",hairSide:false,glasses:true, headscarf:false,beard:true, earring:false,lipCol:"#b08060"} },
+  { id:6,  name:"Leila",    origin:"Iran / Svezia",     gender:"female", age:29, goal:"crescita personale",               accent:"#a4e8d4", personality:"Determinata, riflessiva. Una doppia identita diventata forza. Poetessa e coach.", portrait:{bg:["#1a5a4a","#0d3a2a"],skin:"#d4a878",hairCol:"#1a0804",hairSide:true, glasses:false,headscarf:false,beard:false,earring:false,lipCol:"#c07058"} },
+  { id:7,  name:"Luca",     origin:"Italia",            gender:"male",   age:35, goal:"amicizia e leggerezza",            accent:"#a8d4f0", personality:"Egocentrico simpatico e sbarazzino. Romano DOC, si vanta un po ma fa ridere. Smonta le paranoie con ironia. Dice sempre fidati de Luca.", portrait:{bg:["#1a4a7a","#0d2a50"],skin:"#e8c89a",hairCol:"#3a2010",hairSide:false,glasses:false,headscarf:false,beard:true, earring:false,lipCol:"#b07860"} },
+  { id:8,  name:"Elena",    origin:"Italia",            gender:"female", age:68, goal:"memoria e vita vissuta",           accent:"#f0c4a0", personality:"Nonna saggia e affettuosa. Ha vissuto tutto e ascolta senza giudicare. Ama il te e i ricordi.", portrait:{bg:["#6a3a1a","#3a1a08"],skin:"#e8c090",hairCol:"#d8d0c0",hairSide:true, glasses:true, headscarf:false,beard:false,earring:true, lipCol:"#c08060"} },
+  { id:9,  name:"George",   origin:"Giamaica / UK",     gender:"male",   age:72, goal:"saggezza e storie di vita",       accent:"#a0d4a0", personality:"Anziano gentiluomo con il ritmo dell isola nel cuore. Ride molto e sa quando stare in silenzio.", portrait:{bg:["#1a4a1a","#0a2a0a"],skin:"#2a1208",hairCol:"#d0c8b8",hairSide:false,glasses:true, headscarf:false,beard:true, earring:false,lipCol:"#a06040"} },
+  { id:10, name:"Mx. Alex", origin:"Canada",            gender:"nb",     age:34, goal:"business e carriera",              accent:"#c4a4e8", personality:"Mentor sharp e diretto. Ex startup founder. Trasforma le tue idee in piani concreti.", portrait:{bg:["#3a1a6a","#1a0a3a"],skin:"#d4b890",hairCol:"#2a2a2a",hairSide:false,glasses:true, headscarf:false,beard:false,earring:true, lipCol:"#b08878"} },
+  { id:11, name:"River",    origin:"Nuova Zelanda",     gender:"nb",     age:29, goal:"ecologia e green living",          accent:"#a0e8b0", personality:"Attivista appassionato e concreto. Trasforma l ansia climatica in azione quotidiana.", portrait:{bg:["#1a5a2a","#0a3a1a"],skin:"#c4a878",hairCol:"#1a3a10",hairSide:true, glasses:false,headscarf:false,beard:false,earring:true, lipCol:"#a08060"} },
+  { id:12, name:"Priya",    origin:"India / USA",       gender:"female", age:41, goal:"leadership e business",            accent:"#f4a0c4", personality:"Executive coach con 15 anni in Silicon Valley. Diretta, empatica, ti fa vedere oltre i limiti.", portrait:{bg:["#6a1a3a","#3a0a1a"],skin:"#c09060",hairCol:"#1a0a04",hairSide:true, glasses:false,headscarf:false,beard:false,earring:true, lipCol:"#c06080"} },
+  { id:13, name:"Roberto",  origin:"Milano",            gender:"male",   age:75, goal:"ispirazione cinema arte storia",   accent:"#c8a870", personality:"Ex regista indipendente con carriera tra Milano, Parigi, New York e Tokyo. Risponde con analogie tra cinema, arte e storia. Cita Kubrick, Bergman, Fellini. Trasforma ogni problema in una scena di un film.", portrait:{bg:["#2a1a0a","#1a0a00"],skin:"#d4a870",hairCol:"#f0f0f0",hairSide:true, glasses:false,headscarf:false,beard:true, earring:false,lipCol:"#b08060"} }
+];
+
+var STARTERS = {
+  "ascolto empatico":              ["Come ti senti oggi, davvero?","Ce qualcosa che ti pesa?","Di cosa hai bisogno adesso?"],
+  "riflessioni e filosofia":       ["Ce una domanda che non ti lascia in pace?","Cosa ti fa stare bene ultimamente?","Cosa hai imparato di recente?"],
+  "energia e cultura":             ["Cosa ti ha ispirato questa settimana?","Ultima cosa bella che hai scoperto?","Ce qualcosa che vuoi imparare?"],
+  "saggezza e spiritualita":       ["Come ti senti dentro, adesso?","Cosa ti da forza?","Cosa significa stare bene per te?"],
+  "nostalgia e saggezza":          ["Raccontami un ricordo felice","Cosa diresti al tuo io giovane?","Cosa hai imparato dalla vita?"],
+  "crescita personale":            ["Cosa vuoi cambiare di te?","Qual e la tua sfida questa settimana?","Di cosa sei orgoglioso?"],
+  "amicizia e leggerezza":         ["Come e andata oggi?","Ultima cosa che ti ha fatto ridere?","Cosa faresti con un giorno libero?"],
+  "memoria e vita vissuta":        ["Raccontami di un posto che hai amato","Cosa ti manca di quando eri giovane?","Qual e il consiglio piu grande che hai ricevuto?"],
+  "saggezza e storie di vita":     ["Qual e stata la tua avventura piu grande?","Cosa hai imparato dagli errori?","Di cosa sei piu orgoglioso nella vita?"],
+  "business e carriera":           ["Qual e la tua sfida professionale adesso?","Cosa ti blocca dal fare il prossimo passo?","Parlami del tuo progetto piu importante."],
+  "ecologia e green living":       ["Come stai riducendo il tuo impatto?","Cosa ti preoccupa di piu per il pianeta?","Qual e un piccolo cambiamento green che hai fatto?"],
+  "leadership e business":         ["Qual e la decisione piu difficile che hai preso?","Come gestisci un team in difficolta?","Cosa definisce per te un buon leader?"],
+  "ispirazione cinema arte storia":["Quale film ti ha cambiato la vita?","Se la tua vita fosse un film, in che scena saresti?","Quale opera d arte ti ha emozionato di piu?"]
+};
+
+var QUIZ_STEPS = [
+  { id:"mood", q:"Come ti senti in questo momento?", sub:"Scegli quello che ti descrive meglio",
+    opts:[{l:"Ho bisogno di essere ascoltato",i:"&#129306;",v:"listen"},{l:"Voglio chiacchierare e ridere",i:"&#128516;",v:"fun"},{l:"Cerco qualcuno con cui riflettere",i:"&#128173;",v:"reflect"},{l:"Voglio crescere o imparare",i:"&#9889;",v:"grow"}] },
+  { id:"style", q:"Che stile di conversazione preferisci?", sub:"Non ce risposta giusta",
+    opts:[{l:"Caldo e empatico",i:"&#127807;",v:"warm"},{l:"Diretto e concreto",i:"&#127919;",v:"direct"},{l:"Profondo e poetico",i:"&#127769;",v:"deep"},{l:"Leggero e divertente",i:"&#10024;",v:"light"}] },
+  { id:"topic", q:"Che tematica ti interessa?", sub:"Puoi cambiare dopo",
+    opts:[{l:"Vita e relazioni",i:"&#10084;&#65039;",v:"life"},{l:"Business e carriera",i:"&#128188;",v:"business"},{l:"Natura e ambiente",i:"&#127807;",v:"green"},{l:"Arte e cinema",i:"&#127909;",v:"art"}] }
+];
+
+var currentAlias = null;
+var messages = [];
+var histories = JSON.parse(localStorage.getItem('bz_hist') || '{}');
+var memory = JSON.parse(localStorage.getItem('bz_mem') || '{"userName":""}');
+var quizAnswers = {}, quizStep = 0, swipeMatches = [], swipeIdx = 0;
+var voiceMode = false, micRec = null, micActive = false, micTranscript = '';
+var FREE_MSGS = 15;
+var msgCount = parseInt(localStorage.getItem('bz_msgs') || '0');
+var isPremium = localStorage.getItem('bz_premium') === 'true';
+var userLang = localStorage.getItem('bz_lang') || 'it';
+var selectedVoiceName = localStorage.getItem('bz_voice') || '';
+var userId = localStorage.getItem('bz_uid') || (function(){ var id = 'u_' + Math.random().toString(36).substr(2,9); localStorage.setItem('bz_uid', id); return id; })();
+
+// SUPABASE AUTH
+var SUPABASE_URL = 'https://ybdzcbgqpgexgfjazeji.supabase.co';
+var SUPABASE_KEY = 'sb_publishable_jYYNeX2TdWmH5f7icdj3Yg_ELa-Z6_E';
+var currentUser = null;
+var authMode = 'login';
+
+function supabaseReq(path, method, body, token) {
+  var headers = {'Content-Type': 'application/json', 'apikey': SUPABASE_KEY};
+  if (token) headers['Authorization'] = 'Bearer ' + token;
+  return fetch(SUPABASE_URL + path, {method: method || 'GET', headers: headers, body: body ? JSON.stringify(body) : undefined}).then(function(r) { return r.json(); });
+}
+
+function switchTab(mode) {
+  authMode = mode;
+  document.getElementById('tab-login').classList.toggle('active', mode === 'login');
+  document.getElementById('tab-signup').classList.toggle('active', mode === 'signup');
+  document.getElementById('auth-btn').textContent = mode === 'login' ? 'Accedi' : 'Crea account';
+  document.getElementById('forgot-wrap').style.display = mode === 'login' ? 'block' : 'none';
+  document.getElementById('auth-error').style.display = 'none';
+  document.getElementById('auth-success').style.display = 'none';
+}
+
+function showAuthError(msg) {
+  var el = document.getElementById('auth-error');
+  el.textContent = msg; el.style.display = 'block';
+  document.getElementById('auth-success').style.display = 'none';
+}
+
+function showAuthSuccess(msg) {
+  var el = document.getElementById('auth-success');
+  el.textContent = msg; el.style.display = 'block';
+  document.getElementById('auth-error').style.display = 'none';
+}
+
+function handleAuth() {
+  var email = document.getElementById('auth-email').value.trim();
+  var password = document.getElementById('auth-password').value;
+  if (!email || !password) { showAuthError('Inserisci email e password.'); return; }
+  if (password.length < 6) { showAuthError('La password deve avere almeno 6 caratteri.'); return; }
+  var btn = document.getElementById('auth-btn');
+  btn.textContent = 'Caricamento...'; btn.disabled = true;
+  var endpoint = authMode === 'login' ? '/auth/v1/token?grant_type=password' : '/auth/v1/signup';
+  supabaseReq(endpoint, 'POST', {email: email, password: password}).then(function(data) {
+    btn.disabled = false;
+    if (data.error || data.error_description || data.msg) {
+      var err = data.error_description || data.msg || data.error || 'Errore di autenticazione';
+      if (err.includes('Invalid login')) err = 'Email o password non corretti.';
+      if (err.includes('already registered')) err = 'Email gia registrata. Prova ad accedere.';
+      if (err.includes('not confirmed')) err = 'Conferma la tua email prima di accedere.';
+      showAuthError(err);
+      btn.textContent = authMode === 'login' ? 'Accedi' : 'Crea account';
+      return;
+    }
+    if (authMode === 'signup' && !data.access_token) {
+      showAuthSuccess('Account creato! Controlla la tua email per confermare.');
+      btn.textContent = 'Crea account';
+      return;
+    }
+    if (data.access_token) {
+      currentUser = data.user;
+      userId = data.user.id;
+      localStorage.setItem('bz_uid', userId);
+      localStorage.setItem('bz_token', data.access_token);
+      document.getElementById('screen-auth').classList.remove('show');
+      startAfterAuth();
+    }
+  }).catch(function() {
+    btn.disabled = false;
+    btn.textContent = authMode === 'login' ? 'Accedi' : 'Crea account';
+    showAuthError('Errore di connessione. Riprova.');
+  });
+}
+
+function handleForgot() {
+  var email = document.getElementById('auth-email').value.trim();
+  if (!email) { showAuthError('Inserisci la tua email prima.'); return; }
+  supabaseReq('/auth/v1/recover', 'POST', {email: email}).then(function() {
+    showAuthSuccess('Email di recupero inviata! Controlla la tua casella.');
+  });
+}
+
+function checkExistingSession() {
+  var token = localStorage.getItem('bz_token');
+  if (!token) { document.getElementById('screen-auth').classList.add('show'); return; }
+  supabaseReq('/auth/v1/user', 'GET', null, token).then(function(data) {
+    if (data.id) {
+      currentUser = data; userId = data.id;
+      document.getElementById('screen-auth').classList.remove('show');
+      startAfterAuth();
+    } else {
+      localStorage.removeItem('bz_token');
+      document.getElementById('screen-auth').classList.add('show');
+    }
+  }).catch(function() { document.getElementById('screen-auth').classList.add('show'); });
+}
+
+function startAfterAuth() {
+  var done = localStorage.getItem('bz_onboarded');
+  var terms = localStorage.getItem('bz_terms');
+  var lang = localStorage.getItem('bz_lang');
+  var voice = localStorage.getItem('bz_voice');
+  if (!lang) { document.getElementById('screen-lang').classList.add('show'); }
+  else if (!voice && !terms) { showVoiceSelection(); }
+  else if (!terms) { document.getElementById('screen-terms').classList.add('show'); }
+  else if (done) { goto('main'); }
+  else { goto('welcome'); }
+}
+
+function logout() {
+  localStorage.removeItem('bz_token');
+  currentUser = null;
+  document.getElementById('screen-auth').classList.add('show');
+  document.querySelectorAll('.screen').forEach(function(s) { s.classList.add('hidden'); });
+}
+
+var LANG_CONFIG = {
+  it: { name:'Italiano', flag:'&#127470;&#127481;', respond:'Rispondi sempre in italiano, in modo naturale e breve (2-4 frasi max).', park:'Sei nel Parco del Blazone, seduto su una panchina.' },
+  en: { name:'English',  flag:'&#127468;&#127463;', respond:'Always reply in English, naturally and briefly (2-4 sentences max).', park:'You are in the Blazone Park, sitting on a bench.' },
+  es: { name:'Espanol',  flag:'&#127466;&#127480;', respond:'Responde siempre en espanol, de forma natural y breve (2-4 frases max).', park:'Estas en el Parque Blazone, sentado en un banco.' },
+  fr: { name:'Francais', flag:'&#127467;&#127479;', respond:'Reponds toujours en francais, de facon naturelle et breve (2-4 phrases max).', park:'Tu es dans le Parc Blazone, assis sur un banc.' },
+  de: { name:'Deutsch',  flag:'&#127465;&#127466;', respond:'Antworte immer auf Deutsch, naturlich und kurz (2-4 Satze max).', park:'Du bist im Blazone Park, auf einer Bank sitzend.' },
+  pt: { name:'Portugues',flag:'&#127477;&#127481;', respond:'Responda sempre em portugues, de forma natural e breve (2-4 frases max).', park:'Voce esta no Parque Blazone, sentado num banco.' }
+};
+
+function getMsgsLeft() { return isPremium ? 9999 : Math.max(0, FREE_MSGS - msgCount); }
+
+function updateCounters() {
+  var left = getMsgsLeft();
+  var txt = isPremium ? 'Premium - chat illimitata' : left <= 3 ? 'Attenzione: solo ' + left + ' messaggi gratuiti rimasti' : 'Messaggi gratuiti rimasti: ' + left + '/' + FREE_MSGS;
+  var cls = (!isPremium && left <= 3) ? 'msg-counter warning' : 'msg-counter';
+  var el1 = document.getElementById('msg-counter-main');
+  var el2 = document.getElementById('msg-counter-chat');
+  if (el1) { el1.textContent = txt; el1.className = cls; }
+  if (el2) { el2.textContent = txt; el2.className = cls; }
+  var micBtn = document.getElementById('mic-btn');
+  if (micBtn) {
+    if (!isPremium) micBtn.classList.add('locked');
+    else micBtn.classList.remove('locked');
+  }
+}
+
+function activatePremium() { isPremium = true; localStorage.setItem('bz_premium', 'true'); closePaywall(); updateCounters(); alert('Piano Premium attivato! Microfono e chat illimitata sbloccati.'); }
+function buyCredits() { msgCount = Math.max(0, msgCount - 50); localStorage.setItem('bz_msgs', msgCount); closePaywall(); updateCounters(); alert('50 messaggi aggiunti!'); }
+function closePaywall() { document.getElementById('paywall-screen').classList.remove('show'); }
+function showPaywall() { document.getElementById('paywall-screen').classList.add('show'); }
+function setLang(lang) {
+  userLang = lang;
+  localStorage.setItem('bz_lang', lang);
+  document.getElementById('screen-lang').classList.remove('show');
+  showVoiceSelection();
+}
+
+function showVoiceSelection() {
+  var voices = window.speechSynthesis.getVoices();
+  if (!voices.length) {
+    window.speechSynthesis.onvoiceschanged = function() { showVoiceSelection(); };
+    document.getElementById('screen-voice').classList.add('show');
+    return;
+  }
+  var list = document.getElementById('voice-list');
+  list.innerHTML = '';
+  var langCode = (LANG_CONFIG[userLang] || LANG_CONFIG['it']).lang || userLang;
+  // Prima mostra voci della lingua scelta, poi le altre
+  var langVoices = voices.filter(function(v) { return v.lang.startsWith(langCode.split('-')[0]); });
+  var otherVoices = voices.filter(function(v) { return !v.lang.startsWith(langCode.split('-')[0]); }).slice(0, 5);
+  var showVoices = langVoices.concat(otherVoices).slice(0, 12);
+  if (!showVoices.length) showVoices = voices.slice(0, 10);
+  showVoices.forEach(function(v) {
+    var btn = document.createElement('button');
+    btn.style.cssText = 'background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:12px;padding:10px 14px;color:white;font-family:inherit;font-size:13px;cursor:pointer;text-align:left;';
+    btn.innerHTML = '<strong>' + v.name + '</strong><br><span style="color:rgba(255,255,255,0.5);font-size:11px">' + v.lang + '</span>';
+    btn.onclick = function() { selectVoice(v.name); };
+    // Test preview
+    btn.onmouseenter = function() {
+      window.speechSynthesis.cancel();
+      var u = new SpeechSynthesisUtterance('Ciao, sono qui per te');
+      u.voice = v; u.rate = 0.95; window.speechSynthesis.speak(u);
+    };
+    list.appendChild(btn);
+  });
+  document.getElementById('screen-voice').classList.add('show');
+}
+
+function selectVoice(name) {
+  selectedVoiceName = name;
+  localStorage.setItem('bz_voice', name);
+  window.speechSynthesis.cancel();
+  document.getElementById('screen-voice').classList.remove('show');
+  document.getElementById('screen-terms').classList.add('show');
+}
+
+function skipVoice() {
+  window.speechSynthesis.cancel();
+  document.getElementById('screen-voice').classList.remove('show');
+  document.getElementById('screen-terms').classList.add('show');
+}
+
+function acceptTerms() { localStorage.setItem('bz_terms', '1'); document.getElementById('screen-terms').classList.remove('show'); }
+
+function goto(id) {
+  document.querySelectorAll('.screen').forEach(function(s) { s.classList.add('hidden'); });
+  var el = document.getElementById('screen-' + id);
+  if (el) el.classList.remove('hidden');
+  if (id === 'main') renderMain();
+  if (id === 'quiz') renderQuiz();
+}
+
+function buildPortraitSVG(a, size) {
+  var p = a.portrait;
+  var hair = p.headscarf
+    ? '<ellipse cx="50" cy="38" rx="26" ry="18" fill="' + p.scarfCol + '" opacity="0.95"/><ellipse cx="50" cy="30" rx="22" ry="12" fill="' + p.scarfCol + '"/><ellipse cx="30" cy="50" rx="10" ry="16" fill="' + p.scarfCol + '" opacity="0.9"/><ellipse cx="70" cy="50" rx="10" ry="16" fill="' + p.scarfCol + '" opacity="0.9"/>'
+    : '<ellipse cx="50" cy="31" rx="23" ry="14" fill="' + p.hairCol + '"/>' + (p.hairSide ? '<ellipse cx="30" cy="41" rx="10" ry="18" fill="' + p.hairCol + '" opacity="0.9"/><ellipse cx="70" cy="41" rx="10" ry="18" fill="' + p.hairCol + '" opacity="0.9"/>' : '');
+  var beard = p.beard ? '<ellipse cx="50" cy="68" rx="16" ry="10" fill="' + p.hairCol + '" opacity="0.75"/>' : '';
+  var earring = p.earring ? '<circle cx="28" cy="51" r="2.5" fill="#f0c040"/>' : '';
+  var glasses = p.glasses ? '<circle cx="41" cy="51" r="7" fill="none" stroke="#666" stroke-width="1.5" opacity="0.7"/><circle cx="59" cy="51" r="7" fill="none" stroke="#666" stroke-width="1.5" opacity="0.7"/><line x1="48" y1="51" x2="52" y2="51" stroke="#666" stroke-width="1.5"/>' : '';
+  return '<svg width="' + size + '" height="' + size + '" viewBox="0 0 100 100" style="border-radius:50%;box-shadow:0 3px 12px rgba(0,0,0,0.35);border:2px solid ' + a.accent + '40;display:block">'
+    + '<defs><linearGradient id="bg' + a.id + '" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="' + p.bg[0] + '"/><stop offset="100%" stop-color="' + p.bg[1] + '"/></linearGradient></defs>'
+    + '<circle cx="50" cy="50" r="50" fill="url(#bg' + a.id + ')"/>'
+    + '<ellipse cx="50" cy="88" rx="14" ry="16" fill="' + p.skin + '"/>'
+    + '<ellipse cx="50" cy="108" rx="36" ry="20" fill="' + p.bg[0] + '"/>'
+    + '<ellipse cx="50" cy="52" rx="22" ry="26" fill="' + p.skin + '"/>'
+    + hair + beard
+    + '<ellipse cx="41" cy="51" rx="3.5" ry="4" fill="#1a1010"/>'
+    + '<ellipse cx="59" cy="51" rx="3.5" ry="4" fill="#1a1010"/>'
+    + '<circle cx="42.5" cy="50" r="1.2" fill="white" opacity="0.8"/>'
+    + '<circle cx="60.5" cy="50" r="1.2" fill="white" opacity="0.8"/>'
+    + '<path d="M37,44 Q41,41 45,44" stroke="' + p.hairCol + '" stroke-width="2" fill="none" stroke-linecap="round"/>'
+    + '<path d="M55,44 Q59,41 63,44" stroke="' + p.hairCol + '" stroke-width="2" fill="none" stroke-linecap="round"/>'
+    + '<path d="M43,68 Q50,73 57,68" stroke="' + p.lipCol + '" stroke-width="2" fill="none" stroke-linecap="round"/>'
+    + earring + glasses + '</svg>';
+}
+
+function renderQuiz() {
+  var step = QUIZ_STEPS[quizStep];
+  document.getElementById('quiz-progress').style.width = ((quizStep / QUIZ_STEPS.length) * 100) + '%';
+  document.getElementById('quiz-question').textContent = step.q;
+  document.getElementById('quiz-subtitle').textContent = step.sub;
+  document.getElementById('quiz-options').innerHTML = step.opts.map(function(o) {
+    return '<button class="quiz-option" onclick="answerQuiz(\'' + step.id + '\',\'' + o.v + '\')">'
+      + '<span style="font-size:26px;display:block;margin-bottom:7px">' + o.i + '</span>' + o.l + '</button>';
+  }).join('');
+}
+
+function answerQuiz(stepId, value) {
+  quizAnswers[stepId] = value;
+  if (quizStep < QUIZ_STEPS.length - 1) { quizStep++; renderQuiz(); }
+  else { computeMatches(); goto('swipe'); }
+}
+
+function quizBack() {
+  if (quizStep > 0) { quizStep--; renderQuiz(); }
+  else goto('agegate');
+}
+
+function computeMatches() {
+  var sc = {};
+  ALIASES.forEach(function(a) { sc[a.id] = 0; });
+  var mood = quizAnswers.mood, style = quizAnswers.style, topic = quizAnswers.topic;
+  if (mood === 'listen')  { sc[1]+=3; sc[4]+=2; sc[8]+=2; }
+  if (mood === 'fun')     { sc[3]+=3; sc[7]+=3; sc[9]+=2; }
+  if (mood === 'reflect') { sc[2]+=3; sc[4]+=2; sc[6]+=2; }
+  if (mood === 'grow')    { sc[10]+=3; sc[12]+=3; sc[6]+=2; }
+  if (style === 'warm')   { sc[1]+=2; sc[8]+=2; sc[5]+=2; }
+  if (style === 'direct') { sc[10]+=2; sc[12]+=2; sc[7]+=1; }
+  if (style === 'deep')   { sc[4]+=2; sc[2]+=2; sc[13]+=2; }
+  if (style === 'light')  { sc[3]+=2; sc[7]+=2; sc[9]+=2; }
+  if (topic === 'life')     { sc[1]+=2; sc[8]+=2; sc[9]+=2; sc[5]+=2; }
+  if (topic === 'business') { sc[10]+=3; sc[12]+=3; }
+  if (topic === 'green')    { sc[11]+=3; sc[4]+=1; }
+  if (topic === 'art')      { sc[13]+=3; sc[2]+=2; }
+  swipeMatches = ALIASES.slice().sort(function(a, b) { return sc[b.id] - sc[a.id]; }).slice(0, 3);
+  swipeIdx = 0;
+  renderSwipe();
+}
+
+function renderSwipe() {
+  if (swipeIdx >= swipeMatches.length) { goto('micperm'); return; }
+  var a = swipeMatches[swipeIdx];
+  document.getElementById('swipe-counter').textContent = (swipeIdx + 1) + ' di ' + swipeMatches.length + ' suggeriti';
+  document.getElementById('swipe-portrait-wrap').innerHTML = buildPortraitSVG(a, 86);
+  document.getElementById('swipe-name').textContent = a.name + ', ' + a.age;
+  var orig = document.getElementById('swipe-origin');
+  orig.style.color = a.accent; orig.textContent = a.origin;
+  document.getElementById('swipe-personality').textContent = a.personality;
+  var tag = document.getElementById('swipe-goal-tag');
+  tag.textContent = a.goal; tag.style.background = a.accent + '22';
+  tag.style.borderColor = a.accent + '66'; tag.style.color = 'white';
+  document.getElementById('swipe-yes-btn').style.borderColor = a.accent + '88';
+  document.getElementById('swipe-yes-btn').style.background = a.accent + '22';
+  document.getElementById('swipe-check').setAttribute('stroke', a.accent);
+  document.getElementById('micperm-title').textContent = 'Parla con ' + a.name;
+  currentAlias = a;
+}
+
+function swipe(dir) {
+  var card = document.getElementById('swipe-card');
+  card.style.transform = dir === 'right' ? 'translateX(120%) rotate(20deg)' : 'translateX(-120%) rotate(-20deg)';
+  setTimeout(function() {
+    card.style.transform = 'none'; card.style.transition = 'none';
+    setTimeout(function() { card.style.transition = ''; }, 50);
+    if (dir === 'right') goto('micperm');
+    else { swipeIdx++; renderSwipe(); }
+  }, 400);
+}
+
+function requestMic() {
+  if (navigator.mediaDevices) navigator.mediaDevices.getUserMedia({audio: true}).then(function() {}).catch(function() {});
+  completeMicPerm();
+}
+function completeMicPerm() { localStorage.setItem('bz_onboarded', '1'); goto('main'); }
+
+function renderMain() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function(pos) {
+      fetch('https://api.open-meteo.com/v1/forecast?latitude=' + pos.coords.latitude + '&longitude=' + pos.coords.longitude + '&current=weathercode,temperature_2m')
+        .then(function(r) { return r.json(); })
+        .then(function(d) {
+          var desc = 'sereno', code = d.current.weathercode;
+          if (code >= 1 && code <= 3) desc = 'nuvoloso';
+          if (code >= 51) desc = 'pioggia';
+          if (code >= 71) desc = 'neve';
+          if (code >= 80) desc = 'temporale';
+          document.getElementById('weather-label').textContent = desc + ', ' + Math.round(d.current.temperature_2m) + ' gradi';
+        }).catch(function() {});
+    });
+  }
+  updateCounters();
+  document.getElementById('alias-grid').innerHTML = ALIASES.map(function(a) {
+    var hasH = !!(histories[a.id] && histories[a.id].length);
+    return '<button class="alias-card" onclick="startChat(' + a.id + ')" style="border-color:' + (hasH ? a.accent + 'aa' : 'transparent') + '">'
+      + (hasH ? '<div class="dot" style="background:' + a.accent + ';box-shadow:0 0 6px ' + a.accent + '"></div>' : '')
+      + '<div style="display:flex;justify-content:center;margin-bottom:7px">' + buildPortraitSVG(a, 46) + '</div>'
+      + '<div style="font-weight:bold;font-size:13px">' + a.name + '</div>'
+      + '<div style="font-size:10px;opacity:0.55;margin-top:1px">' + a.age + ' - ' + a.origin.split('/')[0].trim() + '</div>'
+      + '<div style="font-size:9px;opacity:0.45;margin-top:3px;line-height:1.3">' + a.goal + '</div>'
+      + '</button>';
+  }).join('');
+}
+
+function startChat(aliasId) {
+  if (getMsgsLeft() === 0) { showPaywall(); return; }
+  currentAlias = ALIASES.filter(function(a) { return a.id === aliasId; })[0];
+  messages = histories[aliasId] ? histories[aliasId].slice() : [];
+  if (!messages.length) messages = [{role:'assistant', content:'Ciao! Sono ' + currentAlias.name + '. Siediti un momento con me nel Parco del Blazone. Come stai oggi?'}];
+  document.getElementById('chat-alias-name').innerHTML = currentAlias.name + ' <span style="font-size:9px;font-weight:normal;opacity:0.5">' + currentAlias.origin + '</span>';
+  document.getElementById('chat-alias-goal').textContent = currentAlias.goal;
+  document.getElementById('chat-avatar-wrap').innerHTML = buildPortraitSVG(currentAlias, 32);
+  document.getElementById('send-btn').style.background = currentAlias.accent + 'dd';
+  document.querySelectorAll('.screen').forEach(function(s) { s.classList.add('hidden'); });
+  document.getElementById('screen-chat').classList.remove('hidden');
+  updateCounters();
+  renderMessages();
+}
+
+function renderMessages() {
+  var c = document.getElementById('chat-messages'); c.innerHTML = '';
+  messages.forEach(function(msg) { addBubble(msg); });
+  var starters = STARTERS[currentAlias.goal] || [];
+  if (messages.length <= 1 && starters.length) {
+    var div = document.createElement('div'); div.style.padding = '10px 12px';
+    div.innerHTML = '<p style="color:rgba(255,255,255,0.42);font-size:11px;margin-bottom:7px">Inizia con...</p>'
+      + starters.map(function(s) { return '<button class="starter-btn" onclick="sendMessage(\'' + s.replace(/'/g, "\\'") + '\')">' + s + '</button>'; }).join('');
+    c.appendChild(div);
+  }
+  c.scrollTop = c.scrollHeight;
+}
+
+function addBubble(msg) {
+  var c = document.getElementById('chat-messages');
+  var isUser = msg.role === 'user';
+  var div = document.createElement('div'); div.className = 'bubble ' + (isUser ? 'user' : 'alias');
+  if (!isUser) {
+    var av = document.createElement('div'); av.className = 'bubble-avatar';
+    av.innerHTML = buildPortraitSVG(currentAlias, 30); div.appendChild(av);
+  }
+  var text = document.createElement('div'); text.className = 'bubble-text';
+  text.textContent = msg.content; div.appendChild(text);
+  c.appendChild(div); c.scrollTop = c.scrollHeight;
+}
+
+function showTyping() {
+  var c = document.getElementById('chat-messages');
+  var div = document.createElement('div'); div.className = 'bubble alias'; div.id = 'typing-indicator';
+  var av = document.createElement('div'); av.className = 'bubble-avatar';
+  av.innerHTML = buildPortraitSVG(currentAlias, 30); div.appendChild(av);
+  var dots = document.createElement('div');
+  dots.style.cssText = 'background:rgba(10,10,40,0.88);border-radius:18px 18px 18px 5px;';
+  dots.innerHTML = '<div class="typing-dots"><div class="typing-dot" style="animation-delay:0s"></div><div class="typing-dot" style="animation-delay:0.22s"></div><div class="typing-dot" style="animation-delay:0.44s"></div></div>';
+  div.appendChild(dots); c.appendChild(div); c.scrollTop = c.scrollHeight;
+}
+function hideTyping() { var t = document.getElementById('typing-indicator'); if (t) t.remove(); }
+
+function sendMessage(text) {
+  var input = document.getElementById('chat-input');
+  var content = text || input.value.trim();
+  if (!content || !currentAlias) return;
+  if (getMsgsLeft() === 0) { showPaywall(); return; }
+  input.value = '';
+  document.getElementById('error-display').innerHTML = '';
+  var userMsg = {role: 'user', content: content};
+  messages.push(userMsg); addBubble(userMsg);
+  var starterDiv = document.querySelector('#chat-messages div[style]');
+  if (starterDiv) starterDiv.remove();
+  showTyping();
+  var h = new Date().getHours();
+  var tod = h >= 5 && h < 12 ? 'mattina' : h >= 12 && h < 17 ? 'pomeriggio' : h >= 17 && h < 21 ? 'tramonto' : 'sera';
+  var lc = LANG_CONFIG[userLang] || LANG_CONFIG['it'];
+  var system = 'You are ' + currentAlias.name + ', from ' + currentAlias.origin + ', ' + currentAlias.age + ' years old.\nGoal: ' + currentAlias.goal + '.\nPersonality: ' + currentAlias.personality + '\n' + lc.respond + ' ' + lc.park + '\nContext: it is ' + tod + '.';
+  fetch('/api/chat', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({model: 'claude-haiku-4-5-20251001', max_tokens: 300, system: system, messages: messages.slice(-10)})
+  }).then(function(res) {
+    return res.json().then(function(data) { return {ok: res.ok, data: data}; });
+  }).then(function(result) {
+    hideTyping();
+    if (!result.ok) throw new Error(result.data && result.data.error ? result.data.error.message : 'Errore API');
+    var reply = result.data.content && result.data.content[0] ? result.data.content[0].text : null;
+    if (!reply) throw new Error('Nessuna risposta');
+    var assistantMsg = {role: 'assistant', content: reply};
+    messages.push(assistantMsg); addBubble(assistantMsg);
+    histories[currentAlias.id] = messages.slice(-40);
+    localStorage.setItem('bz_hist', JSON.stringify(histories));
+    if (!isPremium) { msgCount++; localStorage.setItem('bz_msgs', msgCount); }
+    updateCounters();
+    if (getMsgsLeft() === 0) setTimeout(showPaywall, 1500);
+    if (voiceMode) speak(reply);
+  }).catch(function(e) {
+    hideTyping();
+    document.getElementById('error-display').innerHTML = '<div class="error-bar">' + e.message + '</div>';
+  });
+}
+
+function clearHistory() {
+  if (!currentAlias) return;
+  delete histories[currentAlias.id];
+  localStorage.setItem('bz_hist', JSON.stringify(histories));
+  messages = [{role: 'assistant', content: 'Ciao! Sono ' + currentAlias.name + '. Ricominciamo. Come stai?'}];
+  renderMessages();
+}
+
+function toggleVoice() {
+  voiceMode = !voiceMode;
+  var btn = document.getElementById('btn-voice');
+  btn.textContent = voiceMode ? 'Voce ON' : 'Voce OFF';
+  btn.classList.toggle('active', voiceMode);
+  if (!voiceMode) window.speechSynthesis.cancel();
+}
+
+function speak(text) {
+  window.speechSynthesis.cancel();
+  var u = new SpeechSynthesisUtterance(text);
+  var profiles = {
+    1:{lang:'en',rate:0.90,pitch:1.15},2:{lang:'it',rate:0.78,pitch:0.78},
+    3:{lang:'it',rate:1.12,pitch:1.22},4:{lang:'fr',rate:0.85,pitch:1.05},
+    5:{lang:'it',rate:0.78,pitch:0.72},6:{lang:'it',rate:0.95,pitch:1.12},
+    7:{lang:'it',rate:1.18,pitch:1.08},8:{lang:'it',rate:0.72,pitch:1.28},
+    9:{lang:'en',rate:0.82,pitch:0.68},10:{lang:'en',rate:1.05,pitch:0.92},
+    11:{lang:'en',rate:0.95,pitch:1.05},12:{lang:'en',rate:1.02,pitch:1.12},
+    13:{lang:'it',rate:0.62,pitch:0.58}
+  };
+  var profile = currentAlias && profiles[currentAlias.id] ? profiles[currentAlias.id] : {lang:'it',rate:0.93,pitch:1.0};
+  u.rate = profile.rate; u.pitch = profile.pitch;
+  function assignAndSpeak() {
+    var voices = window.speechSynthesis.getVoices();
+    var best = null;
+    // Usa la voce scelta dall'utente se disponibile
+    if (selectedVoiceName) {
+      best = voices.filter(function(v) { return v.name === selectedVoiceName; })[0];
+    }
+    // Altrimenti cerca per lingua del personaggio
+    if (!best) {
+      var langVoices = voices.filter(function(v) { return v.lang.startsWith(profile.lang); });
+      best = langVoices[0];
+    }
+    if (!best && voices.length) best = voices[0];
+    if (best) { u.voice = best; u.lang = best.lang; }
+    window.speechSynthesis.speak(u);
+  }
+  if (window.speechSynthesis.getVoices().length > 0) assignAndSpeak();
+  else window.speechSynthesis.onvoiceschanged = assignAndSpeak;
+}
+
+function startMic(e) {
+  e.preventDefault();
+  if (!isPremium) {
+    document.getElementById('error-display').innerHTML = '<div class="error-bar">Il microfono e disponibile solo per gli utenti Premium!</div>';
+    setTimeout(showPaywall, 1500);
+    return;
+  }
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) { document.getElementById('error-display').innerHTML = '<div class="error-bar">Browser non supporta il microfono</div>'; return; }
+  micTranscript = '';
+  var rec = new SR();
+  rec.lang = 'it-IT'; rec.continuous = true; rec.interimResults = true;
+  rec.onresult = function(ev) {
+    var interim = '';
+    for (var i = ev.resultIndex; i < ev.results.length; i++) {
+      if (ev.results[i].isFinal) micTranscript += ev.results[i][0].transcript;
+      else interim = ev.results[i][0].transcript;
+    }
+    var p = document.getElementById('transcript-preview');
+    p.style.display = 'block'; p.textContent = (micTranscript + interim).trim();
+  };
+  rec.onerror = function() { micActive = false; document.getElementById('mic-btn').classList.remove('active'); };
+  rec.onend = function() { micActive = false; document.getElementById('mic-btn').classList.remove('active'); };
+  rec.start(); micRec = rec; micActive = true;
+  document.getElementById('mic-btn').classList.add('active');
+}
+
+function stopMic(e) {
+  e.preventDefault();
+  if (!micRec || !micActive) return;
+  micRec.stop(); micActive = false;
+  document.getElementById('mic-btn').classList.remove('active');
+  document.getElementById('transcript-preview').style.display = 'none';
+  setTimeout(function() { if (micTranscript.trim()) sendMessage(micTranscript.trim()); micTranscript = ''; }, 300);
+}
+
+// SFONDO PARCO - Stile fumetto ricco
+(function() {
+  var canvas = document.getElementById('park-bg');
+  var ctx = canvas.getContext('2d');
+  var animFrame = 0;
+
+  function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; draw(); }
+
+  function draw() {
+    animFrame++;
+    var h = new Date().getHours();
+    var W = canvas.width, H = canvas.height;
+    var isNight = h < 5 || h >= 21;
+    var isSunset = h >= 17 && h < 21;
+    var isDay = !isNight && !isSunset;
+    var sc = Math.min(W, H) / 700;
+
+    // CIELO con sfumatura ricca
+    var grad = ctx.createLinearGradient(0, 0, 0, H * 0.72);
+    if (h >= 5 && h < 12) {
+      grad.addColorStop(0, '#7ec8e3'); grad.addColorStop(0.4, '#a8ddf0'); grad.addColorStop(0.8, '#d4eef7'); grad.addColorStop(1, '#f5f0d0');
+    } else if (h >= 12 && h < 17) {
+      grad.addColorStop(0, '#2980b9'); grad.addColorStop(0.4, '#5ba3d0'); grad.addColorStop(0.8, '#87c0e0'); grad.addColorStop(1, '#c8e8f5');
+    } else if (isSunset) {
+      grad.addColorStop(0, '#1a1a3e'); grad.addColorStop(0.2, '#8b1a1a'); grad.addColorStop(0.5, '#e05020'); grad.addColorStop(0.75, '#f08030'); grad.addColorStop(1, '#ffc060');
+    } else {
+      grad.addColorStop(0, '#050510'); grad.addColorStop(0.5, '#0a0a20'); grad.addColorStop(1, '#151535');
+    }
+    ctx.fillStyle = grad; ctx.fillRect(0, 0, W, H);
+
+    // NUVOLE (solo di giorno)
+    if (isDay) {
+      function drawCloud(cx, cy, s, alpha) {
+        ctx.save(); ctx.globalAlpha = alpha;
+        ctx.fillStyle = '#ffffff';
+        [[0,0,s*1.0],[s*0.6,s*0.15,s*0.75],[s*-0.55,s*0.1,s*0.7],[s*0.15,s*-0.3,s*0.65],[s*-0.2,s*-0.25,s*0.5]].forEach(function(c) {
+          ctx.beginPath(); ctx.arc(cx+c[0], cy+c[1], c[2], 0, Math.PI*2); ctx.fill();
+        });
+        ctx.restore();
+      }
+      drawCloud(W*0.15, H*0.08, 28*sc, 0.85);
+      drawCloud(W*0.45, H*0.05, 22*sc, 0.75);
+      drawCloud(W*0.75, H*0.10, 32*sc, 0.80);
+      drawCloud(W*0.88, H*0.06, 18*sc, 0.70);
+    }
+
+    // STELLE di notte
+    if (isNight) {
+      [[0.08,0.05],[0.19,0.03],[0.33,0.08],[0.52,0.04],[0.64,0.10],[0.78,0.03],[0.44,0.02],[0.26,0.07],[0.57,0.09],[0.87,0.05],[0.71,0.06],[0.13,0.12],[0.91,0.14]].forEach(function(s) {
+        ctx.beginPath(); ctx.arc(s[0]*W, s[1]*H, 1.8, 0, Math.PI*2);
+        ctx.fillStyle = 'rgba(255,255,255,0.9)'; ctx.fill();
+      });
+      // Luna
+      ctx.beginPath(); ctx.arc(W*0.82, H*0.1, 18*sc, 0, Math.PI*2);
+      ctx.fillStyle = '#f5f0d0'; ctx.fill();
+      ctx.beginPath(); ctx.arc(W*0.84, H*0.09, 14*sc, 0, Math.PI*2);
+      ctx.fillStyle = isNight ? '#0a0a20' : '#1a1a3e'; ctx.fill();
+    }
+
+    // SOLE
+    if (isDay) {
+      var sunX = h < 12 ? W*0.2 : W*0.75;
+      var sunY = h < 12 ? H*0.12 : H*0.08;
+      var sunGlow = ctx.createRadialGradient(sunX, sunY, 5, sunX, sunY, 40*sc);
+      sunGlow.addColorStop(0, 'rgba(255,240,100,0.6)'); sunGlow.addColorStop(1, 'rgba(255,200,0,0)');
+      ctx.fillStyle = sunGlow; ctx.beginPath(); ctx.arc(sunX, sunY, 40*sc, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(sunX, sunY, 16*sc, 0, Math.PI*2); ctx.fillStyle = '#ffd700'; ctx.fill();
+      ctx.beginPath(); ctx.arc(sunX, sunY, 12*sc, 0, Math.PI*2); ctx.fillStyle = '#ffec40'; ctx.fill();
+    }
+
+    var grassY = H * 0.68;
+
+    // COLLINE sullo sfondo (stile fumetto)
+    ctx.beginPath(); ctx.ellipse(W*0.2, grassY+10, W*0.35, H*0.12, 0, 0, Math.PI*2);
+    ctx.fillStyle = isNight ? '#0a1a08' : isSunset ? '#1a3010' : '#3a8020'; ctx.fill();
+    ctx.beginPath(); ctx.ellipse(W*0.8, grassY+15, W*0.3, H*0.10, 0, 0, Math.PI*2);
+    ctx.fillStyle = isNight ? '#081508' : isSunset ? '#152808' : '#2e7018'; ctx.fill();
+
+    // PRATO principale - strati
+    ctx.fillStyle = isNight ? '#081408' : isSunset ? '#102008' : '#28681a'; ctx.fillRect(0, grassY, W, H - grassY);
+    ctx.fillStyle = isNight ? '#0c1c0c' : isSunset ? '#162e10' : '#348022'; ctx.fillRect(0, grassY, W, H*0.06);
+    ctx.fillStyle = isNight ? '#102410' : isSunset ? '#1e3a14' : '#44a02c'; ctx.fillRect(0, grassY, W, H*0.025);
+
+    // TEXTURE prato - ciuffi d'erba
+    for (var gi = 0; gi < 22; gi++) {
+      var gx = (gi / 22) * W * 1.05;
+      var gy2 = grassY + Math.sin(gi * 3.7) * 4;
+      ctx.strokeStyle = isNight ? '#142814' : isSunset ? '#1e3c12' : '#50b030';
+      ctx.lineWidth = 1.5;
+      for (var blade = 0; blade < 3; blade++) {
+        ctx.beginPath();
+        ctx.moveTo(gx + blade*4 - 4, gy2 + 2);
+        ctx.quadraticCurveTo(gx + blade*4 - 2 + Math.sin(gi+blade)*3, gy2 - 7, gx + blade*4 + Math.sin(gi+blade)*5, gy2 - 12);
+        ctx.stroke();
+      }
+    }
+
+    // VIALETTO ghiaia
+    ctx.beginPath();
+    ctx.moveTo(W*0.35, H); ctx.lineTo(W*0.65, H);
+    ctx.lineTo(W*0.58, grassY+H*0.02); ctx.lineTo(W*0.42, grassY+H*0.02);
+    ctx.closePath();
+    ctx.fillStyle = isNight ? 'rgba(40,35,20,0.6)' : isSunset ? 'rgba(70,50,20,0.5)' : 'rgba(200,175,120,0.45)'; ctx.fill();
+    // bordi vialetto
+    ctx.strokeStyle = isNight ? 'rgba(60,50,30,0.4)' : 'rgba(150,120,70,0.4)';
+    ctx.lineWidth = 2; ctx.stroke();
+
+    // CESPUGLI colorati
+    function drawBush(x, y, s, color1, color2, flowerColor) {
+      ctx.beginPath(); ctx.ellipse(x, y, s*1.4, s*0.9, 0, 0, Math.PI*2); ctx.fillStyle = color1; ctx.fill();
+      ctx.beginPath(); ctx.ellipse(x-s*0.7, y-s*0.2, s*0.9, s*0.7, 0, 0, Math.PI*2); ctx.fillStyle = color2; ctx.fill();
+      ctx.beginPath(); ctx.ellipse(x+s*0.7, y-s*0.15, s*0.85, s*0.65, 0, 0, Math.PI*2); ctx.fillStyle = color2; ctx.fill();
+      ctx.beginPath(); ctx.ellipse(x, y-s*0.5, s*0.8, s*0.6, 0, 0, Math.PI*2); ctx.fillStyle = color2; ctx.fill();
+      // Fiori sul cespuglio
+      if (isDay && flowerColor) {
+        for (var fi = 0; fi < 5; fi++) {
+          var fx2 = x + Math.cos(fi * 1.26) * s * 0.8;
+          var fy2 = y + Math.sin(fi * 1.26) * s * 0.5 - s * 0.2;
+          ctx.beginPath(); ctx.arc(fx2, fy2, s*0.18, 0, Math.PI*2); ctx.fillStyle = flowerColor; ctx.fill();
+          ctx.beginPath(); ctx.arc(fx2, fy2, s*0.09, 0, Math.PI*2); ctx.fillStyle = '#fff8a0'; ctx.fill();
+        }
+      }
+    }
+
+    var b1 = isNight ? '#0a1a08' : isSunset ? '#142208' : '#2a6018';
+    var b2 = isNight ? '#0e2210' : isSunset ? '#1c3010' : '#368024';
+
+    drawBush(W*0.08, grassY+H*0.03, 22*sc, b1, b2, '#ff9090');
+    drawBush(W*0.18, grassY+H*0.04, 16*sc, b2, b1, '#ffb0d0');
+    drawBush(W*0.28, grassY+H*0.035, 14*sc, b1, b2, '#90d090');
+    drawBush(W*0.72, grassY+H*0.035, 15*sc, b2, b1, '#ffb060');
+    drawBush(W*0.82, grassY+H*0.04, 18*sc, b1, b2, '#d090ff');
+    drawBush(W*0.92, grassY+H*0.03, 20*sc, b2, b1, '#ff9090');
+    drawBush(W*0.5, grassY+H*0.06, 12*sc, b1, b2, '#90c0ff');
+
+    // FIORI nel prato
+    if (!isNight) {
+      var flowerData = [
+        [0.22,0.73,'#ff8080'],[0.26,0.76,'#ffffff'],[0.31,0.74,'#ffb0d0'],[0.35,0.77,'#ffe080'],
+        [0.40,0.75,'#ff8080'],[0.55,0.74,'#c0e0ff'],[0.60,0.76,'#ffffff'],[0.64,0.74,'#ffb0d0'],
+        [0.68,0.77,'#ffe080'],[0.73,0.75,'#d0a0ff'],[0.15,0.78,'#ffffff'],[0.85,0.78,'#ffb060']
+      ];
+      flowerData.forEach(function(f) {
+        var fx3 = f[0]*W, fy3 = f[1]*H;
+        // stelo
+        ctx.strokeStyle = '#50a030'; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.moveTo(fx3, fy3+6); ctx.lineTo(fx3, fy3+2); ctx.stroke();
+        // petali
+        for (var p = 0; p < 5; p++) {
+          ctx.beginPath();
+          ctx.ellipse(fx3 + Math.cos(p*1.26)*5, fy3 + Math.sin(p*1.26)*5, 4, 2.5, p*1.26, 0, Math.PI*2);
+          ctx.fillStyle = f[2]; ctx.fill();
+        }
+        ctx.beginPath(); ctx.arc(fx3, fy3, 2.5, 0, Math.PI*2); ctx.fillStyle = '#ffe840'; ctx.fill();
+      });
+    }
+
+    // LAMPIONI stile fumetto
+    var lit = isNight || isSunset;
+    var lc = isNight ? '#ffe060' : '#ffd040';
+
+    function drawLamp(x, y) {
+      // palo
+      ctx.strokeStyle = '#2a2a2a'; ctx.lineWidth = 6*sc;
+      ctx.beginPath(); ctx.moveTo(x, y + H*0.25); ctx.lineTo(x, y); ctx.stroke();
+      // braccio curvo
+      ctx.beginPath(); ctx.moveTo(x, y);
+      ctx.quadraticCurveTo(x+5*sc, y-22*sc, x+28*sc, y-24*sc);
+      ctx.strokeStyle = '#2a2a2a'; ctx.lineWidth = 5*sc; ctx.stroke();
+      // cappuccio lampione
+      ctx.beginPath();
+      ctx.moveTo(x+16*sc, y-28*sc); ctx.lineTo(x+40*sc, y-28*sc);
+      ctx.lineTo(x+38*sc, y-18*sc); ctx.lineTo(x+18*sc, y-18*sc);
+      ctx.closePath(); ctx.fillStyle = '#1a1a1a'; ctx.fill();
+      // luce
+      if (lit) {
+        var glow = ctx.createRadialGradient(x+28*sc, y-23*sc, 3, x+28*sc, y-23*sc, 45*sc);
+        glow.addColorStop(0, 'rgba(255,220,80,0.5)'); glow.addColorStop(1, 'rgba(255,200,50,0)');
+        ctx.beginPath(); ctx.arc(x+28*sc, y-23*sc, 45*sc, 0, Math.PI*2); ctx.fillStyle = glow; ctx.fill();
+      }
+      ctx.beginPath(); ctx.ellipse(x+28*sc, y-20*sc, 6*sc, 4*sc, 0, 0, Math.PI*2);
+      ctx.fillStyle = lit ? lc : '#888'; ctx.fill();
+    }
+
+    // ALBERI stile fumetto con foglie dettagliate
+    function drawTree(x, y, s, variant) {
+      var trunkColor = isNight ? '#1a0c06' : '#3d1f08';
+      var colors = isNight
+        ? ['#081808','#0c2010','#102814','#0e2210']
+        : isSunset
+        ? ['#1a3008','#223810','#1e3408','#283e0c']
+        : ['#1a5208','#228810','#2a9c14','#1e7010','#30a018','#38b820'];
+
+      // Tronco con texture
+      var trunkGrad = ctx.createLinearGradient(x-6*s, 0, x+6*s, 0);
+      trunkGrad.addColorStop(0, isNight ? '#120806' : '#2e1606');
+      trunkGrad.addColorStop(0.5, isNight ? '#1e1008' : '#4a2810');
+      trunkGrad.addColorStop(1, isNight ? '#120806' : '#2e1606');
+      ctx.fillStyle = trunkGrad;
+      ctx.beginPath();
+      ctx.moveTo(x-5*s, y+50*s); ctx.quadraticCurveTo(x-6*s, y+20*s, x-4*s, y);
+      ctx.lineTo(x+4*s, y); ctx.quadraticCurveTo(x+6*s, y+20*s, x+5*s, y+50*s);
+      ctx.closePath(); ctx.fill();
+
+      // Radici
+      ctx.strokeStyle = trunkColor; ctx.lineWidth = 3*s;
+      [[-8,12],[8,10],[-14,6],[14,8]].forEach(function(r) {
+        ctx.beginPath(); ctx.moveTo(x, y+48*s);
+        ctx.quadraticCurveTo(x+r[0]*s*0.5, y+50*s, x+r[0]*s, y+r[1]*s+48*s); ctx.stroke();
+      });
+
+      // Chioma con molti strati di foglie
+      var leafPositions = [
+        [0,-15*s,42*s,50*s,0],[−12*s,-32*s,30*s,38*s,1],[10*s,-38*s,26*s,34*s,2],
+        [-4*s,-50*s,20*s,26*s,3],[8*s,-20*s,22*s,30*s,4],[−18*s,-18*s,18*s,26*s,5]
+      ];
+      if (variant === 2) {
+        leafPositions = [
+          [0,-18*s,38*s,45*s,0],[-14*s,-35*s,28*s,36*s,1],[12*s,-40*s,24*s,32*s,2],
+          [-2*s,-54*s,18*s,24*s,3],[10*s,-22*s,20*s,28*s,4]
+        ];
+      }
+      leafPositions.forEach(function(lp) {
+        ctx.beginPath();
+        ctx.ellipse(x+lp[0], y+lp[1], lp[2], lp[3], 0, 0, Math.PI*2);
+        ctx.fillStyle = colors[lp[4] % colors.length]; ctx.fill();
+        // Contorno fumetto
+        ctx.strokeStyle = isNight ? 'rgba(0,0,0,0.3)' : 'rgba(0,50,0,0.2)';
+        ctx.lineWidth = 1.5*s; ctx.stroke();
+      });
+
+      // Foglie singole sporgenti (stile fumetto)
+      if (!isNight) {
+        var leafColor = colors[2];
+        for (var li = 0; li < 8; li++) {
+          var angle = li * 0.785;
+          var dist = (32 + li * 4) * s;
+          var lx = x + Math.cos(angle) * dist;
+          var ly = y - 20*s + Math.sin(angle) * dist * 0.6;
+          ctx.save(); ctx.translate(lx, ly); ctx.rotate(angle + 0.5);
+          ctx.beginPath();
+          ctx.moveTo(0, -5*s); ctx.quadraticCurveTo(6*s, 0, 0, 5*s);
+          ctx.quadraticCurveTo(-6*s, 0, 0, -5*s);
+          ctx.fillStyle = leafColor; ctx.fill();
+          ctx.strokeStyle = 'rgba(0,80,0,0.3)'; ctx.lineWidth = s; ctx.stroke();
+          ctx.restore();
+        }
+      }
+
+      // Frutti/fiori sull'albero (solo di giorno)
+      if (isDay && variant === 1) {
+        for (var fr = 0; fr < 4; fr++) {
+          var fangle = fr * 1.57 + 0.5;
+          ctx.beginPath();
+          ctx.arc(x + Math.cos(fangle)*22*s, y - 25*s + Math.sin(fangle)*16*s, 4*s, 0, Math.PI*2);
+          ctx.fillStyle = '#ff4040'; ctx.fill();
+        }
+      }
+    }
+
+    // PANCHINE stile fumetto
+    function drawBench(x, y, s) {
+      var wood = isNight ? '#3a2810' : isSunset ? '#4a3214' : '#6b4520';
+      var iron = '#1a1a1a';
+      var woodHL = isNight ? '#4a3818' : '#8a5a30';
+
+      // Ombra
+      ctx.beginPath(); ctx.ellipse(x+32*s, y+32*s, 38*s, 8*s, 0, 0, Math.PI*2);
+      ctx.fillStyle = 'rgba(0,0,0,0.2)'; ctx.fill();
+
+      // Gambe ferro
+      [0, 58].forEach(function(ox) {
+        ctx.fillStyle = iron;
+        ctx.beginPath(); ctx.roundRect(x+ox*s, y, 5*s, 30*s, 2); ctx.fill();
+      });
+      // Traversa
+      ctx.fillStyle = iron; ctx.beginPath(); ctx.roundRect(x+2*s, y+18*s, 58*s, 4*s, 1); ctx.fill();
+
+      // Doghe seduta con ombreggiatura fumetto
+      for (var di = 0; di < 4; di++) {
+        ctx.fillStyle = wood;
+        ctx.beginPath(); ctx.roundRect(x-4*s, y-28*s+di*9*s, 70*s, 7*s, 2); ctx.fill();
+        ctx.fillStyle = woodHL;
+        ctx.beginPath(); ctx.roundRect(x-4*s, y-28*s+di*9*s, 70*s, 2*s, 1); ctx.fill();
+      }
+
+      // Schienale
+      [0, 60].forEach(function(ox) {
+        ctx.fillStyle = iron;
+        ctx.beginPath(); ctx.roundRect(x-2*s+ox*s, y-62*s, 5*s, 38*s, 2); ctx.fill();
+      });
+      ctx.fillStyle = iron;
+      ctx.beginPath(); ctx.roundRect(x+26*s, y-62*s, 5*s, 38*s, 2); ctx.fill();
+
+      [0, 1].forEach(function(bi) {
+        ctx.fillStyle = wood;
+        ctx.beginPath(); ctx.roundRect(x-4*s, y-57*s+bi*13*s, 70*s, 7*s, 2); ctx.fill();
+        ctx.fillStyle = woodHL;
+        ctx.beginPath(); ctx.roundRect(x-4*s, y-57*s+bi*13*s, 70*s, 2*s, 1); ctx.fill();
+      });
+    }
+
+    // RECINZIONE ferro battuto
+    function drawFence(x1, x2, y) {
+      ctx.fillStyle = '#1a1a1a';
+      ctx.beginPath(); ctx.roundRect(x1, y-4, x2-x1, 4, 1); ctx.fill();
+      ctx.beginPath(); ctx.roundRect(x1, y-18*sc, x2-x1, 3, 1); ctx.fill();
+      for (var fx = x1+4; fx < x2-4; fx += 22*sc) {
+        ctx.fillStyle = '#1a1a1a';
+        ctx.beginPath(); ctx.roundRect(fx, y-26*sc, 3*sc, 26*sc, 1); ctx.fill();
+        // Punta lancia
+        ctx.beginPath();
+        ctx.moveTo(fx+1.5*sc, y-30*sc); ctx.lineTo(fx+4.5*sc, y-24*sc); ctx.lineTo(fx-1.5*sc, y-24*sc);
+        ctx.fillStyle = '#2a2a2a'; ctx.fill();
+      }
+    }
+
+    // UCCELLINI (solo di giorno, animati)
+    if (isDay) {
+      var birdOffset = Math.sin(animFrame * 0.02) * 3;
+      function drawBird(bx, by, sz) {
+        ctx.strokeStyle = '#333'; ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(bx, by + birdOffset * 0.3);
+        ctx.quadraticCurveTo(bx - sz*3, by - sz*2 + birdOffset, bx - sz*6, by + birdOffset * 0.3);
+        ctx.moveTo(bx, by + birdOffset * 0.3);
+        ctx.quadraticCurveTo(bx + sz*3, by - sz*2 + birdOffset * 0.8, bx + sz*6, by + birdOffset * 0.3);
+        ctx.stroke();
+      }
+      drawBird(W*0.3, H*0.15, 1.2);
+      drawBird(W*0.33, H*0.13, 1.0);
+      drawBird(W*0.65, H*0.12, 1.1);
+      drawBird(W*0.68, H*0.14, 0.9);
+    }
+
+    // FARFALLE (solo di giorno)
+    if (isDay) {
+      var btOffset = animFrame * 0.04;
+      [[0.35, 0.72, '#ff80c0','#ff40a0'],[0.62, 0.71, '#80c0ff','#4090ff'],[0.48, 0.75, '#ffc060','#ff8020']].forEach(function(b, bi) {
+        var bx = b[0]*W + Math.sin(btOffset + bi*2) * 15;
+        var by = b[1]*H + Math.cos(btOffset*0.7 + bi) * 8;
+        var wing = Math.sin(btOffset*3 + bi) * 0.4;
+        ctx.save(); ctx.translate(bx, by);
+        [[1,1],[−1,1]].forEach(function(side) {
+          ctx.save(); ctx.scale(side[0], side[1]);
+          ctx.beginPath();
+          ctx.ellipse(6, -4, 9, 6, wing, 0, Math.PI*2);
+          ctx.fillStyle = b[2]; ctx.globalAlpha = 0.85; ctx.fill();
+          ctx.beginPath();
+          ctx.ellipse(5, 4, 7, 5, -wing*0.5, 0, Math.PI*2);
+          ctx.fillStyle = b[3]; ctx.fill();
+          ctx.restore();
+        });
+        ctx.restore();
+        ctx.globalAlpha = 1;
+      });
+    }
+
+    // DISEGNA TUTTO nell'ordine corretto
+
+    // Alberi di sfondo (più piccoli)
+    drawTree(W*0.03, grassY-H*0.22, sc*1.1, 0);
+    drawTree(W*0.13, grassY-H*0.15, sc*0.85, 1);
+    drawTree(W*0.22, grassY-H*0.10, sc*0.65, 2);
+    drawTree(W*0.78, grassY-H*0.10, sc*0.68, 1);
+    drawTree(W*0.87, grassY-H*0.16, sc*0.88, 0);
+    drawTree(W*0.97, grassY-H*0.22, sc*1.08, 2);
+    // Alberi in mezzo
+    drawTree(W*0.42, grassY-H*0.07, sc*0.55, 1);
+    drawTree(W*0.58, grassY-H*0.07, sc*0.52, 2);
+
+    // Lampioni
+    drawLamp(W*0.15, grassY-H*0.25);
+    drawLamp(W*0.85, grassY-H*0.25);
+    drawLamp(W*0.36, grassY-H*0.19);
+    drawLamp(W*0.64, grassY-H*0.19);
+
+    // Panchine
+    drawBench(W*0.31, grassY-H*0.065, sc*0.88);
+    drawBench(W*0.51, grassY-H*0.065, sc*0.88);
+    drawBench(W*0.11, grassY-H*0.045, sc*0.68);
+    drawBench(W*0.73, grassY-H*0.045, sc*0.68);
+
+    // Recinzioni
+    drawFence(W*0.01, W*0.23, grassY-H*0.005);
+    drawFence(W*0.77, W*0.99, grassY-H*0.005);
+  }
+
+  // Animazione per farfalle e uccelli
+  function animate() {
+    draw();
+    requestAnimationFrame(animate);
+  }
+
+  window.addEventListener('resize', resize);
+  resize();
+  // Avvia animazione solo se non è notte (ottimizzazione)
+  var h0 = new Date().getHours();
+  if (h0 >= 5 && h0 < 21) animate();
+})();
+
+// INIT
+(function() {
+  checkExistingSession();
+})();
+</script>
+</body>
+</html>
