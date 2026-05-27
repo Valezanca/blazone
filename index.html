@@ -91,6 +91,9 @@
     <input type="password" id="auth-password" placeholder="Password (min. 6 caratteri)" style="margin-bottom:16px"/>
     <button class="btn-primary" id="auth-btn" onclick="handleAuth()">Accedi</button>
     <div id="forgot-wrap" style="text-align:center;margin-top:8px">
+      <div style="text-align:center;margin:12px 0 4px">
+      <button onclick="enterAsGuest()" style="background:none;border:none;color:rgba(255,255,255,0.45);font-size:12px;cursor:pointer;font-family:inherit;text-decoration:underline">Entra senza account →</button>
+    </div>
       <button onclick="handleForgot()" style="background:none;border:none;color:rgba(255,255,255,0.4);font-size:12px;cursor:pointer;font-family:inherit">Password dimenticata?</button>
     </div>
     <p style="color:rgba(255,255,255,0.3);font-size:10px;text-align:center;margin-top:16px">Continuando accetti i Termini di Servizio e la Privacy Policy.</p>
@@ -429,6 +432,10 @@ function handleAuth() {
   });
 }
 
+function enterAsGuest() {
+  document.getElementById('screen-auth').classList.remove('show');
+  startAfterAuth();
+}
 function handleForgot() {
   var email = document.getElementById('auth-email').value.trim();
   if (!email) { showAuthError('Inserisci la tua email prima.'); return; }
