@@ -559,8 +559,7 @@ function renderSwipe(){
 function swipe(dir){
   var card=document.getElementById('swipe-card');
   card.style.transform=dir==='right'?'translateX(120%) rotate(20deg)':'translateX(-120%) rotate(-20deg)';
-  setTimeout(function(){card.style.transform='none';card.style.transition='none';setTimeout(function(){card.style.transition='';},50);if(dir==='right')completeMicPerm();else{swipeIdx++;renderSwipe();}},400);
-}
+setTimeout(function(){card.style.transform='none';card.style.transition='none';setTimeout(function(){card.style.transition='';},50);if(dir==='right'){completeMicPerm();if(currentAlias)setTimeout(function(){startChat(currentAlias.id);},100);}else{swipeIdx++;renderSwipe();}},400);}
 function completeMicPerm(){localStorage.setItem('bz_onboarded','1');goto('main');}
 
 function renderMain(){
@@ -719,8 +718,10 @@ function clearHistory(){
   var canvas=document.getElementById('park-bg');
   var ctx=canvas.getContext('2d');
   var animFrame=0;
-  function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;draw();}
-  function draw(){
+function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;draw();}
+  window.addEventListener('resize',resize);resize();
+  var h0=new Date().getHours();
+  animate();  function draw(){
     animFrame++;
     var h=new Date().getHours(),W=canvas.width,H=canvas.height;
     var isNight=h<5||h>=21,isSunset=h>=17&&h<21,isDay=!isNight&&!isSunset;
@@ -774,8 +775,10 @@ function clearHistory(){
     drawFence(W*0.01,W*0.23,grassY-H*0.005);drawFence(W*0.77,W*0.99,grassY-H*0.005);
   }
   function animate(){draw();requestAnimationFrame(animate);}
-  window.addEventListener('resize',resize);resize();
-  var h0=new Date().getHours();if(h0>=5&&h0<21)animate();
+window.addEventListener('resize',resize);
+  resize();
+  setTimeout(resize,200);
+  animate();  var h0=new Date().getHours();if(h0>=5&&h0<21)animate();
 })();
 
 (function(){
