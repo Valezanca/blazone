@@ -196,6 +196,7 @@
       <div style="font-size:30px;margin-bottom:3px">&#128761;</div>
       <h1 style="font-size:19px;font-weight:normal;letter-spacing:2px">Il Parco del Blazone</h1>
       <p id="weather-label" style="color:rgba(255,255,255,0.4);font-size:11px;margin-top:3px"></p>
+      <p style="color:rgba(245,200,66,0.7);font-size:12px;font-style:italic;margin-top:8px;margin-bottom:4px">Siediti. Qualcuno ti sta aspettando.</p>
     </div>
     <div id="msg-counter-main" class="msg-counter" style="margin-bottom:10px"></div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:9px">
@@ -581,8 +582,7 @@ function renderMain(){
       +'<div style="display:flex;justify-content:center;margin-bottom:7px">'+buildPortraitSVG(a,46)+'</div>'
       +'<div style="font-weight:bold;font-size:13px">'+a.name+'</div>'
       +'<div style="font-size:10px;opacity:0.55;margin-top:1px">'+a.age+' · '+a.origin.split('/')[0].trim()+'</div>'
-      +'<div style="font-size:9px;opacity:0.45;margin-top:3px;line-height:1.3">'+a.goal+'</div>'
-      +'</button>';
++'<div style="font-size:9px;background:rgba(0,0,0,0.35);border-radius:6px;padding:3px 6px;margin-top:3px;line-height:1.3;color:rgba(255,255,255,0.85)">'+a.goal+'</div>'      +'</button>';
   }).join('');
 }
 
@@ -773,6 +773,12 @@ function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeigh
     drawLamp(W*0.15,grassY-H*0.25);drawLamp(W*0.85,grassY-H*0.25);drawLamp(W*0.36,grassY-H*0.19);drawLamp(W*0.64,grassY-H*0.19);
     drawBench(W*0.31,grassY-H*0.065,sc*0.88);drawBench(W*0.51,grassY-H*0.065,sc*0.88);drawBench(W*0.11,grassY-H*0.045,sc*0.68);drawBench(W*0.73,grassY-H*0.045,sc*0.68);
     drawFence(W*0.01,W*0.23,grassY-H*0.005);drawFence(W*0.77,W*0.99,grassY-H*0.005);
+    // Sagome persone sulle panchine
+    function drawPerson(x,y,s,col){var pulse=Math.sin(animFrame*0.05)*2;var glow=ctx.createRadialGradient(x,y-20*s,2,x,y-20*s,28*s+pulse);glow.addColorStop(0,'rgba(245,200,66,0.25)');glow.addColorStop(1,'rgba(245,200,66,0)');ctx.fillStyle=glow;ctx.beginPath();ctx.arc(x,y-20*s,28*s+pulse,0,Math.PI*2);ctx.fill();ctx.fillStyle=col;ctx.beginPath();ctx.arc(x,y-38*s,8*s,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.ellipse(x,y-22*s,7*s,12*s,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='rgba(245,200,66,0.6)';ctx.beginPath();ctx.arc(x,y-38*s,4*s,0,Math.PI*2);ctx.fill();}
+    drawPerson(W*0.36,grassY-H*0.04,sc*0.9,'rgba(180,140,100,0.85)');
+    drawPerson(W*0.56,grassY-H*0.04,sc*0.9,'rgba(100,140,180,0.85)');
+    drawPerson(W*0.17,grassY-H*0.025,sc*0.72,'rgba(160,100,120,0.85)');
+    drawPerson(W*0.78,grassY-H*0.025,sc*0.72,'rgba(100,160,120,0.85)');
   }
   function animate(){draw();requestAnimationFrame(animate);}
 window.addEventListener('resize',resize);
