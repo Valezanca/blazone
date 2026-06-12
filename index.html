@@ -777,8 +777,8 @@ function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeigh
   function animate(){draw();requestAnimationFrame(animate);}
 window.addEventListener('resize',resize);
   resize();
-  setTimeout(resize,200);
-animate();})();
+  setTimeout(function(){resize();animate();},300);
+})();
 
 (function(){
   if('serviceWorker' in navigator)navigator.serviceWorker.register('/sw.js').catch(function(){});
