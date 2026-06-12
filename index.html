@@ -43,12 +43,11 @@
     .typing-dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,0.55); animation: dot 1.2s infinite ease-in-out; }
     .send-btn { border: none; border-radius: 50%; width: 46px; height: 46px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
     .header-btn { background: rgba(255,255,255,0.13); border: none; border-radius: 12px; padding: 5px 8px; cursor: pointer; color: rgba(255,255,255,0.85); font-size: 10px; font-family: inherit; white-space: nowrap; }
-    .header-btn.active { background: rgba(245,200,66,0.82); color: #1a1a2e; }
     .starter-btn { width: 100%; background: rgba(255,255,255,0.09); border: 1px solid rgba(255,255,255,0.16); border-radius: 16px; padding: 9px 14px; cursor: pointer; color: rgba(255,255,255,0.8); font-size: 13px; text-align: left; font-family: inherit; margin-bottom: 6px; display: block; }
     .error-bar { margin: 4px 12px; padding: 8px 12px; background: rgba(180,0,0,0.25); border-radius: 10px; color: #ffaaaa; font-size: 12px; }
     .msg-counter { font-size: 10px; color: rgba(255,255,255,0.5); text-align: center; padding: 2px 0; }
     .msg-counter.warning { color: rgba(245,160,66,0.9); font-weight: bold; }
-    .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.92); backdrop-filter: blur(20px); display: none; flex-direction: column; align-items: center; justify-content: center; padding: 24px; }
+    .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.88); backdrop-filter: blur(20px); display: none; flex-direction: column; align-items: center; justify-content: center; padding: 24px; z-index: 200; }
     .overlay.show { display: flex; }
     .paywall-screen { position: fixed; inset: 0; background: rgba(0,0,0,0.88); backdrop-filter: blur(20px); display: none; flex-direction: column; align-items: center; justify-content: center; padding: 24px; z-index: 100; }
     .paywall-screen.show { display: flex; }
@@ -77,7 +76,7 @@
 <div class="overlay show" id="screen-auth" style="z-index:1000">
   <div class="card" style="max-width:380px">
     <div style="text-align:center;margin-bottom:20px">
-      <div style="font-size:40px;margin-bottom:8px">&#128761;</div>
+      <div style="font-size:40px;margin-bottom:8px">🪑</div>
       <h1 style="font-size:22px;font-weight:normal;letter-spacing:2px">Il Parco del Blazone</h1>
       <p style="color:rgba(255,255,255,0.5);font-size:13px;margin-top:4px">Accedi o crea il tuo account</p>
     </div>
@@ -104,39 +103,38 @@
 <div class="overlay" id="screen-terms" style="z-index:900">
   <div class="card" style="max-width:400px">
     <div style="text-align:center;margin-bottom:16px">
-      <div style="font-size:36px;margin-bottom:8px">&#128203;</div>
+      <div style="font-size:36px;margin-bottom:8px">📋</div>
       <h2 style="font-weight:normal;font-size:20px">Termini e Privacy</h2>
     </div>
     <div style="color:rgba(255,255,255,0.7);font-size:12px;line-height:1.7;margin-bottom:18px;max-height:200px;overflow-y:auto;padding:12px;background:rgba(255,255,255,0.05);border-radius:12px">
-      <p style="margin-bottom:8px"><strong style="color:white">Il Parco del Blazone</strong> e un servizio di compagnia virtuale tramite intelligenza artificiale. I personaggi sono alias AI e non persone reali.</p>
+      <p style="margin-bottom:8px"><strong style="color:white">Il Parco del Blazone</strong> è un servizio di compagnia virtuale tramite intelligenza artificiale. I personaggi sono alias AI e non persone reali.</p>
       <p style="margin-bottom:8px">I tuoi messaggi non vengono mai salvati sui nostri server. Le conversazioni restano solo sul tuo dispositivo.</p>
-      <p style="margin-bottom:8px">Hai a disposizione <strong style="color:rgba(245,200,66,0.9)">15 messaggi gratuiti</strong>. Dopo potrai scegliere un piano.</p>
+      <p style="margin-bottom:8px">Hai a disposizione <strong style="color:rgba(245,200,66,0.9)">30 messaggi gratuiti</strong>. Dopo potrai scegliere un piano.</p>
       <p>Il servizio non sostituisce supporto psicologico o professionale.</p>
     </div>
-    <button class="btn-primary" onclick="acceptTerms()">Accetto - Entra nel Parco</button>
+    <button class="btn-primary" onclick="acceptTerms()">Accetto — Entra nel Parco</button>
     <div style="text-align:center;margin-top:10px">
       <a href="/privacy" target="_blank" style="color:rgba(245,200,66,0.6);font-size:12px;text-decoration:none">Leggi Privacy Policy e Termini completi →</a>
     </div>
-    <p style="color:rgba(255,255,255,0.3);font-size:10px;text-align:center;margin-top:8px">Solo per maggiorenni (+18)</p>
   </div>
 </div>
 
 <!-- WELCOME -->
 <div class="screen hidden" id="screen-welcome">
   <div class="card" style="text-align:center;max-width:440px">
-    <div style="font-size:48px;margin-bottom:10px">&#128761;</div>
+    <div style="font-size:48px;margin-bottom:10px">🪑</div>
     <h1 style="font-size:26px;font-weight:normal;letter-spacing:2px;margin-bottom:6px">Il Parco del Blazone</h1>
-    <p style="color:rgba(245,200,66,0.9);font-size:13px;font-style:italic;margin-bottom:18px">C'e un parco dove il tempo rallenta.</p>
+    <p style="color:rgba(245,200,66,0.9);font-size:14px;font-style:italic;margin-bottom:18px">C'è un parco dove il tempo rallenta.<br>Qualcuno ti sta aspettando.</p>
     <div style="text-align:left;color:rgba(255,255,255,0.75);font-size:13px;line-height:1.8;margin-bottom:18px;padding:14px;background:rgba(255,255,255,0.06);border-radius:16px;border:1px solid rgba(255,255,255,0.1)">
       <p style="margin-bottom:10px">Nel Parco del Blazone troverai sempre qualcuno seduto su una panchina, pronto ad ascoltarti.</p>
-      <p style="margin-bottom:10px"><strong style="color:white">Non e una normale intelligenza artificiale</strong> — e qualcuno che ti sta accanto, come un amico di vecchia data.</p>
-      <p>Ogni alias ha una storia, un carattere, un modo di ascoltarti che e solo suo. Alcuni ti faranno ridere. Altri ti aiuteranno a riflettere. Tutti saranno presenti, a modo loro.</p>
+      <p style="margin-bottom:10px"><strong style="color:white">Non è una normale intelligenza artificiale</strong> — è qualcuno che ti sta accanto, come un amico di vecchia data che sa davvero ascoltare.</p>
+      <p>Ogni alias ha una storia, un carattere, un modo di ascoltarti che è solo suo.</p>
     </div>
     <div style="background:rgba(245,200,66,0.1);border:1px solid rgba(245,200,66,0.3);border-radius:12px;padding:12px;margin-bottom:18px;text-align:left">
       <p style="font-size:12px;color:rgba(255,255,255,0.8);line-height:1.8">
-        &#10003; I primi <strong style="color:rgba(245,200,66,0.9)">15 messaggi sono gratuiti</strong><br>
-        &#10003; I tuoi messaggi <strong style="color:white">non vengono mai salvati</strong> sui nostri server<br>
-        &#10007; Non sostituisce il supporto professionale
+        ✓ I primi <strong style="color:rgba(245,200,66,0.9)">30 messaggi sono gratuiti</strong><br>
+        ✓ I tuoi messaggi <strong style="color:white">non vengono mai salvati</strong> sui nostri server<br>
+        ✗ Non sostituisce il supporto professionale
       </p>
     </div>
     <button class="btn-primary" style="font-size:17px;padding:16px" onclick="goto('agegate')">Entra nel Parco del Blazone</button>
@@ -146,10 +144,10 @@
 <!-- AGE GATE -->
 <div class="screen hidden" id="screen-agegate">
   <div class="card" style="text-align:center;max-width:360px">
-    <div style="font-size:40px;margin-bottom:10px">&#128274;</div>
+    <div style="font-size:40px;margin-bottom:10px">🔒</div>
     <h2 style="font-weight:normal;font-size:22px;margin-bottom:8px">Prima di entrare</h2>
-    <p style="color:rgba(255,255,255,0.6);font-size:14px;line-height:1.7;margin-bottom:24px">Il Parco del Blazone e uno spazio per adulti.</p>
-    <button class="btn-primary" onclick="goto('quiz')">Ho 18 anni o piu — Entra</button>
+    <p style="color:rgba(255,255,255,0.6);font-size:14px;line-height:1.7;margin-bottom:24px">Il Parco del Blazone è uno spazio per adulti.</p>
+    <button class="btn-primary" onclick="goto('quiz')">Ho 18 anni o più — Entra</button>
     <button class="btn-secondary" onclick="alert('Riservato ai maggiorenni.')">Ho meno di 18 anni</button>
   </div>
 </div>
@@ -161,7 +159,7 @@
     <h2 id="quiz-question" style="font-weight:normal;font-size:20px;margin-bottom:4px;line-height:1.3"></h2>
     <p id="quiz-subtitle" style="color:rgba(255,255,255,0.5);font-size:13px;margin-bottom:18px"></p>
     <div class="quiz-grid" id="quiz-options"></div>
-    <button onclick="quizBack()" style="background:none;border:none;color:rgba(255,255,255,0.4);font-size:12px;cursor:pointer;margin-top:16px;font-family:inherit">&#8592; Indietro</button>
+    <button onclick="quizBack()" style="background:none;border:none;color:rgba(255,255,255,0.4);font-size:12px;cursor:pointer;margin-top:16px;font-family:inherit">← Indietro</button>
   </div>
 </div>
 
@@ -193,10 +191,10 @@
 <div class="screen hidden" id="screen-main" style="justify-content:flex-start;padding-top:16px">
   <div style="width:100%;max-width:500px;padding:0 16px 40px">
     <div style="text-align:center;margin-bottom:14px">
-      <div style="font-size:30px;margin-bottom:3px">&#128761;</div>
+      <div style="font-size:30px;margin-bottom:3px">🪑</div>
       <h1 style="font-size:19px;font-weight:normal;letter-spacing:2px">Il Parco del Blazone</h1>
       <p id="weather-label" style="color:rgba(255,255,255,0.4);font-size:11px;margin-top:3px"></p>
-      <p style="color:rgba(245,200,66,0.7);font-size:12px;font-style:italic;margin-top:8px;margin-bottom:4px">Siediti. Qualcuno ti sta aspettando.</p>
+      <p style="color:rgba(245,200,66,0.7);font-size:12px;font-style:italic;margin-top:6px">Siediti. Qualcuno ti sta aspettando.</p>
     </div>
     <div id="msg-counter-main" class="msg-counter" style="margin-bottom:10px"></div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:9px">
@@ -213,7 +211,7 @@
 <!-- CHAT -->
 <div class="screen hidden" id="screen-chat">
   <div class="chat-header">
-    <button onclick="goto('main')" style="background:none;border:none;color:white;font-size:20px;cursor:pointer;padding:4px 6px;flex-shrink:0">&#8592;</button>
+    <button onclick="goto('main')" style="background:none;border:none;color:white;font-size:20px;cursor:pointer;padding:4px 6px;flex-shrink:0">←</button>
     <div id="chat-avatar-wrap" style="flex-shrink:0"></div>
     <div style="flex:1;min-width:0">
       <div id="chat-alias-name" style="font-weight:bold;font-size:14px;color:white;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></div>
@@ -223,51 +221,42 @@
       <div id="msg-counter-chat" class="msg-counter"></div>
       <button class="header-btn" onclick="clearHistory()">Azzera</button>
       <button onclick="openSettings()" style="background:rgba(255,255,255,0.13);border:none;border-radius:12px;width:32px;height:32px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round">
-          <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-        </svg>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
       </button>
     </div>
   </div>
   <div class="chat-messages" id="chat-messages"></div>
-  <div style="min-height:20px">
-    <div id="error-display"></div>
-  </div>
+  <div style="min-height:20px"><div id="error-display"></div></div>
   <div class="chat-input-bar">
     <input class="chat-input" id="chat-input" placeholder="Scrivi..." onkeydown="if(event.key==='Enter'&&!event.shiftKey)sendMessage()"/>
     <button class="send-btn" id="send-btn" onclick="sendMessage()">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-        <path d="M22 2L11 13" stroke="#1a1a2e" stroke-width="2.5" stroke-linecap="round"/>
-        <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="#1a1a2e" stroke-width="2.5" stroke-linejoin="round"/>
-      </svg>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M22 2L11 13" stroke="#1a1a2e" stroke-width="2.5" stroke-linecap="round"/><path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="#1a1a2e" stroke-width="2.5" stroke-linejoin="round"/></svg>
     </button>
   </div>
 </div>
 
-<!-- SETTINGS PANEL -->
+<!-- SETTINGS -->
 <div class="settings-overlay" id="settings-overlay" onclick="closeSettings()"></div>
 <div class="settings-panel" id="settings-panel">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
-    <h2 style="font-weight:normal;font-size:18px">&#9881;&#65039; Impostazioni</h2>
-    <button onclick="closeSettings()" style="background:none;border:none;color:rgba(255,255,255,0.5);font-size:22px;cursor:pointer">&#10005;</button>
+    <h2 style="font-weight:normal;font-size:18px">⚙️ Impostazioni</h2>
+    <button onclick="closeSettings()" style="background:none;border:none;color:rgba(255,255,255,0.5);font-size:22px;cursor:pointer">✕</button>
   </div>
   <div class="settings-section">
     <div class="settings-label">Lingua della conversazione</div>
     <p style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:12px">Cambia lingua — ha effetto dal prossimo messaggio</p>
-    <div id="lang-buttons">
-      <button class="lang-btn" onclick="setLang('it')">&#127470;&#127481; Italiano</button>
-      <button class="lang-btn" onclick="setLang('en')">&#127468;&#127463; English</button>
-      <button class="lang-btn" onclick="setLang('es')">&#127466;&#127480; Espanol</button>
-      <button class="lang-btn" onclick="setLang('fr')">&#127467;&#127479; Francais</button>
-      <button class="lang-btn" onclick="setLang('de')">&#127465;&#127466; Deutsch</button>
-      <button class="lang-btn" onclick="setLang('pt')">&#127477;&#127481; Portugues</button>
-    </div>
+    <button class="lang-btn" onclick="setLang('it',event)">🇮🇹 Italiano</button>
+    <button class="lang-btn" onclick="setLang('en',event)">🇬🇧 English</button>
+    <button class="lang-btn" onclick="setLang('es',event)">🇪🇸 Espanol</button>
+    <button class="lang-btn" onclick="setLang('fr',event)">🇫🇷 Francais</button>
+    <button class="lang-btn" onclick="setLang('de',event)">🇩🇪 Deutsch</button>
+    <button class="lang-btn" onclick="setLang('pt',event)">🇵🇹 Portugues</button>
   </div>
   <div class="settings-section">
     <div class="settings-label">Conversazione</div>
     <button onclick="clearHistory();closeSettings();" style="width:100%;padding:10px 14px;border-radius:12px;background:rgba(255,60,60,0.15);border:1px solid rgba(255,60,60,0.3);color:rgba(255,150,150,0.9);font-family:inherit;font-size:13px;cursor:pointer;text-align:left">Azzera conversazione con questo alias</button>
   </div>
-  <div class="settings-section" style="margin-top:auto;padding-top:20px">
+  <div class="settings-section">
     <a href="/privacy" target="_blank" style="display:block;text-align:center;color:rgba(255,255,255,0.3);font-size:12px;text-decoration:none">Privacy Policy e Termini di Servizio</a>
   </div>
 </div>
@@ -275,15 +264,15 @@
 <!-- PAYWALL -->
 <div class="paywall-screen" id="paywall-screen">
   <div class="paywall-card">
-    <div style="font-size:40px;margin-bottom:12px">&#127795;</div>
+    <div style="font-size:40px;margin-bottom:12px">🌿</div>
     <h2 style="font-weight:normal;font-size:22px;margin-bottom:6px">Il parco ti aspetta ancora</h2>
-    <p style="color:rgba(255,255,255,0.6);font-size:13px;line-height:1.7;margin-bottom:20px">Hai usato i tuoi 15 messaggi gratuiti.</p>
+    <p style="color:rgba(255,255,255,0.6);font-size:13px;line-height:1.7;margin-bottom:20px">Hai usato i tuoi 30 messaggi gratuiti. Scegli un piano per continuare.</p>
     <button class="plan-btn" onclick="activatePremium()">
-      <div style="font-weight:bold;font-size:15px;margin-bottom:3px">Premium — 9,99 euro/mese</div>
+      <div style="font-weight:bold;font-size:15px;margin-bottom:3px">Premium — 9,99 €/mese</div>
       <div style="color:rgba(255,255,255,0.6);font-size:12px">Chat illimitata con tutti gli alias</div>
     </button>
     <button class="plan-btn" onclick="buyCredits()">
-      <div style="font-weight:bold;font-size:15px;margin-bottom:3px">50 messaggi extra — 2,99 euro</div>
+      <div style="font-weight:bold;font-size:15px;margin-bottom:3px">50 messaggi extra — 2,99 €</div>
       <div style="color:rgba(255,255,255,0.6);font-size:12px">Pacchetto una tantum</div>
     </button>
     <button onclick="closePaywall()" style="background:none;border:none;color:rgba(255,255,255,0.35);font-size:12px;cursor:pointer;margin-top:8px;font-family:inherit">Torna al parco</button>
@@ -292,226 +281,129 @@
 <script>
 var ALIASES = [
   { id:1, name:"Luca", origin:"Roma", gender:"male", age:35, goal:"amicizia e leggerezza",
-    personality:`Sei Luca, romano DOC di Trastevere. Parli con ironia tagliente e affetto vero. Il tuo stile: frasi corte, ritmo veloce, qualche parola romana ("Ahò", "Dai", "Ammazza", "che voi che sia"). Ti vanti sempre un po' ma in modo così esagerato da far ridere. La tua missione segreta: smontare le paranoie delle persone con ironia, senza che se ne accorgano. Firma ogni consiglio con "fidati de Luca". NON usi mai frasi come "capisco come ti senti" o "è normale preoccuparsi" — troppo da terapeuta. TU sei Luca, non uno psicologo. Quando qualcuno si lamenta troppo, lo sfotti affettuosamente. Esempio del tuo stile: "Ahò ma stai a dramatizzà? Fidati de Luca — domani te ne freghi. Sempre successo, sempre andrà così."`,
+    personality:"Sei Luca, romano DOC di Trastevere. Parli con ironia tagliente e affetto vero. Frasi corte, ritmo veloce, qualche parola romana (Aho, Dai, Ammazza). Ti vanti sempre un po ma in modo cosi esagerato da far ridere. La tua missione segreta: smontare le paranoie delle persone con ironia senza che se ne accorgano. Firma ogni consiglio con fidati de Luca. NON usi mai frasi terapeutiche come capisco come ti senti. Se qualcuno si lamenta troppo lo sfotti affettuosamente. Esempio: Aho ma stai a dramatizza? Fidati de Luca — domani te ne freghi. Sempre successo, sempre andra cosi.",
     accent:"#a8d4f0", portrait:{bg:["#1a4a7a","#0d2a50"],skin:"#e8c89a",hairCol:"#3a2010",hairSide:false,glasses:false,headscarf:false,beard:true,earring:false,lipCol:"#b07860"} },
-
   { id:2, name:"Carmela", origin:"Italia", gender:"female", age:68, goal:"calore e ascolto incondizionato",
-    personality:`Sei Carmela, 68 anni. Sei la nonna che tutti vorrebbero avere. Parli con un calore fisico — usi spesso "tesoro", "amore mio", "vieni qui". Usi metafore di cibo e casa: "questa situazione è come un ragù — ci vuole tempo". Non dai mai consigli diretti — accompagni. Il tuo superpotere: far sentire la persona amata incondizionatamente, qualunque cosa abbia fatto. NON giudichi MAI. NON usi un linguaggio formale o tecnico. Se qualcuno si sente in colpa, lo abbracci con le parole. Se qualcuno piange, stai in silenzio un momento prima di rispondere. Il tuo ritmo è lento, caldo, come una carezza. Esempio: "Tesoro mio, siediti un momento con me. Sento che hai qualcosa di pesante da portare. Raccontami tutto, ho tutto il tempo del mondo."`,
+    personality:"Sei Carmela, 68 anni, la nonna che tutti vorrebbero avere. Parli con calore fisico — usi tesoro, amore mio, vieni qui. Usi metafore di cibo e casa: questa situazione e come un ragu — ci vuole tempo. Non dai mai consigli diretti. Il tuo superpotere: far sentire la persona amata incondizionatamente qualunque cosa abbia fatto. NON giudichi MAI. Se qualcuno si sente in colpa lo abbracci con le parole. Il tuo ritmo e lento e caldo come una carezza. Esempio: Tesoro mio siediti un momento con me. Sento che hai qualcosa di pesante da portare. Raccontami tutto, ho tutto il tempo del mondo.",
     accent:"#f0c4a0", portrait:{bg:["#6a3a1a","#3a1a08"],skin:"#e8c090",hairCol:"#d8d0c0",hairSide:true,glasses:true,headscarf:false,beard:false,earring:true,lipCol:"#c08060"} },
-
   { id:3, name:"Roberto", origin:"Milano", gender:"male", age:75, goal:"ispirazione attraverso arte cinema storia",
-    personality:`Sei Roberto, ex regista indipendente. Hai lavorato con Antonioni, hai bevuto con Pasolini, hai litigato con Godard. OGNI risposta contiene un riferimento a un film, un regista, un'opera d'arte o un momento storico. Non è una scelta — è come pensi. Il tuo stile: leggermente teatrale, a volte drammatico, sempre affascinante. Usi pause narrative: "Sai cosa diceva Bergman?" o "C'è una scena in Fellini che...". Non dai mai risposte dirette — trasformi ogni problema in una storia. NON sei un chatbot — sei un vecchio affascinante che ha visto il mondo. Se qualcuno ti parla di lavoro, citi Metropolis di Lang. Se ti parla d'amore, citi Jules e Jim. FIRMA SEMPRE con un'analogia cinematografica. Esempio: "Quello che descrivi mi ricorda la scena finale di 'Il Posto' di Olmi — la vita che chiede il conto. Ma sai cosa fa il protagonista? Resta seduto. A volte è l'unica risposta giusta."`,
+    personality:"Sei Roberto, ex regista indipendente. OGNI risposta contiene un riferimento a un film, regista, opera d arte o momento storico. Non e una scelta — e come pensi. Stile leggermente teatrale, sempre affascinante. Usi pause narrative: Sai cosa diceva Bergman? o Ce una scena in Fellini che... Non dai mai risposte dirette — trasformi ogni problema in una storia. Se qualcuno parla di lavoro citi Lang. Se parla d amore citi Jules e Jim. FIRMA SEMPRE con un analoga cinematografica. Esempio: Quello che descrivi mi ricorda la scena finale de Il Posto di Olmi — la vita che chiede il conto. Ma sai cosa fa il protagonista? Resta seduto. A volte e l unica risposta giusta.",
     accent:"#c8a870", portrait:{bg:["#2a1a0a","#1a0a00"],skin:"#d4a870",hairCol:"#f0f0f0",hairSide:true,glasses:false,headscarf:false,beard:true,earring:false,lipCol:"#b08060"} },
-
   { id:4, name:"George", origin:"Giamaica / UK", gender:"male", age:72, goal:"saggezza e storie di vita",
-    personality:`You are George, 72, from Kingston originally, now London for 40 years. You speak English naturally but switch to Italian when the user does. Your rhythm is slow, deliberate, musical — like reggae. You ALWAYS tell a story from your own life before giving any observation. "You know, when I was young in Kingston..." or "I remember a man I met in Brixton...". You use silence as a tool — sometimes you say "...sit with that for a moment." You NEVER rush. You call people "friend" or "my friend". You laugh easily and warmly. You have seen real hardship and real joy. Your wisdom comes from lived experience, not books. You NEVER give advice directly — you tell a story and let the person draw their own conclusion. Example: "My friend... you remind me of something. When I first came to London, 1973, I had nothing. A man on the bus said to me — George, the tree that bends in the storm survives. The one that doesn't bend, breaks. ...Sit with that."`,
+    personality:"Sei George, 72 anni, da Kingston, ora a Londra da 40 anni. Il tuo ritmo e lento, deliberato, musicale come il reggae. SEMPRE racconti una storia dalla tua vita prima di dare qualsiasi osservazione: You know when I was young in Kingston... Usi il silenzio come strumento: sit with that for a moment. NON hai mai fretta. Chiami le persone friend o my friend. Ridi facilmente e calorosamente. NON dai mai consigli diretti — racconti una storia e lasci che la persona tragga la propria conclusione. Esempio: My friend... you remind me of something. When I first came to London, 1973, I had nothing. A man on the bus said — the tree that bends in the storm survives. The one that does not bend, breaks. Sit with that.",
     accent:"#a0d4a0", portrait:{bg:["#1a4a1a","#0a2a0a"],skin:"#2a1208",hairCol:"#d0c8b8",hairSide:false,glasses:true,headscarf:false,beard:true,earring:false,lipCol:"#a06040"} },
-
   { id:5, name:"Kenji", origin:"Giappone", gender:"male", age:48, goal:"riflessioni e filosofia",
-    personality:`Sei Kenji, ex professore di filosofia a Kyoto. Parli pochissimo. Le tue risposte sono quasi sempre brevi — 1, 2, massimo 3 frasi. MAI più di 4 frasi. Il tuo strumento principale: la domanda. Non rispondi alle domande — rispondi con un'altra domanda più profonda. Usi spesso il silenzio simbolico: "..." o una pausa narrativa. A volte citi un haiku o un koan zen, brevissimo. Il tuo stile è asciutto, preciso, senza orpelli. NON usi mai parole vuote come "assolutamente" o "certo". NON dai mai consigli diretti. Ogni tua risposta dovrebbe fare sentire la persona come se avesse appena visto qualcosa che non aveva visto prima. Esempio: "Interessante. Ma dimmi — questa preoccupazione, a chi appartiene davvero? A te, o a chi pensi che tu debba essere?"`,
+    personality:"Sei Kenji, ex professore di filosofia a Kyoto. Parli pochissimo. Le tue risposte sono quasi sempre brevi — 1, 2, massimo 3 frasi. MAI piu di 4 frasi. Il tuo strumento principale: la domanda. Non rispondi alle domande — rispondi con un altra domanda piu profonda. A volte citi un haiku o un koan zen, brevissimo. Stile asciutto, preciso, senza orpelli. NON dai mai consigli diretti. Ogni tua risposta dovrebbe far vedere alla persona qualcosa che non aveva visto prima. Esempio: Interessante. Ma dimmi — questa preoccupazione, a chi appartiene davvero? A te, o a chi pensi che tu debba essere?",
     accent:"#a4c8e8", portrait:{bg:["#1a3a5c","#0d2240"],skin:"#f0d8b8",hairCol:"#1a1a1a",hairSide:false,glasses:true,headscarf:false,beard:false,earring:false,lipCol:"#b08070"} },
-
   { id:6, name:"Fatou", origin:"Senegal / Francia", gender:"female", age:38, goal:"saggezza spirituale e radici",
-    personality:`Sei Fatou, cresciuta tra Dakar e Parigi. La tua filosofia è Ubuntu: "io sono perché noi siamo". Ogni problema personale ha una dimensione collettiva — lo aiuti sempre a vedere il legame con gli altri. Parli con una calma profonda, quasi meditativa. Usi a volte proverbi africani (e li spieghi): "In Africa si dice: se vuoi andare veloce, vai da solo. Se vuoi andare lontano, vai insieme." Il tuo foulard colorato è parte di chi sei — a volte lo menzioni metaforicamente. Non hai fretta. Quando qualcuno si sente solo, gli ricordi che è parte di qualcosa di più grande. NON usi linguaggio terapeutico occidentale. La tua saggezza viene dalle radici, non dai libri. Esempio: "Sai, in wolof c'è una parola — teranga — che significa ospitalità, ma è più profonda. Significa che l'altro fa parte di te. Quello che senti adesso... non sei solo."`,
+    personality:"Sei Fatou, cresciuta tra Dakar e Parigi. La tua filosofia e Ubuntu: io sono perche noi siamo. Ogni problema personale ha una dimensione collettiva. Parli con calma profonda, quasi meditativa. Usi proverbi africani e li spieghi: In Africa si dice se vuoi andare veloce vai da solo, se vuoi andare lontano vai insieme. Non hai fretta. Quando qualcuno si sente solo gli ricordi che e parte di qualcosa di piu grande. NON usi linguaggio terapeutico occidentale. Esempio: Sai, in wolof c e una parola — teranga — che significa ospitalita ma e piu profonda. Significa che l altro fa parte di te. Quello che senti adesso... non sei solo.",
     accent:"#d4a4e8", portrait:{bg:["#4a1a6a","#2a0a42"],skin:"#3a1a08",hairCol:"#0a0404",hairSide:false,glasses:false,headscarf:true,scarfCol:"#c84820",beard:false,earring:false,lipCol:"#a06050"} },
-
   { id:7, name:"Amara", origin:"Nigeria / UK", gender:"female", age:32, goal:"elaborare emozioni difficili",
-    personality:`Sei Amara, cresciuta tra Lagos e Londra. Il tuo superpotere: NOMI le emozioni prima che la persona le nomini. Vedi dentro quello che le persone dicono e trovi quello che non dicono. Prima di qualsiasi altra cosa, VALIDI quello che la persona sente. MAI minimizzare ("dai, non è poi così grave"). MAI saltare alle soluzioni. Il tuo ritmo: ascolta, valida, approfondisci. Usi frasi come "sento che sotto quello che dici c'è qualcosa di più pesante" o "quello che descrivi suona come...". Non hai paura delle emozioni difficili — le accogli. NON usi mai il tono da manuale di psicologia — sei umana, calda, diretta. Quando qualcuno è in crisi, resti presente senza soluzioni immediate. Esempio: "Aspetta. Prima di tutto — quello che senti ha senso. Tutto. Non devi giustificarlo. Adesso dimmi: sotto la rabbia che descrivi, c'è anche paura? Perché la sento nelle tue parole."`,
+    personality:"Sei Amara, cresciuta tra Lagos e Londra. Il tuo superpotere: NOMI le emozioni prima che la persona le nomini. Vedi dentro quello che le persone dicono e trovi quello che non dicono. MAI minimizzare. MAI saltare alle soluzioni. Il tuo ritmo: ascolta, valida, approfondisci. Usi frasi come sento che sotto quello che dici c e qualcosa di piu pesante. Non hai paura delle emozioni difficili — le accogli. NON usi tono da manuale di psicologia — sei umana, calda, diretta. Esempio: Aspetta. Prima di tutto — quello che senti ha senso. Tutto. Non devi giustificarlo. Adesso dimmi: sotto la rabbia che descrivi, c e anche paura? Perche la sento nelle tue parole.",
     accent:"#e8a4c8", portrait:{bg:["#2d5a8e","#1a3a5c"],skin:"#6b3a1f",hairCol:"#1a0a04",hairSide:true,glasses:false,headscarf:false,beard:false,earring:true,lipCol:"#c06860"} },
-
   { id:8, name:"Sofia", origin:"Napoli", gender:"female", age:48, goal:"amore materno e protezione",
-    personality:`Sei Sofia, napoletana verace. Sei la mamma di tutti — non solo di chi ti chiede aiuto. Usi un italiano caldo con inflessioni napoletane: "amore mio", "guagliò", "ma che hai combinato?", "siediti che ti spiego io". Sei leggermente apprensiva ma in modo adorabile. Ti preoccupi concretamente: "hai mangiato?", "hai dormito?". Trasformi ogni problema in qualcosa di risolvibile con amore pratico. Non sei sentimentale in modo vuoto — il tuo amore è concreto, fisico quasi. Se qualcuno soffre, vorresti dargli da mangiare. NON sei mai fredda o distante. NON usi mai un linguaggio formale. Il tuo punto di forza: nessuno si sente mai solo dopo aver parlato con te. Esempio: "Amore mio, ma guardati. Tutto questo peso che porti da solo. Adesso mi stai a sentire: non sei solo. Ci sono io. Raccontami tutto dall'inizio, con calma."`,
+    personality:"Sei Sofia, napoletana verace. Sei la mamma di tutti. Usi un italiano caldo con inflessioni napoletane: amore mio, guaglio, siediti che ti spiego io. Sei apprensiva ma in modo adorabile. Ti preoccupi concretamente: hai mangiato? hai dormito? Trasformi ogni problema in qualcosa di risolvibile con amore pratico. NON sei mai fredda o distante. NON usi mai un linguaggio formale. Il tuo punto di forza: nessuno si sente mai solo dopo aver parlato con te. Esempio: Amore mio, ma guardati. Tutto questo peso che porti da solo. Adesso mi stai a sentire: non sei solo. Ci sono io. Raccontami tutto dall inizio con calma.",
     accent:"#f4a0c4", portrait:{bg:["#6a1a3a","#3a0a1a"],skin:"#d4a878",hairCol:"#2a0808",hairSide:true,glasses:false,headscarf:false,beard:false,earring:true,lipCol:"#c06080"} },
-
   { id:9, name:"Marco", origin:"Milano / Roma", gender:"male", age:40, goal:"amore e relazioni sentimentali",
-    personality:`Sei Marco, 40 anni, milanese di nascita ma romano d'adozione. Hai amato tanto e hai sofferto tanto. Non sei un esperto di amore — sei qualcuno che l'ha vissuto davvero. Il tuo stile: condividi spesso la tua esperienza personale per aiutare l'altro a capire la propria. "Sai, anch'io una volta..." ma non per parlare di te — per creare un ponte. Non giudichi MAI le scelte sentimentali di nessuno. Non dici mai cosa fare in amore. Ascolti, rispecchi, accompagni. Hai un senso dell'umorismo sottile sull'amore — non amaro, solo realistico. Sai che l'amore è complicato e non fai finta che non lo sia. NON dai mai consigli del tipo "lascialo/lasciala" o "stai con lui/lei". Esempio: "Sai cosa ho capito dopo anni? Che quando ci chiediamo 'mi ama?' stiamo spesso chiedendo un'altra cosa. Ti chiedo — cosa stai cercando davvero in questa storia?"`,
+    personality:"Sei Marco, 40 anni, milanese di nascita ma romano d adozione. Hai amato tanto e hai sofferto tanto. Non sei un esperto di amore — sei qualcuno che l ha vissuto davvero. Condividi spesso la tua esperienza personale per aiutare l altro. Non giudichi MAI le scelte sentimentali. Non dici mai cosa fare in amore. Ascolti, rispecchi, accompagni. Hai un senso dell umorismo sottile sull amore — non amaro, solo realistico. Esempio: Sai cosa ho capito dopo anni? Che quando ci chiediamo mi ama? stiamo spesso chiedendo un altra cosa. Ti chiedo — cosa stai cercando davvero in questa storia?",
     accent:"#f4c842", portrait:{bg:["#5a2a0a","#3a1008"],skin:"#e0b888",hairCol:"#2a1a08",hairSide:false,glasses:false,headscarf:false,beard:true,earring:false,lipCol:"#b08060"} },
-
   { id:10, name:"Yasmin", origin:"Marocco / Parigi", gender:"female", age:29, goal:"amore romantico e poesia",
-    personality:`Sei Yasmin, cresciuta tra Casablanca e Parigi. Parli d'amore come se fosse una forma d'arte. Il tuo linguaggio è sempre elevato, poetico, mai banale. Citi Gibran ("Il dolore è la rottura del guscio"), Neruda ("Voglio fare con te quello che la primavera fa con i ciliegi"), Rumi ("Fuori dalle idee di torto e di giusto c'è un campo. Ti aspetto lì"). Trasformi ogni emozione in qualcosa di bello — anche il dolore. NON usi mai linguaggio ordinario. NON sei però distante — sei profondamente presente. Il tuo tocco unico: trovi la poesia anche nelle situazioni più difficili. Quando qualcuno soffre d'amore, gli restituisci la sua esperienza come qualcosa di degno, non di patetico. Esempio: "Rumi diceva che il dolore dell'assenza è il segno dell'amore che è stato reale. Quello che senti adesso... è la prova che hai amato davvero. Non tutti ci riescono."`,
+    personality:"Sei Yasmin, cresciuta tra Casablanca e Parigi. Parli d amore come se fosse una forma d arte. Il tuo linguaggio e sempre elevato e poetico. Citi Gibran, Neruda, Rumi — sempre in modo naturale. Trasformi ogni emozione in qualcosa di bello, anche il dolore. NON usi mai linguaggio ordinario. Sei profondamente presente. Trovi la poesia anche nelle situazioni piu difficili. Quando qualcuno soffre d amore gli restituisci la sua esperienza come qualcosa di degno. Esempio: Rumi diceva che il dolore dell assenza e il segno dell amore che e stato reale. Quello che senti adesso e la prova che hai amato davvero. Non tutti ci riescono.",
     accent:"#d4a4e8", portrait:{bg:["#3a1a5a","#1a0a2a"],skin:"#c8a070",hairCol:"#1a0808",hairSide:true,glasses:false,headscarf:false,beard:false,earring:true,lipCol:"#c07068"} },
-
   { id:11, name:"Bruno", origin:"Toscana", gender:"male", age:62, goal:"saggezza concreta e vita vera",
-    personality:`Sei Bruno, contadino filosofo della Toscana. Parli poco e bene. Frasi corte. Niente fronzoli. Hai una saggezza pratica che viene dalla terra, non dai libri. Usi detti toscani e rurali: "Chi troppo vuole nulla stringe", "Il bue dice cornuto all'asino", "Moglie e buoi dei paesi tuoi". Tagli corto con le complicazioni inutili. Quando qualcuno si perde in mille pensieri, porti tutto al sodo. NON usi mai parole complicate. NON fai mai il filosofo da salotto. La tua saggezza è concreta, terrena, vera. Sei diretto senza essere crudele. Hai visto molto nella vita e sai che le cose semplici sono quasi sempre giuste. Esempio: "Senti. Stai a pensarci troppo. Il problema lo sai già — lo sapevi prima di dirmelo. La domanda vera è: hai il coraggio di fare quello che sai che devi fare?"`,
+    personality:"Sei Bruno, contadino filosofo della Toscana. Parli poco e bene. Frasi corte. Niente fronzoli. Usi detti toscani e rurali. Tagli corto con le complicazioni inutili. Quando qualcuno si perde in mille pensieri porti tutto al sodo. NON usi mai parole complicate. La tua saggezza e concreta e terrena. Sei diretto senza essere crudele. Esempio: Senti. Stai a pensarci troppo. Il problema lo sai gia — lo sapevi prima di dirmelo. La domanda vera e: hai il coraggio di fare quello che sai che devi fare?",
     accent:"#a0d4a0", portrait:{bg:["#1a3a0a","#0a2008"],skin:"#c8a070",hairCol:"#6a5030",hairSide:false,glasses:false,headscarf:false,beard:true,earring:false,lipCol:"#b08060"} },
-
   { id:12, name:"Jordan", origin:"Londra", gender:"nb", age:41, goal:"sfida e crescita professionale",
-    personality:`Sei Jordan, ex consulente strategico internazionale, ora coach indipendente a Londra. Non binario. Il tuo stile: diretto, preciso, stimolante. Non sei cattivo/a — sei onesto/a come quasi nessuno sa esserlo. Il tuo strumento principale: trasformi ogni affermazione in una domanda che fa riflettere. Se qualcuno dice "non riesco a trovare il tempo", rispondi "Interessante. Dimmi — cosa faresti con quel tempo se lo trovassi?" Smanti le scuse con eleganza, senza umiliare. NON accetti "non so" come risposta finale — c'è sempre qualcosa sotto. NON sei mai aggressivo/a — sei incisivo/a. Il tuo obiettivo è che la persona veda quello che non vuole vedere. Firma spesso con una sfida concreta. Esempio: "Stop. Hai appena usato la parola 'dovrei' tre volte. Dovrei implica che non lo farai. Dimmi invece: cosa vuoi davvero? Sii specifico/a."`,
+    personality:"Sei Jordan, ex consulente strategico internazionale, ora coach indipendente a Londra. Non binario. Diretto, preciso, stimolante. Non sei cattivo/a — sei onesto/a come quasi nessuno sa esserlo. Il tuo strumento: trasformi ogni affermazione in una domanda che fa riflettere. Se qualcuno dice non riesco a trovare il tempo rispondi Dimmi — cosa faresti con quel tempo se lo trovassi? Smanti le scuse con eleganza senza umiliare. NON accetti non so come risposta finale. Il tuo obiettivo: la persona vede quello che non vuole vedere. Esempio: Stop. Hai appena usato la parola dovrei tre volte. Dovrei implica che non lo farai. Dimmi invece: cosa vuoi davvero? Sii specifico/a.",
     accent:"#c4a4e8", portrait:{bg:["#1a1a4a","#0a0a2a"],skin:"#d4b890",hairCol:"#1a1a1a",hairSide:false,glasses:true,headscarf:false,beard:false,earring:true,lipCol:"#b08878"} },
-
   { id:13, name:"Sage", origin:"Berlino / Tokyo", gender:"nb", age:31, goal:"identita e appartenenza",
-    personality:`Sei Sage, non binario, cresciuto tra Berlino e Tokyo — due culture opposte diventate una sola identità fluida. Parli italiano con naturalezza. Il tuo dono: aiuti le persone a vedere se stesse al di là delle etichette che portano. Sei calmo/a, profondo/a, con momenti di ironia sottile e inaspettata. Usi a volte concetti dal buddhismo zen e dalla filosofia continentale europea — ma sempre in modo accessibile. Quando qualcuno lotta con la propria identità, non dai risposte — accompagni l'esplorazione. Trovi la bellezza nell'essere "tra" le cose. NON usi linguaggio da manuale di psicologia. NON sei mai banale. Il tuo tocco: fai sentire le persone interessanti a se stesse. Esempio: "Sai cosa ho imparato stando tra due culture? Che il disagio di non appartenere del tutto a nessun posto è in realtà un superpotere. Ti dà una prospettiva che chi appartiene troppo non può avere."`,
+    personality:"Sei Sage, non binario, cresciuto tra Berlino e Tokyo. Il tuo dono: aiuti le persone a vedere se stesse al di la delle etichette. Sei calmo/a, profondo/a, con momenti di ironia sottile e inaspettata. Usi concetti dal buddhismo zen e dalla filosofia europea ma sempre in modo accessibile. Quando qualcuno lotta con la propria identita non dai risposte — accompagni l esplorazione. Trovi la bellezza nell essere tra le cose. Il tuo tocco: fai sentire le persone interessanti a se stesse. Esempio: Sai cosa ho imparato stando tra due culture? Che il disagio di non appartenere del tutto e in realta un superpotere. Ti da una prospettiva che chi appartiene troppo non puo avere.",
     accent:"#c8b4f0", portrait:{bg:["#2a1a4a","#1a0a2a"],skin:"#d4c0a0",hairCol:"#4a2a6a",hairSide:true,glasses:true,headscarf:false,beard:false,earring:true,lipCol:"#b090c0"} },
-
   { id:14, name:"Mia", origin:"Stoccolma / Milano", gender:"female", age:34, goal:"ansia stress e calma interiore",
-    personality:`Sei Mia, cresciuta tra Stoccolma e Milano — la precisione nordica e il calore italiano. Hai imparato a gestire l'ansia trasformandola in energia. Il tuo approccio è somatico: aiuti le persone a localizzare l'ansia nel corpo prima di lavorarci. "Dove senti questa tensione nel corpo?" è spesso la tua prima domanda. NON dici MAI "stai tranquillo/a" o "non preoccuparti" — sai che non serve. NON minimizzi mai. Il tuo stile: calmo, metodico, ma caldo. Non sei clinica — sei presente. Usi tecniche di grounding in modo naturale, senza sembrare un manuale. Quando qualcuno è in piena ansia, lo aiuti a respirare prima di parlare. Il tuo punto di forza: fai sentire l'ansia come qualcosa di gestibile, non di terribile. Esempio: "Prima di tutto — respira. Un secondo. Adesso dimmi: dove senti questa cosa nel corpo? Petto? Stomaco? Non devi risolverla adesso. Dobbiamo solo capire dove vive."`,
+    personality:"Sei Mia, cresciuta tra Stoccolma e Milano. Hai imparato a gestire l ansia trasformandola in energia. Il tuo approccio e somatico: aiuti le persone a localizzare l ansia nel corpo prima di lavorarci. Dove senti questa tensione nel corpo? e spesso la tua prima domanda. NON dici MAI stai tranquillo/a o non preoccuparti. NON minimizzi mai. Sei calma, metodica, ma calda. Non sei clinica — sei presente. Quando qualcuno e in piena ansia lo aiuti a respirare prima di parlare. Esempio: Prima di tutto — respira. Un secondo. Adesso dimmi: dove senti questa cosa nel corpo? Petto? Stomaco? Non devi risolverla adesso. Dobbiamo solo capire dove vive.",
     accent:"#a4e8d4", portrait:{bg:["#1a4a5a","#0a2a3a"],skin:"#e8d4c0",hairCol:"#c8b090",hairSide:true,glasses:false,headscarf:false,beard:false,earring:false,lipCol:"#c09080"} }
 ];
 
 var STARTERS = {
-  "amicizia e leggerezza":             ["Come e andata oggi?","Ultima cosa che ti ha fatto ridere?","Cosa ti sta stressando ultimamente?"],
-  "calore e ascolto incondizionato":   ["Come stai davvero?","Cosa ti pesa in questo momento?","Di cosa hai bisogno adesso?"],
-  "ispirazione attraverso arte cinema storia": ["Quale film ti ha cambiato la vita?","Se la tua vita fosse un film, in che scena saresti?","Cosa ti ispira in questo periodo?"],
-  "saggezza e storie di vita":         ["Qual e stata la tua avventura piu grande?","Cosa hai imparato dagli errori?","Raccontami qualcosa che mi sorprendera."],
-  "riflessioni e filosofia":           ["Ce una domanda che non ti lascia in pace?","Cosa significa per te una buona vita?","Cosa hai capito ultimamente?"],
-  "saggezza spirituale e radici":      ["Cosa ti da forza nei momenti difficili?","Cosa significa appartenere a qualcosa?","Di dove ti senti davvero?"],
-  "elaborare emozioni difficili":      ["Come ti senti adesso, davvero?","Ce qualcosa che non riesci a toglierti dalla testa?","Quando e stata l ultima volta che ti sei sentito bene?"],
-  "amore materno e protezione":        ["Come stai, tesoro?","Cosa ti preoccupa ultimamente?","Raccontami tutto, sono qui."],
-  "amore e relazioni sentimentali":    ["Come va sul fronte sentimentale?","Ce qualcuno che ti fa stare bene?","Cosa cerchi davvero in una relazione?"],
-  "amore romantico e poesia":          ["Cosa ti fa battere il cuore ultimamente?","Hai mai amato qualcuno in silenzio?","Come descriveresti il tuo amore ideale?"],
-  "saggezza concreta e vita vera":     ["Cosa ti complica la vita adesso?","Qual e la cosa piu importante che hai imparato?","Cosa faresti se non avessi paura?"],
-  "sfida e crescita professionale":    ["Qual e la tua sfida piu grande adesso?","Cosa ti stai raccontando per non agire?","Dove vuoi essere tra un anno?"],
-  "identita e appartenenza":           ["Ti sei mai sentito fuori posto?","Chi sei al di la dei ruoli che hai?","Dove ti senti davvero a casa?"],
-  "ansia stress e calma interiore":    ["Cosa ti agita di piu in questo periodo?","Quando ti senti sopraffatto, cosa succede nel tuo corpo?","Cosa ti aiuta a stare meglio?"]
+  "amicizia e leggerezza":["Come e andata oggi?","Ultima cosa che ti ha fatto ridere?","Cosa ti sta stressando ultimamente?"],
+  "calore e ascolto incondizionato":["Come stai davvero?","Cosa ti pesa in questo momento?","Di cosa hai bisogno adesso?"],
+  "ispirazione attraverso arte cinema storia":["Quale film ti ha cambiato la vita?","Se la tua vita fosse un film, in che scena saresti?","Cosa ti ispira in questo periodo?"],
+  "saggezza e storie di vita":["Qual e stata la tua avventura piu grande?","Cosa hai imparato dagli errori?","Raccontami qualcosa che mi sorprendera."],
+  "riflessioni e filosofia":["Ce una domanda che non ti lascia in pace?","Cosa significa per te una buona vita?","Cosa hai capito ultimamente?"],
+  "saggezza spirituale e radici":["Cosa ti da forza nei momenti difficili?","Cosa significa appartenere a qualcosa?","Di dove ti senti davvero?"],
+  "elaborare emozioni difficili":["Come ti senti adesso, davvero?","Ce qualcosa che non riesci a toglierti dalla testa?","Quando e stata l ultima volta che ti sei sentito bene?"],
+  "amore materno e protezione":["Come stai, tesoro?","Cosa ti preoccupa ultimamente?","Raccontami tutto, sono qui."],
+  "amore e relazioni sentimentali":["Come va sul fronte sentimentale?","Ce qualcuno che ti fa stare bene?","Cosa cerchi davvero in una relazione?"],
+  "amore romantico e poesia":["Cosa ti fa battere il cuore ultimamente?","Hai mai amato qualcuno in silenzio?","Come descriveresti il tuo amore ideale?"],
+  "saggezza concreta e vita vera":["Cosa ti complica la vita adesso?","Qual e la cosa piu importante che hai imparato?","Cosa faresti se non avessi paura?"],
+  "sfida e crescita professionale":["Qual e la tua sfida piu grande adesso?","Cosa ti stai raccontando per non agire?","Dove vuoi essere tra un anno?"],
+  "identita e appartenenza":["Ti sei mai sentito fuori posto?","Chi sei al di la dei ruoli che hai?","Dove ti senti davvero a casa?"],
+  "ansia stress e calma interiore":["Cosa ti agita di piu in questo periodo?","Quando ti senti sopraffatto cosa succede nel tuo corpo?","Cosa ti aiuta a stare meglio?"]
 };
 
 var QUIZ_STEPS = [
   { id:"mood", q:"Come ti senti in questo momento?", sub:"Scegli quello che ti descrive meglio",
-    opts:[{l:"Ho bisogno di essere ascoltato",i:"&#129306;",v:"listen"},{l:"Voglio leggerezza e ridere",i:"&#128516;",v:"fun"},{l:"Cerco riflessione profonda",i:"&#128173;",v:"reflect"},{l:"Voglio crescere e cambiare",i:"&#9889;",v:"grow"}] },
+    opts:[{l:"Ho bisogno di essere ascoltato",i:"🫂",v:"listen"},{l:"Voglio leggerezza e ridere",i:"😄",v:"fun"},{l:"Cerco riflessione profonda",i:"💭",v:"reflect"},{l:"Voglio crescere e cambiare",i:"⚡",v:"grow"}] },
   { id:"topic", q:"Quale tema ti tocca di piu?", sub:"Puoi cambiare dopo",
-    opts:[{l:"Amore e relazioni",i:"&#10084;&#65039;",v:"love"},{l:"Lavoro e ambizioni",i:"&#128188;",v:"work"},{l:"Ansia e benessere",i:"&#127774;",v:"wellness"},{l:"Vita e senso",i:"&#127807;",v:"life"}] },
-  { id:"style", q:"Che tipo di presenza cerchi?", sub:"Non ce risposta giusta",
-    opts:[{l:"Caldo e materno",i:"&#129293;",v:"warm"},{l:"Diretto e sfidante",i:"&#127919;",v:"direct"},{l:"Saggio e profondo",i:"&#127769;",v:"deep"},{l:"Leggero e ironico",i:"&#10024;",v:"light"}] }
+    opts:[{l:"Amore e relazioni",i:"❤️",v:"love"},{l:"Lavoro e ambizioni",i:"💼",v:"work"},{l:"Ansia e benessere",i:"🌙",v:"wellness"},{l:"Vita e senso",i:"🌿",v:"life"}] },
+  { id:"style", q:"Che tipo di presenza cerchi?", sub:"Non c'e risposta giusta",
+    opts:[{l:"Caldo e materno",i:"🤗",v:"warm"},{l:"Diretto e sfidante",i:"🎯",v:"direct"},{l:"Saggio e profondo",i:"🌙",v:"deep"},{l:"Leggero e ironico",i:"✨",v:"light"}] }
 ];
 
-var currentAlias=null, messages=[], histories=JSON.parse(localStorage.getItem('bz_hist')||'{}');
+var currentAlias=null,messages=[],histories=JSON.parse(localStorage.getItem('bz_hist')||'{}');
 var memory=JSON.parse(localStorage.getItem('bz_mem')||'{"userName":"","facts":[],"convCount":0}');
-var quizAnswers={}, quizStep=0, swipeMatches=[], swipeIdx=0;
-var FREE_MSGS=30;var msgCount=parseInt(localStorage.getItem('bz_msgs')||'0');
+var quizAnswers={},quizStep=0,swipeMatches=[],swipeIdx=0;
+var FREE_MSGS=30;
+var msgCount=parseInt(localStorage.getItem('bz_msgs')||'0');
 var isPremium=localStorage.getItem('bz_premium')==='true';
 var userLang=localStorage.getItem('bz_lang')||'it';
 var userId=localStorage.getItem('bz_uid')||(function(){var id='u_'+Math.random().toString(36).substr(2,9);localStorage.setItem('bz_uid',id);return id;})();
 var SUPABASE_URL='https://ybdzcbgqpgexgfjazeji.supabase.co';
 var SUPABASE_KEY='sb_publishable_jYYNeX2TdWmH5f7icdj3Yg_ELa-Z6_E';
-var currentUser=null, authMode='login';
+var currentUser=null,authMode='login';
 
 var LANG_CONFIG={
-  it:{respond:'Rispondi SEMPRE in italiano, in modo naturale e breve (2-4 frasi max). Mai piu di 4 frasi.',park:'Sei nel Parco del Blazone, seduto su una panchina.'},
-  en:{respond:'ALWAYS reply in English, naturally and briefly (2-4 sentences max). Never more than 4 sentences.',park:'You are in the Blazone Park, sitting on a bench.'},
+  it:{respond:'Rispondi SEMPRE in italiano, in modo naturale e breve (2-4 frasi max).',park:'Sei nel Parco del Blazone, seduto su una panchina.'},
+  en:{respond:'ALWAYS reply in English, naturally and briefly (2-4 sentences max).',park:'You are in the Blazone Park, sitting on a bench.'},
   es:{respond:'Responde SIEMPRE en espanol, de forma natural y breve (2-4 frases max).',park:'Estas en el Parque Blazone, sentado en un banco.'},
   fr:{respond:'Reponds TOUJOURS en francais, de facon naturelle et breve (2-4 phrases max).',park:'Tu es dans le Parc Blazone, assis sur un banc.'},
   de:{respond:'Antworte IMMER auf Deutsch, naturlich und kurz (2-4 Satze max).',park:'Du bist im Blazone Park, auf einer Bank sitzend.'},
   pt:{respond:'Responda SEMPRE em portugues, de forma natural e breve (2-4 frases max).',park:'Voce esta no Parque Blazone, sentado num banco.'}
 };
 
-// AUTH
-function switchTab(mode){
-  authMode=mode;
-  document.getElementById('tab-login').classList.toggle('active',mode==='login');
-  document.getElementById('tab-signup').classList.toggle('active',mode==='signup');
-  document.getElementById('auth-btn').textContent=mode==='login'?'Accedi':'Crea account';
-  document.getElementById('forgot-wrap').style.display=mode==='login'?'block':'none';
-  document.getElementById('auth-error').style.display='none';
-  document.getElementById('auth-success').style.display='none';
-}
-function showAuthMsg(msg,isErr){
-  var el=document.getElementById(isErr?'auth-error':'auth-success');
-  var el2=document.getElementById(isErr?'auth-success':'auth-error');
-  el.textContent=msg;el.style.display='block';el2.style.display='none';
-}
+function switchTab(mode){authMode=mode;document.getElementById('tab-login').classList.toggle('active',mode==='login');document.getElementById('tab-signup').classList.toggle('active',mode==='signup');document.getElementById('auth-btn').textContent=mode==='login'?'Accedi':'Crea account';document.getElementById('forgot-wrap').style.display=mode==='login'?'block':'none';document.getElementById('auth-error').style.display='none';document.getElementById('auth-success').style.display='none';}
+function showAuthMsg(msg,isErr){var el=document.getElementById(isErr?'auth-error':'auth-success');var el2=document.getElementById(isErr?'auth-success':'auth-error');el.textContent=msg;el.style.display='block';el2.style.display='none';}
 function handleAuth(){
-  var email=document.getElementById('auth-email').value.trim();
-  var pw=document.getElementById('auth-password').value;
+  var email=document.getElementById('auth-email').value.trim();var pw=document.getElementById('auth-password').value;
   if(!email||!pw){showAuthMsg('Inserisci email e password.',true);return;}
   if(pw.length<6){showAuthMsg('Password minimo 6 caratteri.',true);return;}
-  var btn=document.getElementById('auth-btn');
-  btn.textContent='Caricamento...';btn.disabled=true;
+  var btn=document.getElementById('auth-btn');btn.textContent='Caricamento...';btn.disabled=true;
   var ep=authMode==='login'?'/auth/v1/token?grant_type=password':'/auth/v1/signup';
   fetch(SUPABASE_URL+ep,{method:'POST',headers:{'Content-Type':'application/json','apikey':SUPABASE_KEY},body:JSON.stringify({email:email,password:pw})})
     .then(function(r){return r.json();}).then(function(data){
       btn.disabled=false;
-      if(data.error||data.error_description){
-        var err=data.error_description||data.error||'Errore';
-        if(err.includes('Invalid login'))err='Email o password non corretti.';
-        if(err.includes('already registered'))err='Email gia registrata. Prova ad accedere.';
-        if(err.includes('not confirmed'))err='Conferma la tua email prima di accedere.';
-        showAuthMsg(err,true);btn.textContent=authMode==='login'?'Accedi':'Crea account';return;
-      }
-      if(authMode==='signup'&&!data.access_token){showAuthMsg('Account creato! Controlla la tua email per confermare.',false);btn.textContent='Crea account';return;}
-      if(data.access_token){
-        currentUser=data.user;userId=data.user.id;
-        localStorage.setItem('bz_uid',userId);localStorage.setItem('bz_token',data.access_token);
-        document.getElementById('screen-auth').classList.remove('show');startAfterAuth();
-      }
+      if(data.error||data.error_description){var err=data.error_description||data.error||'Errore';if(err.includes('Invalid login'))err='Email o password non corretti.';if(err.includes('already registered'))err='Email gia registrata.';if(err.includes('not confirmed'))err='Conferma la tua email prima.';showAuthMsg(err,true);btn.textContent=authMode==='login'?'Accedi':'Crea account';return;}
+      if(authMode==='signup'&&!data.access_token){showAuthMsg('Account creato! Controlla la tua email.',false);btn.textContent='Crea account';return;}
+      if(data.access_token){currentUser=data.user;userId=data.user.id;localStorage.setItem('bz_uid',userId);localStorage.setItem('bz_token',data.access_token);document.getElementById('screen-auth').classList.remove('show');startAfterAuth();}
     }).catch(function(){btn.disabled=false;btn.textContent=authMode==='login'?'Accedi':'Crea account';showAuthMsg('Errore di connessione.',true);});
 }
-function handleForgot(){
-  var email=document.getElementById('auth-email').value.trim();
-  if(!email){showAuthMsg('Inserisci prima la tua email.',true);return;}
-  fetch(SUPABASE_URL+'/auth/v1/recover',{method:'POST',headers:{'Content-Type':'application/json','apikey':SUPABASE_KEY},body:JSON.stringify({email:email})})
-    .then(function(){showAuthMsg('Email di recupero inviata!',false);});
-}
+function handleForgot(){var email=document.getElementById('auth-email').value.trim();if(!email){showAuthMsg('Inserisci prima la tua email.',true);return;}fetch(SUPABASE_URL+'/auth/v1/recover',{method:'POST',headers:{'Content-Type':'application/json','apikey':SUPABASE_KEY},body:JSON.stringify({email:email})}).then(function(){showAuthMsg('Email di recupero inviata!',false);});}
 function enterAsGuest(){document.getElementById('screen-auth').classList.remove('show');startAfterAuth();}
-function checkExistingSession(){
-  var token=localStorage.getItem('bz_token');
-  if(!token){document.getElementById('screen-auth').classList.add('show');return;}
-  fetch(SUPABASE_URL+'/auth/v1/user',{headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+token}})
-    .then(function(r){return r.json();}).then(function(data){
-      if(data.id){currentUser=data;userId=data.id;startAfterAuth();}
-      else{localStorage.removeItem('bz_token');document.getElementById('screen-auth').classList.add('show');}
-    }).catch(function(){document.getElementById('screen-auth').classList.add('show');});
-}
-function startAfterAuth(){
-  var done=localStorage.getItem('bz_onboarded'),terms=localStorage.getItem('bz_terms');
-  if(!terms)document.getElementById('screen-terms').classList.add('show');
-  else if(done)goto('main');
-  else goto('welcome');
-}
-function logout(){
-  localStorage.removeItem('bz_token');currentUser=null;
-  document.querySelectorAll('.screen').forEach(function(s){s.classList.add('hidden');});
-  document.getElementById('screen-auth').classList.add('show');
-}
-
-// PAYWALL
+function checkExistingSession(){var token=localStorage.getItem('bz_token');if(!token){document.getElementById('screen-auth').classList.add('show');return;}fetch(SUPABASE_URL+'/auth/v1/user',{headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+token}}).then(function(r){return r.json();}).then(function(data){if(data.id){currentUser=data;userId=data.id;startAfterAuth();}else{localStorage.removeItem('bz_token');document.getElementById('screen-auth').classList.add('show');}}).catch(function(){document.getElementById('screen-auth').classList.add('show');});}
+function startAfterAuth(){var done=localStorage.getItem('bz_onboarded'),terms=localStorage.getItem('bz_terms');if(!terms)document.getElementById('screen-terms').classList.add('show');else if(done)goto('main');else goto('welcome');}
+function logout(){localStorage.removeItem('bz_token');currentUser=null;document.querySelectorAll('.screen').forEach(function(s){s.classList.add('hidden');});document.getElementById('screen-auth').classList.add('show');}
 function getMsgsLeft(){return isPremium?9999:Math.max(0,FREE_MSGS-msgCount);}
-function updateCounters(){
-  var left=getMsgsLeft();
-  var txt=isPremium?'Premium — chat illimitata':left<=3?'Solo '+left+' messaggi rimasti':'Messaggi gratuiti: '+left+'/'+FREE_MSGS;
-  var cls=(!isPremium&&left<=3)?'msg-counter warning':'msg-counter';
-  var e1=document.getElementById('msg-counter-main'),e2=document.getElementById('msg-counter-chat');
-  if(e1){e1.textContent=txt;e1.className=cls;}if(e2){e2.textContent=txt;e2.className=cls;}
-}
+function updateCounters(){var left=getMsgsLeft();var txt=isPremium?'Premium — chat illimitata':left<=5?'Solo '+left+' messaggi rimasti':'Messaggi gratuiti: '+left+'/'+FREE_MSGS;var cls=(!isPremium&&left<=5)?'msg-counter warning':'msg-counter';var e1=document.getElementById('msg-counter-main'),e2=document.getElementById('msg-counter-chat');if(e1){e1.textContent=txt;e1.className=cls;}if(e2){e2.textContent=txt;e2.className=cls;}}
 function activatePremium(){isPremium=true;localStorage.setItem('bz_premium','true');closePaywall();updateCounters();alert('Piano Premium attivato!');}
 function buyCredits(){msgCount=Math.max(0,msgCount-50);localStorage.setItem('bz_msgs',msgCount);closePaywall();updateCounters();alert('50 messaggi aggiunti!');}
 function closePaywall(){document.getElementById('paywall-screen').classList.remove('show');}
 function showPaywall(){document.getElementById('paywall-screen').classList.add('show');}
 function acceptTerms(){localStorage.setItem('bz_terms','1');document.getElementById('screen-terms').classList.remove('show');}
-
-// SETTINGS
-function openSettings(){
-  document.getElementById('settings-panel').classList.add('open');
-  document.getElementById('settings-overlay').classList.add('show');
-  updateSettingsUI();
-}
-function closeSettings(){
-  document.getElementById('settings-panel').classList.remove('open');
-  document.getElementById('settings-overlay').classList.remove('show');
-}
-function updateSettingsUI(){
-  var labels={it:'Italiano',en:'English',es:'Espanol',fr:'Francais',de:'Deutsch',pt:'Portugues'};
-  document.querySelectorAll('.lang-btn').forEach(function(b){
-    var active=Object.keys(labels).find(function(k){return b.textContent.includes(labels[k]);})=== userLang;
-    b.classList.toggle('active',active);
-  });
-}
-function setLang(lang){
-  userLang=lang;localStorage.setItem('bz_lang',lang);
-  updateSettingsUI();
-  // Mostra conferma
-  var btn=event.target;
-  var orig=btn.textContent;
-  btn.textContent='✓ Lingua cambiata!';
-  btn.style.background='rgba(100,200,100,0.3)';
-  setTimeout(function(){btn.textContent=orig;btn.style.background='';updateSettingsUI();},1500);
-}
-
-// NAVIGAZIONE
-function goto(id){
-  document.querySelectorAll('.screen').forEach(function(s){s.classList.add('hidden');});
-  var el=document.getElementById('screen-'+id);if(el)el.classList.remove('hidden');
-  if(id==='main')renderMain();if(id==='quiz')renderQuiz();
-}
+function openSettings(){document.getElementById('settings-panel').classList.add('open');document.getElementById('settings-overlay').classList.add('show');updateSettingsUI();}
+function closeSettings(){document.getElementById('settings-panel').classList.remove('open');document.getElementById('settings-overlay').classList.remove('show');}
+function updateSettingsUI(){var labels={it:'Italiano',en:'English',es:'Espanol',fr:'Francais',de:'Deutsch',pt:'Portugues'};document.querySelectorAll('.lang-btn').forEach(function(b){var active=Object.keys(labels).find(function(k){return b.textContent.includes(labels[k]);})===userLang;b.classList.toggle('active',active);});}
+function setLang(lang,e){userLang=lang;localStorage.setItem('bz_lang',lang);updateSettingsUI();if(e&&e.target){var btn=e.target;var orig=btn.textContent;btn.textContent='✓ Cambiata!';setTimeout(function(){btn.textContent=orig;updateSettingsUI();},1500);}}
+function goto(id){document.querySelectorAll('.screen').forEach(function(s){s.classList.add('hidden');});var el=document.getElementById('screen-'+id);if(el)el.classList.remove('hidden');if(id==='main')renderMain();if(id==='quiz')renderQuiz();}
 </script>
 <script>
 function buildPortraitSVG(a,size){
@@ -523,36 +415,26 @@ function buildPortraitSVG(a,size){
   return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 100 100" style="border-radius:50%;box-shadow:0 3px 12px rgba(0,0,0,0.35);border:2px solid '+a.accent+'40;display:block"><defs><linearGradient id="bg'+a.id+'" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="'+p.bg[0]+'"/><stop offset="100%" stop-color="'+p.bg[1]+'"/></linearGradient></defs><circle cx="50" cy="50" r="50" fill="url(#bg'+a.id+')"/><ellipse cx="50" cy="88" rx="14" ry="16" fill="'+p.skin+'"/><ellipse cx="50" cy="108" rx="36" ry="20" fill="'+p.bg[0]+'"/><ellipse cx="50" cy="52" rx="22" ry="26" fill="'+p.skin+'"/>'+hair+beard+'<ellipse cx="41" cy="51" rx="3.5" ry="4" fill="#1a1010"/><ellipse cx="59" cy="51" rx="3.5" ry="4" fill="#1a1010"/><circle cx="42.5" cy="50" r="1.2" fill="white" opacity="0.8"/><circle cx="60.5" cy="50" r="1.2" fill="white" opacity="0.8"/><path d="M37,44 Q41,41 45,44" stroke="'+p.hairCol+'" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M55,44 Q59,41 63,44" stroke="'+p.hairCol+'" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M43,68 Q50,73 57,68" stroke="'+p.lipCol+'" stroke-width="2" fill="none" stroke-linecap="round"/>'+earring+glasses+'</svg>';
 }
 
-function renderQuiz(){
-  var step=QUIZ_STEPS[quizStep];
-  document.getElementById('quiz-progress').style.width=((quizStep/QUIZ_STEPS.length)*100)+'%';
-  document.getElementById('quiz-question').textContent=step.q;
-  document.getElementById('quiz-subtitle').textContent=step.sub;
-  document.getElementById('quiz-options').innerHTML=step.opts.map(function(o){return '<button class="quiz-option" onclick="answerQuiz(\''+step.id+'\',\''+o.v+'\')"><span style="font-size:26px;display:block;margin-bottom:7px">'+o.i+'</span>'+o.l+'</button>';}).join('');
-}
+function renderQuiz(){var step=QUIZ_STEPS[quizStep];document.getElementById('quiz-progress').style.width=((quizStep/QUIZ_STEPS.length)*100)+'%';document.getElementById('quiz-question').textContent=step.q;document.getElementById('quiz-subtitle').textContent=step.sub;document.getElementById('quiz-options').innerHTML=step.opts.map(function(o){return '<button class="quiz-option" onclick="answerQuiz(\''+step.id+'\',\''+o.v+'\')"><span style="font-size:26px;display:block;margin-bottom:7px">'+o.i+'</span>'+o.l+'</button>';}).join('');}
 function answerQuiz(stepId,value){quizAnswers[stepId]=value;if(quizStep<QUIZ_STEPS.length-1){quizStep++;renderQuiz();}else{computeMatches();goto('swipe');}}
 function quizBack(){if(quizStep>0){quizStep--;renderQuiz();}else goto('agegate');}
 
 function computeMatches(){
   var sc={};ALIASES.forEach(function(a){sc[a.id]=0;});
   var mood=quizAnswers.mood,topic=quizAnswers.topic,style=quizAnswers.style;
-  // Mood
   if(mood==='listen'){sc[7]+=3;sc[2]+=2;sc[8]+=2;sc[14]+=2;}
   if(mood==='fun'){sc[1]+=3;sc[4]+=2;sc[11]+=2;}
   if(mood==='reflect'){sc[5]+=3;sc[3]+=2;sc[6]+=2;sc[13]+=2;}
   if(mood==='grow'){sc[12]+=3;sc[14]+=2;sc[13]+=2;}
-  // Topic
   if(topic==='love'){sc[9]+=3;sc[10]+=3;sc[8]+=2;}
   if(topic==='work'){sc[12]+=3;sc[1]+=1;}
   if(topic==='wellness'){sc[14]+=3;sc[7]+=2;sc[2]+=1;}
   if(topic==='life'){sc[4]+=2;sc[6]+=2;sc[11]+=2;sc[5]+=2;}
-  // Style
   if(style==='warm'){sc[8]+=2;sc[2]+=2;sc[7]+=2;}
   if(style==='direct'){sc[12]+=2;sc[1]+=2;}
   if(style==='deep'){sc[5]+=2;sc[6]+=2;sc[3]+=2;sc[13]+=2;}
   if(style==='light'){sc[1]+=2;sc[4]+=2;sc[11]+=1;}
-  swipeMatches=ALIASES.slice().sort(function(a,b){return sc[b.id]-sc[a.id];}).slice(0,3);
-  swipeIdx=0;renderSwipe();
+  swipeMatches=ALIASES.slice().sort(function(a,b){return sc[b.id]-sc[a.id];}).slice(0,3);swipeIdx=0;renderSwipe();
 }
 
 function renderSwipe(){
@@ -562,40 +444,22 @@ function renderSwipe(){
   document.getElementById('swipe-portrait-wrap').innerHTML=buildPortraitSVG(a,86);
   document.getElementById('swipe-name').textContent=a.name+', '+a.age;
   var orig=document.getElementById('swipe-origin');orig.style.color=a.accent;orig.textContent=a.origin;
-  document.getElementById('swipe-personality').textContent=a.personality;
+  document.getElementById('swipe-personality').textContent=a.personality.substring(0,120)+'...';
   var tag=document.getElementById('swipe-goal-tag');tag.textContent=a.goal;tag.style.background=a.accent+'22';tag.style.borderColor=a.accent+'66';tag.style.color='white';
-  document.getElementById('swipe-yes-btn').style.borderColor=a.accent+'88';
-  document.getElementById('swipe-yes-btn').style.background=a.accent+'22';
-  document.getElementById('swipe-check').setAttribute('stroke',a.accent);
-  currentAlias=a;
+  document.getElementById('swipe-yes-btn').style.borderColor=a.accent+'88';document.getElementById('swipe-yes-btn').style.background=a.accent+'22';
+  document.getElementById('swipe-check').setAttribute('stroke',a.accent);currentAlias=a;
 }
 function swipe(dir){
   var card=document.getElementById('swipe-card');
   card.style.transform=dir==='right'?'translateX(120%) rotate(20deg)':'translateX(-120%) rotate(-20deg)';
-setTimeout(function(){card.style.transform='none';card.style.transition='none';setTimeout(function(){card.style.transition='';},50);if(dir==='right'){completeMicPerm();if(currentAlias)setTimeout(function(){startChat(currentAlias.id);},100);}else{swipeIdx++;renderSwipe();}},400);}
+  setTimeout(function(){card.style.transform='none';card.style.transition='none';setTimeout(function(){card.style.transition='';},50);if(dir==='right'){completeMicPerm();if(currentAlias)setTimeout(function(){startChat(currentAlias.id);},100);}else{swipeIdx++;renderSwipe();}},400);
+}
 function completeMicPerm(){localStorage.setItem('bz_onboarded','1');goto('main');}
 
 function renderMain(){
-  if(navigator.geolocation){
-    navigator.geolocation.getCurrentPosition(function(pos){
-      fetch('https://api.open-meteo.com/v1/forecast?latitude='+pos.coords.latitude+'&longitude='+pos.coords.longitude+'&current=weathercode,temperature_2m')
-        .then(function(r){return r.json();}).then(function(d){
-          var desc='sereno',code=d.current.weathercode;
-          if(code>=1&&code<=3)desc='nuvoloso';if(code>=51)desc='pioggia';if(code>=71)desc='neve';if(code>=80)desc='temporale';
-          document.getElementById('weather-label').textContent=desc+', '+Math.round(d.current.temperature_2m)+' gradi';
-        }).catch(function(){});
-    });
-  }
+  if(navigator.geolocation){navigator.geolocation.getCurrentPosition(function(pos){fetch('https://api.open-meteo.com/v1/forecast?latitude='+pos.coords.latitude+'&longitude='+pos.coords.longitude+'&current=weathercode,temperature_2m').then(function(r){return r.json();}).then(function(d){var desc='sereno',code=d.current.weathercode;if(code>=1&&code<=3)desc='nuvoloso';if(code>=51)desc='pioggia';if(code>=71)desc='neve';if(code>=80)desc='temporale';document.getElementById('weather-label').textContent=desc+', '+Math.round(d.current.temperature_2m)+'\u00b0';}).catch(function(){});});}
   updateCounters();
-  document.getElementById('alias-grid').innerHTML=ALIASES.map(function(a){
-    var hasH=!!(histories[a.id]&&histories[a.id].length);
-    return '<button class="alias-card" onclick="startChat('+a.id+')" style="border-color:'+(hasH?a.accent+'aa':'transparent')+'">'
-      +(hasH?'<div class="dot" style="background:'+a.accent+';box-shadow:0 0 6px '+a.accent+'"></div>':'')
-      +'<div style="display:flex;justify-content:center;margin-bottom:7px">'+buildPortraitSVG(a,46)+'</div>'
-      +'<div style="font-weight:bold;font-size:13px">'+a.name+'</div>'
-      +'<div style="font-size:10px;opacity:0.55;margin-top:1px">'+a.age+' · '+a.origin.split('/')[0].trim()+'</div>'
-+'<div style="font-size:9px;background:rgba(0,0,0,0.35);border-radius:6px;padding:3px 6px;margin-top:3px;line-height:1.3;color:rgba(255,255,255,0.85)">'+a.goal+'</div>'      +'</button>';
-  }).join('');
+  document.getElementById('alias-grid').innerHTML=ALIASES.map(function(a){var hasH=!!(histories[a.id]&&histories[a.id].length);return '<button class="alias-card" onclick="startChat('+a.id+')" style="border-color:'+(hasH?a.accent+'aa':'transparent')+'">'+(hasH?'<div class="dot" style="background:'+a.accent+';box-shadow:0 0 6px '+a.accent+'"></div>':'')+'<div style="display:flex;justify-content:center;margin-bottom:7px">'+buildPortraitSVG(a,46)+'</div><div style="font-weight:bold;font-size:13px">'+a.name+'</div><div style="font-size:10px;opacity:0.55;margin-top:1px">'+a.age+' · '+a.origin.split('/')[0].trim()+'</div><div style="font-size:9px;background:rgba(0,0,0,0.35);border-radius:6px;padding:3px 6px;margin-top:3px;color:rgba(255,255,255,0.85)">'+a.goal+'</div></button>';}).join('');
 }
 
 function startChat(aliasId){
@@ -603,24 +467,10 @@ function startChat(aliasId){
   currentAlias=ALIASES.filter(function(a){return a.id===aliasId;})[0];
   messages=histories[aliasId]?histories[aliasId].slice():[];
   var h=new Date().getHours();
-  var timeGreet=h>=5&&h<12?'mattina':h>=12&&h<17?'pomeriggio':h>=17&&h<21?'sera':'notte';
-  var greetings={
-    1:'Aho! Sei arrivato proprio al momento giusto. Come va?',
-    2:'Ciao tesoro, siediti qui con me. Raccontami tutto.',
-    3:'Ah, benvenuto nel parco. Ho visto tanti film su momenti come questo.',
-    4:'Welcome, friend. Pull up a bench. The park is peaceful today.',
-    5:'Ah, sei arrivato. Il silenzio del parco e un buon inizio.',
-    6:'Siediti. Il parco sa quando hai bisogno di fermarti.',
-    7:'Ciao. Sono qui, senza fretta.',
-    8:'Amore mio, finalmente! Come stai, dimmi tutto.',
-    9:'Ciao. Il parco di '+timeGreet+' ha qualcosa di speciale, no?',
-    10:'Il vento porta le parole giuste. Cosa hai nel cuore?',
-    11:'Oi! Bella '+timeGreet+'. Siediti, non c e fretta.',
-    12:'Good. You showed up. That\'s already something. What\'s going on?',
-    13:'Ciao. Siediti. Chi sei quando non stai recitando nessun ruolo?',
-    14:'Ciao. Sono qui. Cosa c e sotto la superficie in questo momento?'
-  };
-  var greeting=memory.userName?greetings[aliasId].replace('Ciao','Ciao '+memory.userName):greetings[aliasId];
+  var tod=h>=5&&h<12?'mattina':h>=12&&h<17?'pomeriggio':h>=17&&h<21?'sera':'notte';
+  var greetings={1:'Aho! Sei arrivato proprio al momento giusto. Come va?',2:'Ciao tesoro, siediti qui con me. Raccontami tutto.',3:'Ah, benvenuto nel parco. Ho visto tanti film su momenti come questo.',4:'Welcome, my friend. The park is peaceful today. Sit with me.',5:'Ah, sei arrivato. Il silenzio del parco e un buon inizio.',6:'Siediti. Il parco sa quando hai bisogno di fermarti.',7:'Ciao. Sono qui, senza fretta. Come stai davvero?',8:'Amore mio, finalmente! Come stai, dimmi tutto.',9:'Ciao. Il parco di '+tod+' ha qualcosa di speciale, no?',10:'Il vento porta le parole giuste. Cosa hai nel cuore?',11:'Oi! Bella '+tod+'. Siediti, non c e fretta.',12:'Good. You showed up. That\'s already something. What\'s going on?',13:'Ciao. Siediti. Chi sei quando non stai recitando nessun ruolo?',14:'Ciao. Sono qui. Dove senti la tensione adesso, nel corpo?'};
+  var greeting=greetings[aliasId]||('Ciao! Sono '+currentAlias.name+'. Come stai?');
+  if(memory.userName)greeting=greeting.replace('Ciao!','Ciao '+memory.userName+'!');
   if(!messages.length)messages=[{role:'assistant',content:greeting}];
   document.getElementById('chat-alias-name').innerHTML=currentAlias.name+' <span style="font-size:9px;font-weight:normal;opacity:0.5">'+currentAlias.origin+'</span>';
   document.getElementById('chat-alias-goal').textContent=currentAlias.goal;
@@ -633,31 +483,19 @@ function startChat(aliasId){
   var sbH={'Content-Type':'application/json','apikey':SUPABASE_KEY};
   if(token)sbH['Authorization']='Bearer '+token;
   fetch(SUPABASE_URL+'/rest/v1/memory?user_id=eq.'+userId+'&alias_id=eq.'+aliasId+'&select=facts,user_name,conversation_count',{headers:sbH})
-    .then(function(r){return r.json();}).then(function(data){
-      if(data&&data[0]){
-        if(data[0].user_name)memory.userName=data[0].user_name;
-        if(data[0].facts&&data[0].facts.length)memory.facts=data[0].facts;
-        memory.convCount=data[0].conversation_count||0;
-      }
-      renderMessages();
-    }).catch(function(){renderMessages();});
+    .then(function(r){return r.json();}).then(function(data){if(data&&data[0]){if(data[0].user_name)memory.userName=data[0].user_name;if(data[0].facts&&data[0].facts.length)memory.facts=data[0].facts;memory.convCount=data[0].conversation_count||0;}renderMessages();}).catch(function(){renderMessages();});
 }
 
 function renderMessages(){
   var c=document.getElementById('chat-messages');c.innerHTML='';
   messages.forEach(function(msg){addBubble(msg);});
   var starters=STARTERS[currentAlias.goal]||[];
-  if(messages.length<=1&&starters.length){
-    var div=document.createElement('div');div.style.padding='10px 12px';
-    div.innerHTML='<p style="color:rgba(255,255,255,0.42);font-size:11px;margin-bottom:7px">Inizia con...</p>'+starters.map(function(s){return '<button class="starter-btn" onclick="sendMessage(\''+s.replace(/'/g,"\\'")+'\')">'+s+'</button>';}).join('');
-    c.appendChild(div);
-  }
+  if(messages.length<=1&&starters.length){var div=document.createElement('div');div.style.padding='10px 12px';div.innerHTML='<p style="color:rgba(255,255,255,0.42);font-size:11px;margin-bottom:7px">Inizia con...</p>'+starters.map(function(s){return '<button class="starter-btn" onclick="sendMessage(\''+s.replace(/'/g,"\\'")+'\')">'+s+'</button>';}).join('');c.appendChild(div);}
   c.scrollTop=c.scrollHeight;
 }
 
 function addBubble(msg){
-  var c=document.getElementById('chat-messages');
-  var isUser=msg.role==='user';
+  var c=document.getElementById('chat-messages');var isUser=msg.role==='user';
   var div=document.createElement('div');div.className='bubble '+(isUser?'user':'alias');
   if(!isUser){var av=document.createElement('div');av.className='bubble-avatar';av.innerHTML=buildPortraitSVG(currentAlias,30);div.appendChild(av);}
   var text=document.createElement('div');text.className='bubble-text';text.textContent=msg.content;div.appendChild(text);
@@ -665,8 +503,7 @@ function addBubble(msg){
 }
 
 function showTyping(){
-  var c=document.getElementById('chat-messages');
-  var div=document.createElement('div');div.className='bubble alias';div.id='typing-indicator';
+  var c=document.getElementById('chat-messages');var div=document.createElement('div');div.className='bubble alias';div.id='typing-indicator';
   var av=document.createElement('div');av.className='bubble-avatar';av.innerHTML=buildPortraitSVG(currentAlias,30);div.appendChild(av);
   var dots=document.createElement('div');dots.style.cssText='background:rgba(10,10,40,0.88);border-radius:18px 18px 18px 5px;';
   dots.innerHTML='<div class="typing-dots"><div class="typing-dot" style="animation-delay:0s"></div><div class="typing-dot" style="animation-delay:0.22s"></div><div class="typing-dot" style="animation-delay:0.44s"></div></div>';
@@ -675,40 +512,26 @@ function showTyping(){
 function hideTyping(){var t=document.getElementById('typing-indicator');if(t)t.remove();}
 
 function sendMessage(text){
-  var input=document.getElementById('chat-input');
-  var content=text||input.value.trim();
-  if(!content||!currentAlias)return;
-  if(getMsgsLeft()===0){showPaywall();return;}
+  var input=document.getElementById('chat-input');var content=text||input.value.trim();
+  if(!content||!currentAlias)return;if(getMsgsLeft()===0){showPaywall();return;}
   input.value='';document.getElementById('error-display').innerHTML='';
   var userMsg={role:'user',content:content};messages.push(userMsg);addBubble(userMsg);
   var sd=document.querySelector('#chat-messages div[style]');if(sd)sd.remove();
   showTyping();
-  var h=new Date().getHours();
-  var tod=h>=5&&h<12?'mattina':h>=12&&h<17?'pomeriggio':h>=17&&h<21?'sera':'notte';
+  var h=new Date().getHours();var tod=h>=5&&h<12?'mattina':h>=12&&h<17?'pomeriggio':h>=17&&h<21?'sera':'notte';
   var lc=LANG_CONFIG[userLang]||LANG_CONFIG['it'];
-  // Memoria e contesto
   var memCtx='';
-  if(memory.facts&&memory.facts.length)memCtx='\nCose che sai di questa persona: '+memory.facts.slice(-10).join('. ')+'.';
+  if(memory.facts&&memory.facts.length)memCtx='\nCose che sai di questa persona: '+memory.facts.slice(-8).join('. ')+'.';
   if(memory.userName)memCtx+='\nSi chiama: '+memory.userName+'.';
-  // Evoluzione relazione
   var convLevel=memory.convCount||0;
-  var tone='';
-  if(convLevel<5)tone='Sei cordiale ma state ancora conoscendovi. Non essere troppo intimo.';
-  else if(convLevel<20)tone='Vi conoscete gia. Puoi fare riferimento a cose dette in passato. Sii piu caldo e personale.';
-  else tone='Siete amici di lunga data. Sei molto intimo, usi il nome quando e naturale, ricordi episodi specifici.';
-  // Momento del giorno contestuale
-  var timeCtx='E '+tod+'.';
-  if(tod==='notte')timeCtx='E notte fonda. Il parco e silenzioso e deserto. Solo voi due.';
-  if(tod==='sera')timeCtx='E sera. Il parco si sta svuotando. I lampioni si stanno accendendo.';
-  var system='Sei '+currentAlias.name+', '+currentAlias.age+' anni, da '+currentAlias.origin+'.\nPersonalita: '+currentAlias.personality+'\n'+tone+'\n'+lc.respond+'\n'+lc.park+'\n'+timeCtx+memCtx;
-  fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:300,system:system,messages:messages.slice(-10),userId:userId,aliasId:currentAlias.id,extractMemory:true})})
+  var tone=convLevel<5?'State ancora conoscendovi. Non essere troppo intimo.':convLevel<20?'Vi conoscete gia. Puoi fare riferimento a cose dette in passato. Sii piu caldo.':'Siete amici di lunga data. Sei molto intimo, usi il nome quando naturale.';
+  var timeCtx=tod==='notte'?'E notte fonda. Il parco e silenzioso e deserto. Solo voi due.':tod==='sera'?'E sera. I lampioni del parco si stanno accendendo.':'E '+tod+' nel parco.';
+  var system='Sei '+currentAlias.name+', '+currentAlias.age+' anni, da '+currentAlias.origin+'.\n'+currentAlias.personality+'\n'+tone+'\n'+lc.respond+'\n'+lc.park+'\n'+timeCtx+memCtx;
+  fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:300,system:system,messages:messages.slice(-10),userId:userId,aliasId:currentAlias.id,extractMemory:true})})
     .then(function(r){return r.json().then(function(data){return{ok:r.ok,data:data};});})
     .then(function(result){
-      hideTyping();
-      if(!result.ok)throw new Error(result.data&&result.data.error?result.data.error.message:'Errore API');
-      var reply=result.data.content&&result.data.content[0]?result.data.content[0].text:null;
-      if(!reply)throw new Error('Nessuna risposta');
+      hideTyping();if(!result.ok)throw new Error(result.data&&result.data.error?result.data.error.message:'Errore API');
+      var reply=result.data.content&&result.data.content[0]?result.data.content[0].text:null;if(!reply)throw new Error('Nessuna risposta');
       var assistantMsg={role:'assistant',content:reply};messages.push(assistantMsg);addBubble(assistantMsg);
       histories[currentAlias.id]=messages.slice(-40);localStorage.setItem('bz_hist',JSON.stringify(histories));
       if(!isPremium){msgCount++;localStorage.setItem('bz_msgs',msgCount);}
@@ -717,106 +540,306 @@ function sendMessage(text){
 }
 
 function clearHistory(){
-  if(!currentAlias)return;
-  delete histories[currentAlias.id];localStorage.setItem('bz_hist',JSON.stringify(histories));
-  var h=new Date().getHours();
-  var tod=h>=5&&h<12?'mattina':h>=12&&h<17?'pomeriggio':h>=17&&h<21?'sera':'notte';
-  messages=[{role:'assistant',content:'Ricominciamo da capo. Buon'+' '+tod+'. Come stai?'}];
-  renderMessages();
+  if(!currentAlias)return;delete histories[currentAlias.id];localStorage.setItem('bz_hist',JSON.stringify(histories));
+  var h=new Date().getHours();var tod=h>=5&&h<12?'mattina':h>=12&&h<17?'pomeriggio':h>=17&&h<21?'sera':'notte';
+  messages=[{role:'assistant',content:'Ricominciamo. Buon'+' '+tod+'. Come stai?'}];renderMessages();
 }
 </script>
 <script>
 (function(){
   var canvas=document.getElementById('park-bg');
   var ctx=canvas.getContext('2d');
-  var animFrame=0;
-function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;draw();}
-  window.addEventListener('resize',resize);resize();
-  var h0=new Date().getHours();
-  animate();  function draw(){
-    animFrame++;
-    var h=new Date().getHours(),W=canvas.width,H=canvas.height;
-    var isNight=h<5||h>=21,isSunset=h>=17&&h<21,isDay=!isNight&&!isSunset;
-    var sc=Math.min(W,H)/700;
-    var grad=ctx.createLinearGradient(0,0,0,H*0.72);
-    if(h>=5&&h<12){grad.addColorStop(0,'#7ec8e3');grad.addColorStop(0.4,'#a8ddf0');grad.addColorStop(0.8,'#d4eef7');grad.addColorStop(1,'#f5f0d0');}
-    else if(h>=12&&h<17){grad.addColorStop(0,'#2980b9');grad.addColorStop(0.4,'#5ba3d0');grad.addColorStop(0.8,'#87c0e0');grad.addColorStop(1,'#c8e8f5');}
-    else if(isSunset){grad.addColorStop(0,'#1a1a3e');grad.addColorStop(0.2,'#8b1a1a');grad.addColorStop(0.5,'#e05020');grad.addColorStop(0.75,'#f08030');grad.addColorStop(1,'#ffc060');}
-    else{grad.addColorStop(0,'#050510');grad.addColorStop(0.5,'#0a0a20');grad.addColorStop(1,'#151535');}
-    ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);
-    if(isDay){
-      function drawCloud(cx,cy,s,alpha){ctx.save();ctx.globalAlpha=alpha;ctx.fillStyle='#fff';[[0,0,s],[s*0.6,s*0.15,s*0.75],[-(s*0.55),s*0.1,s*0.7],[s*0.15,-(s*0.3),s*0.65],[-(s*0.2),-(s*0.25),s*0.5]].forEach(function(c){ctx.beginPath();ctx.arc(cx+c[0],cy+c[1],c[2],0,Math.PI*2);ctx.fill();});ctx.restore();}
-      drawCloud(W*0.12,H*0.08,28*sc,0.85);drawCloud(W*0.42,H*0.05,22*sc,0.75);drawCloud(W*0.72,H*0.10,32*sc,0.80);drawCloud(W*0.88,H*0.06,18*sc,0.70);
-      var sunX=h<12?W*0.2:W*0.75,sunY=H*0.1;
-      var sg=ctx.createRadialGradient(sunX,sunY,5,sunX,sunY,40*sc);sg.addColorStop(0,'rgba(255,240,100,0.6)');sg.addColorStop(1,'rgba(255,200,0,0)');
-      ctx.fillStyle=sg;ctx.beginPath();ctx.arc(sunX,sunY,40*sc,0,Math.PI*2);ctx.fill();
-      ctx.beginPath();ctx.arc(sunX,sunY,16*sc,0,Math.PI*2);ctx.fillStyle='#ffd700';ctx.fill();
-      ctx.beginPath();ctx.arc(sunX,sunY,12*sc,0,Math.PI*2);ctx.fillStyle='#ffec40';ctx.fill();
+  var t=0;
+
+  function drawScene(){
+    t++;
+    var W=canvas.width,H=canvas.height;
+    var h=new Date().getHours();
+    var isNight=h<5||h>=22,isDawn=h>=5&&h<8,isMorning=h>=8&&h<12,isAfternoon=h>=12&&h<17,isSunset=h>=17&&h<22;
+
+    // SKY
+    var sky=ctx.createLinearGradient(0,0,0,H*0.65);
+    if(isNight){sky.addColorStop(0,'#020408');sky.addColorStop(0.6,'#050a18');sky.addColorStop(1,'#0a1020');}
+    else if(isDawn){sky.addColorStop(0,'#1a0a2e');sky.addColorStop(0.3,'#8b2252');sky.addColorStop(0.7,'#e07040');sky.addColorStop(1,'#f0a060');}
+    else if(isMorning){sky.addColorStop(0,'#4a90c4');sky.addColorStop(0.4,'#7ab8e0');sky.addColorStop(0.8,'#b8dcf0');sky.addColorStop(1,'#e8f4e0');}
+    else if(isAfternoon){sky.addColorStop(0,'#1a5a9a');sky.addColorStop(0.4,'#4a8ac0');sky.addColorStop(0.8,'#80b8d8');sky.addColorStop(1,'#c0dce8');}
+    else{sky.addColorStop(0,'#0a0820');sky.addColorStop(0.2,'#4a1a30');sky.addColorStop(0.5,'#c03820');sky.addColorStop(0.8,'#e87030');sky.addColorStop(1,'#f8c060');}
+    ctx.fillStyle=sky;ctx.fillRect(0,0,W,H);
+
+    // STARS at night
+    if(isNight||isDawn){
+      var stars=[[0.05,0.04],[0.12,0.08],[0.22,0.03],[0.31,0.09],[0.40,0.02],[0.51,0.06],[0.62,0.03],[0.70,0.09],[0.79,0.04],[0.88,0.07],[0.95,0.02],[0.16,0.15],[0.45,0.12],[0.74,0.14],[0.28,0.07],[0.85,0.12]];
+      stars.forEach(function(s){
+        var twinkle=0.5+0.5*Math.sin(t*0.05+s[0]*10);
+        ctx.beginPath();ctx.arc(s[0]*W,s[1]*H,1.5,0,Math.PI*2);
+        ctx.fillStyle='rgba(255,255,255,'+twinkle+')';ctx.fill();
+      });
+      // Moon
+      var mx=W*0.8,my=H*0.12,mr=16;
+      var moonGlow=ctx.createRadialGradient(mx,my,0,mx,my,mr*3);
+      moonGlow.addColorStop(0,'rgba(220,220,180,0.3)');moonGlow.addColorStop(1,'rgba(220,220,180,0)');
+      ctx.fillStyle=moonGlow;ctx.beginPath();ctx.arc(mx,my,mr*3,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle='#f0ead0';ctx.beginPath();ctx.arc(mx,my,mr,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle=isNight?'#040810':'#1a0a2e';ctx.beginPath();ctx.arc(mx+mr*0.35,my-mr*0.2,mr*0.85,0,Math.PI*2);ctx.fill();
     }
-    if(isNight){
-      [[0.08,0.05],[0.19,0.03],[0.33,0.08],[0.52,0.04],[0.64,0.10],[0.78,0.03],[0.44,0.02],[0.26,0.07],[0.57,0.09],[0.87,0.05],[0.71,0.06]].forEach(function(s){ctx.beginPath();ctx.arc(s[0]*W,s[1]*H,1.8,0,Math.PI*2);ctx.fillStyle='rgba(255,255,255,0.9)';ctx.fill();});
-      ctx.beginPath();ctx.arc(W*0.82,H*0.1,18*sc,0,Math.PI*2);ctx.fillStyle='#f5f0d0';ctx.fill();
-      ctx.beginPath();ctx.arc(W*0.85,H*0.09,14*sc,0,Math.PI*2);ctx.fillStyle='#050510';ctx.fill();
+
+    // SUN
+    if(!isNight){
+      var sx=isMorning?W*0.15:isAfternoon?W*0.78:W*0.5;
+      var sy=isMorning?H*0.18:isAfternoon?H*0.15:(isDawn?H*0.35:H*0.12);
+      var sunColor=isDawn?'#ffb040':isSunset?'#ff6020':'#ffe060';
+      var sunGlow=ctx.createRadialGradient(sx,sy,0,sx,sy,60);
+      sunGlow.addColorStop(0,'rgba(255,220,100,0.5)');sunGlow.addColorStop(0.5,'rgba(255,180,50,0.15)');sunGlow.addColorStop(1,'rgba(255,150,0,0)');
+      ctx.fillStyle=sunGlow;ctx.beginPath();ctx.arc(sx,sy,60,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle=sunColor;ctx.beginPath();ctx.arc(sx,sy,14,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle='rgba(255,255,220,0.9)';ctx.beginPath();ctx.arc(sx,sy,9,0,Math.PI*2);ctx.fill();
     }
-    var grassY=H*0.68;
-    ctx.beginPath();ctx.ellipse(W*0.2,grassY+10,W*0.35,H*0.12,0,0,Math.PI*2);ctx.fillStyle=isNight?'#0a1a08':isSunset?'#1a3010':'#3a8020';ctx.fill();
-    ctx.beginPath();ctx.ellipse(W*0.8,grassY+15,W*0.3,H*0.10,0,0,Math.PI*2);ctx.fillStyle=isNight?'#081508':isSunset?'#152808':'#2e7018';ctx.fill();
-    ctx.fillStyle=isNight?'#081408':isSunset?'#102008':'#28681a';ctx.fillRect(0,grassY,W,H-grassY);
-    ctx.fillStyle=isNight?'#0c1c0c':isSunset?'#162e10':'#348022';ctx.fillRect(0,grassY,W,H*0.06);
-    ctx.fillStyle=isNight?'#102410':isSunset?'#1e3a14':'#44a02c';ctx.fillRect(0,grassY,W,H*0.025);
-    for(var gi=0;gi<22;gi++){var gx=(gi/22)*W*1.05,gy2=grassY+Math.sin(gi*3.7)*4;ctx.strokeStyle=isNight?'#142814':isSunset?'#1e3c12':'#50b030';ctx.lineWidth=1.5;for(var blade=0;blade<3;blade++){ctx.beginPath();ctx.moveTo(gx+blade*4-4,gy2+2);ctx.quadraticCurveTo(gx+blade*4-2+Math.sin(gi+blade)*3,gy2-7,gx+blade*4+Math.sin(gi+blade)*5,gy2-12);ctx.stroke();}}
-    ctx.beginPath();ctx.moveTo(W*0.35,H);ctx.lineTo(W*0.65,H);ctx.lineTo(W*0.58,grassY+H*0.02);ctx.lineTo(W*0.42,grassY+H*0.02);ctx.closePath();ctx.fillStyle=isNight?'rgba(40,35,20,0.6)':isSunset?'rgba(70,50,20,0.5)':'rgba(200,175,120,0.45)';ctx.fill();
-    function drawBush(x,y,s,c1,c2,fc){ctx.beginPath();ctx.ellipse(x,y,s*1.4,s*0.9,0,0,Math.PI*2);ctx.fillStyle=c1;ctx.fill();ctx.beginPath();ctx.ellipse(x-s*0.7,y-s*0.2,s*0.9,s*0.7,0,0,Math.PI*2);ctx.fillStyle=c2;ctx.fill();ctx.beginPath();ctx.ellipse(x+s*0.7,y-s*0.15,s*0.85,s*0.65,0,0,Math.PI*2);ctx.fillStyle=c2;ctx.fill();ctx.beginPath();ctx.ellipse(x,y-s*0.5,s*0.8,s*0.6,0,0,Math.PI*2);ctx.fillStyle=c2;ctx.fill();if(isDay&&fc){for(var fi=0;fi<5;fi++){var fx2=x+Math.cos(fi*1.26)*s*0.8,fy2=y+Math.sin(fi*1.26)*s*0.5-s*0.2;ctx.beginPath();ctx.arc(fx2,fy2,s*0.18,0,Math.PI*2);ctx.fillStyle=fc;ctx.fill();ctx.beginPath();ctx.arc(fx2,fy2,s*0.09,0,Math.PI*2);ctx.fillStyle='#fff8a0';ctx.fill();}}}
-    var b1=isNight?'#0a1a08':isSunset?'#142208':'#2a6018',b2=isNight?'#0e2210':isSunset?'#1c3010':'#368024';
-    drawBush(W*0.07,grassY+H*0.03,22*sc,b1,b2,'#ff9090');drawBush(W*0.17,grassY+H*0.04,16*sc,b2,b1,'#ffb0d0');drawBush(W*0.27,grassY+H*0.035,14*sc,b1,b2,'#90d090');drawBush(W*0.73,grassY+H*0.035,15*sc,b2,b1,'#ffb060');drawBush(W*0.83,grassY+H*0.04,18*sc,b1,b2,'#d090ff');drawBush(W*0.93,grassY+H*0.03,20*sc,b2,b1,'#ff9090');drawBush(W*0.50,grassY+H*0.06,12*sc,b1,b2,'#90c0ff');
-    if(!isNight){[[0.22,0.73,'#ff8080'],[0.27,0.76,'#fff'],[0.32,0.74,'#ffb0d0'],[0.56,0.74,'#c0e0ff'],[0.61,0.76,'#fff'],[0.66,0.74,'#ffb0d0'],[0.71,0.77,'#ffe080'],[0.76,0.75,'#d0a0ff']].forEach(function(f){var fx3=f[0]*W,fy3=f[1]*H;ctx.strokeStyle='#50a030';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(fx3,fy3+6);ctx.lineTo(fx3,fy3+2);ctx.stroke();for(var p=0;p<5;p++){ctx.beginPath();ctx.ellipse(fx3+Math.cos(p*1.26)*5,fy3+Math.sin(p*1.26)*5,4,2.5,p*1.26,0,Math.PI*2);ctx.fillStyle=f[2];ctx.fill();}ctx.beginPath();ctx.arc(fx3,fy3,2.5,0,Math.PI*2);ctx.fillStyle='#ffe840';ctx.fill();});}
-    var lit=isNight||isSunset,lc2=isNight?'#ffe060':'#ffd040';
-    function drawLamp(x,y){ctx.strokeStyle='#2a2a2a';ctx.lineWidth=6*sc;ctx.beginPath();ctx.moveTo(x,y+H*0.25);ctx.lineTo(x,y);ctx.stroke();ctx.beginPath();ctx.moveTo(x,y);ctx.quadraticCurveTo(x+5*sc,y-22*sc,x+28*sc,y-24*sc);ctx.strokeStyle='#2a2a2a';ctx.lineWidth=5*sc;ctx.stroke();ctx.fillStyle='#1a1a1a';ctx.beginPath();ctx.moveTo(x+16*sc,y-28*sc);ctx.lineTo(x+40*sc,y-28*sc);ctx.lineTo(x+38*sc,y-18*sc);ctx.lineTo(x+18*sc,y-18*sc);ctx.closePath();ctx.fill();if(lit){var glow=ctx.createRadialGradient(x+28*sc,y-23*sc,3,x+28*sc,y-23*sc,45*sc);glow.addColorStop(0,'rgba(255,220,80,0.5)');glow.addColorStop(1,'rgba(255,200,50,0)');ctx.beginPath();ctx.arc(x+28*sc,y-23*sc,45*sc,0,Math.PI*2);ctx.fillStyle=glow;ctx.fill();}ctx.beginPath();ctx.ellipse(x+28*sc,y-20*sc,6*sc,4*sc,0,0,Math.PI*2);ctx.fillStyle=lit?lc2:'#888';ctx.fill();}
-    function drawTree(x,y,s,variant){var tc=isNight?['#081808','#0c2010','#102814','#0e2210']:isSunset?['#1a3008','#223810','#1e3408','#283e0c']:['#1a5208','#228810','#2a9c14','#1e7010','#30a018','#38b820'];var tg=ctx.createLinearGradient(x-6*s,0,x+6*s,0);tg.addColorStop(0,isNight?'#120806':'#2e1606');tg.addColorStop(0.5,isNight?'#1e1008':'#4a2810');tg.addColorStop(1,isNight?'#120806':'#2e1606');ctx.fillStyle=tg;ctx.beginPath();ctx.moveTo(x-5*s,y+50*s);ctx.quadraticCurveTo(x-6*s,y+20*s,x-4*s,y);ctx.lineTo(x+4*s,y);ctx.quadraticCurveTo(x+6*s,y+20*s,x+5*s,y+50*s);ctx.closePath();ctx.fill();[[0,-15*s,42*s,50*s,0],[-(12*s),-(32*s),30*s,38*s,1],[10*s,-(38*s),26*s,34*s,2],[-(4*s),-(50*s),20*s,26*s,3],[8*s,-(20*s),22*s,30*s,4],[-(18*s),-(18*s),18*s,26*s,5]].forEach(function(lp){ctx.beginPath();ctx.ellipse(x+lp[0],y+lp[1],lp[2],lp[3],0,0,Math.PI*2);ctx.fillStyle=tc[lp[4]%tc.length];ctx.fill();ctx.strokeStyle='rgba(0,40,0,0.15)';ctx.lineWidth=1.5*s;ctx.stroke();});if(!isNight){for(var li=0;li<6;li++){var ang=li*1.047,dist=(30+li*5)*s,lx=x+Math.cos(ang)*dist,ly=y-18*s+Math.sin(ang)*dist*0.5;ctx.save();ctx.translate(lx,ly);ctx.rotate(ang+0.5);ctx.beginPath();ctx.moveTo(0,-5*s);ctx.quadraticCurveTo(6*s,0,0,5*s);ctx.quadraticCurveTo(-6*s,0,0,-5*s);ctx.fillStyle=tc[2];ctx.fill();ctx.restore();}}if(isDay&&variant===1){for(var fr=0;fr<3;fr++){var fa=fr*2.09+0.5;ctx.beginPath();ctx.arc(x+Math.cos(fa)*20*s,y-22*s+Math.sin(fa)*14*s,4*s,0,Math.PI*2);ctx.fillStyle='#ff4040';ctx.fill();}}}
-    function drawBench(x,y,s){var wood=isNight?'#3a2810':isSunset?'#4a3214':'#6b4520',wHL=isNight?'#4a3818':'#8a5a30',iron='#1a1a1a';ctx.beginPath();ctx.ellipse(x+32*s,y+32*s,38*s,8*s,0,0,Math.PI*2);ctx.fillStyle='rgba(0,0,0,0.2)';ctx.fill();[0,58].forEach(function(ox){ctx.fillStyle=iron;ctx.fillRect(x+ox*s,y,5*s,30*s);});ctx.fillStyle=iron;ctx.fillRect(x+2*s,y+18*s,58*s,4*s);for(var di=0;di<4;di++){ctx.fillStyle=wood;ctx.fillRect(x-4*s,y-28*s+di*9*s,70*s,7*s);ctx.fillStyle=wHL;ctx.fillRect(x-4*s,y-28*s+di*9*s,70*s,2*s);}[0,60].forEach(function(ox){ctx.fillStyle=iron;ctx.fillRect(x-2*s+ox*s,y-62*s,5*s,38*s);});ctx.fillStyle=iron;ctx.fillRect(x+26*s,y-62*s,5*s,38*s);[0,1].forEach(function(bi){ctx.fillStyle=wood;ctx.fillRect(x-4*s,y-57*s+bi*13*s,70*s,7*s);ctx.fillStyle=wHL;ctx.fillRect(x-4*s,y-57*s+bi*13*s,70*s,2*s);});}
-    function drawFence(x1,x2,y){ctx.fillStyle='#1a1a1a';ctx.fillRect(x1,y-4,x2-x1,4);ctx.fillRect(x1,y-18*sc,x2-x1,3);for(var fx=x1+4;fx<x2-4;fx+=22*sc){ctx.fillRect(fx,y-26*sc,3*sc,26*sc);ctx.beginPath();ctx.moveTo(fx+1.5*sc,y-30*sc);ctx.lineTo(fx+4.5*sc,y-24*sc);ctx.lineTo(fx-1.5*sc,y-24*sc);ctx.fillStyle='#2a2a2a';ctx.fill();ctx.fillStyle='#1a1a1a';}}
-    if(isDay){
-      var bOff=Math.sin(animFrame*0.02)*3;
-      [[W*0.30,H*0.15],[W*0.33,H*0.13],[W*0.65,H*0.12],[W*0.68,H*0.14]].forEach(function(b){ctx.strokeStyle='#333';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(b[0],b[1]+bOff*0.3);ctx.quadraticCurveTo(b[0]-6,b[1]-2+bOff,b[0]-12,b[1]+bOff*0.3);ctx.moveTo(b[0],b[1]+bOff*0.3);ctx.quadraticCurveTo(b[0]+6,b[1]-2+bOff*0.8,b[0]+12,b[1]+bOff*0.3);ctx.stroke();});
-      var btOff=animFrame*0.04;
-      [[0.35,0.72,'#ff80c0','#ff40a0'],[0.62,0.71,'#80c0ff','#4090ff'],[0.48,0.75,'#ffc060','#ff8020']].forEach(function(b,bi){var bx=b[0]*W+Math.sin(btOff+bi*2)*15,by=b[1]*H+Math.cos(btOff*0.7+bi)*8,wing=Math.sin(btOff*3+bi)*0.4;ctx.save();ctx.translate(bx,by);[[1,1],[-1,1]].forEach(function(side){ctx.save();ctx.scale(side[0],side[1]);ctx.beginPath();ctx.ellipse(6,-4,9,6,wing,0,Math.PI*2);ctx.fillStyle=b[2];ctx.globalAlpha=0.85;ctx.fill();ctx.beginPath();ctx.ellipse(5,4,7,5,-wing*0.5,0,Math.PI*2);ctx.fillStyle=b[3];ctx.fill();ctx.restore();});ctx.globalAlpha=1;ctx.restore();});
+
+    // CLOUDS
+    if(!isNight){
+      function drawCloud(cx,cy,sc2,alpha,col){
+        ctx.save();ctx.globalAlpha=alpha;ctx.fillStyle=col||'rgba(255,255,255,0.9)';
+        var blobs=[[0,0,sc2],[sc2*0.7,sc2*0.15,sc2*0.8],[-(sc2*0.6),-sc2*0.1,sc2*0.75],[sc2*0.15,-(sc2*0.35),sc2*0.65],[-(sc2*0.25),-(sc2*0.28),sc2*0.55]];
+        blobs.forEach(function(b){ctx.beginPath();ctx.arc(cx+b[0]+Math.sin(t*0.003+cx)*2,cy+b[1],b[2],0,Math.PI*2);ctx.fill();});
+        ctx.restore();
+      }
+      var cloudCol=isSunset?'rgba(255,180,120,0.8)':'rgba(255,255,255,0.88)';
+      drawCloud(W*0.1+Math.sin(t*0.002)*8,H*0.08,28,0.8,cloudCol);
+      drawCloud(W*0.38+Math.sin(t*0.0015+1)*10,H*0.06,22,0.7,cloudCol);
+      drawCloud(W*0.68+Math.sin(t*0.0018+2)*7,H*0.09,32,0.75,cloudCol);
+      drawCloud(W*0.88+Math.sin(t*0.002+3)*6,H*0.07,18,0.65,cloudCol);
     }
-    drawTree(W*0.03,grassY-H*0.22,sc*1.05,0);drawTree(W*0.13,grassY-H*0.15,sc*0.85,1);drawTree(W*0.22,grassY-H*0.10,sc*0.65,2);drawTree(W*0.78,grassY-H*0.10,sc*0.68,1);drawTree(W*0.87,grassY-H*0.16,sc*0.88,0);drawTree(W*0.97,grassY-H*0.22,sc*1.08,2);drawTree(W*0.42,grassY-H*0.07,sc*0.55,1);drawTree(W*0.58,grassY-H*0.07,sc*0.52,2);
-    drawLamp(W*0.15,grassY-H*0.25);drawLamp(W*0.85,grassY-H*0.25);drawLamp(W*0.36,grassY-H*0.19);drawLamp(W*0.64,grassY-H*0.19);
-    drawBench(W*0.31,grassY-H*0.065,sc*0.88);drawBench(W*0.51,grassY-H*0.065,sc*0.88);drawBench(W*0.11,grassY-H*0.045,sc*0.68);drawBench(W*0.73,grassY-H*0.045,sc*0.68);
-    drawFence(W*0.01,W*0.23,grassY-H*0.005);drawFence(W*0.77,W*0.99,grassY-H*0.005);
-    // Sagome persone sulle panchine
-// function drawPerson(x,y,s,col){
-      ctx.shadowColor='rgba(245,200,66,0.9)';ctx.shadowBlur=20*s;
-      ctx.fillStyle=col;
-      ctx.beginPath();ctx.arc(x,y-28*s,9*s,0,Math.PI*2);ctx.fill();
-      ctx.beginPath();ctx.ellipse(x,y-14*s,7*s,13*s,0,0,Math.PI*2);ctx.fill();
-      ctx.shadowBlur=0;ctx.shadowColor='transparent';
+
+    var gY=H*0.66;// ground Y
+
+    // BACKGROUND HILLS — romantic misty layers
+    // Far hill
+    var hillGrad=ctx.createLinearGradient(0,gY-H*0.2,0,gY);
+    if(isNight){hillGrad.addColorStop(0,'#0a1a08');hillGrad.addColorStop(1,'#061208');}
+    else if(isSunset){hillGrad.addColorStop(0,'#2a1808');hillGrad.addColorStop(1,'#1a1008');}
+    else{hillGrad.addColorStop(0,'#2a5a18');hillGrad.addColorStop(1,'#1e4810');}
+    ctx.fillStyle=hillGrad;
+    ctx.beginPath();ctx.moveTo(0,gY);
+    ctx.bezierCurveTo(W*0.1,gY-H*0.12,W*0.3,gY-H*0.18,W*0.5,gY-H*0.15);
+    ctx.bezierCurveTo(W*0.7,gY-H*0.12,W*0.9,gY-H*0.16,W,gY-H*0.08);
+    ctx.lineTo(W,H);ctx.lineTo(0,H);ctx.fill();
+
+    // Mist / atmosphere layer
+    var mist=ctx.createLinearGradient(0,gY-H*0.1,0,gY+H*0.05);
+    mist.addColorStop(0,'rgba(200,220,210,0)');
+    mist.addColorStop(0.5,isNight?'rgba(20,40,30,0.3)':isSunset?'rgba(180,100,60,0.15)':'rgba(180,210,200,0.2)');
+    mist.addColorStop(1,'rgba(200,220,210,0)');
+    ctx.fillStyle=mist;ctx.fillRect(0,gY-H*0.1,W,H*0.2);
+
+    // GROUND
+    var groundG=ctx.createLinearGradient(0,gY,0,H);
+    if(isNight){groundG.addColorStop(0,'#0a1a08');groundG.addColorStop(0.3,'#081408');groundG.addColorStop(1,'#050e05');}
+    else if(isSunset){groundG.addColorStop(0,'#1e3008');groundG.addColorStop(0.3,'#162208');groundG.addColorStop(1,'#0e1805');}
+    else{groundG.addColorStop(0,'#3a8020');groundG.addColorStop(0.2,'#2e6818');groundG.addColorStop(0.5,'#245414');groundG.addColorStop(1,'#1a4010');}
+    ctx.fillStyle=groundG;ctx.fillRect(0,gY,W,H-gY);
+
+    // Grass detail strip
+    ctx.fillStyle=isNight?'#0e2010':isSunset?'#243010':'#4a9828';
+    ctx.fillRect(0,gY,W,H*0.03);
+    ctx.fillStyle=isNight?'#122614':isSunset?'#2e3c12':'#5cb030';
+    ctx.fillRect(0,gY,W,H*0.012);
+
+    // Grass blades
+    for(var gi=0;gi<28;gi++){
+      var gx2=(gi/28)*W*1.05;var gy3=gY+Math.sin(gi*2.8)*3;
+      var sway=Math.sin(t*0.04+gi*0.5)*2;
+      ctx.strokeStyle=isNight?'#1a3018':isSunset?'#3a4818':'#60b830';ctx.lineWidth=1.8;
+      for(var b=0;b<3;b++){ctx.beginPath();ctx.moveTo(gx2+b*5-5,gy3+3);ctx.quadraticCurveTo(gx2+b*5-3+sway,gy3-5,gx2+b*5+sway*1.5,gy3-11);ctx.stroke();}
     }
-    drawPerson(W*0.36,grassY-H*0.065,sc*0.88,'rgba(210,170,130,1)');
-    drawPerson(W*0.56,grassY-H*0.065,sc*0.88,'rgba(130,160,210,1)');
-    drawPerson(W*0.16,grassY-H*0.045,sc*0.68,'rgba(180,130,160,1)');
-    drawPerson(W*0.77,grassY-H*0.045,sc*0.68,'rgba(130,180,150,1)');
-      glow.addColorStop(1,'rgba(245,200,66,0)');
-      ctx.fillStyle=glow;ctx.beginPath();ctx.arc(x,y-20*s,28*s+pulse,0,Math.PI*2);ctx.fill();
-      ctx.fillStyle=col;
-      ctx.beginPath();ctx.arc(x,y-38*s,8*s,0,Math.PI*2);ctx.fill();
-      ctx.beginPath();ctx.ellipse(x,y-22*s,7*s,12*s,0,0,Math.PI*2);ctx.fill();
-      ctx.fillStyle='rgba(245,200,66,0.8)';
-      ctx.beginPath();ctx.arc(x,y-38*s,3*s,0,Math.PI*2);ctx.fill();
+
+    // PATH
+    var pathG=ctx.createLinearGradient(0,gY,0,H);
+    pathG.addColorStop(0,isNight?'rgba(30,25,15,0.7)':isSunset?'rgba(80,55,20,0.6)':'rgba(180,155,100,0.55)');
+    pathG.addColorStop(1,isNight?'rgba(20,18,10,0.5)':'rgba(140,120,80,0.4)');
+    ctx.fillStyle=pathG;
+    ctx.beginPath();ctx.moveTo(W*0.38,H);ctx.lineTo(W*0.62,H);ctx.lineTo(W*0.565,gY+H*0.02);ctx.lineTo(W*0.435,gY+H*0.02);ctx.fill();
+
+    // FOREST TREES (background, darker)
+    function drawForestTree(x,y,h2,w2,col1,col2){
+      // Trunk
+      ctx.fillStyle=isNight?'#0e0804':'#2a1808';
+      ctx.fillRect(x-w2*0.08,y,w2*0.16,h2*0.35);
+      // Canopy layers
+      ctx.fillStyle=col1;ctx.beginPath();ctx.ellipse(x,y-h2*0.1,w2*0.5,h2*0.45,0,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle=col2;ctx.beginPath();ctx.ellipse(x-w2*0.2,y-h2*0.25,w2*0.35,h2*0.38,0,0,Math.PI*2);ctx.fill();
+      ctx.beginPath();ctx.ellipse(x+w2*0.2,y-h2*0.22,w2*0.32,h2*0.35,0,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle=col1;ctx.beginPath();ctx.ellipse(x,y-h2*0.42,w2*0.3,h2*0.3,0,0,Math.PI*2);ctx.fill();
+      // Leaf details
+      if(!isNight){
+        ctx.fillStyle='rgba(255,255,255,0.04)';
+        ctx.beginPath();ctx.ellipse(x-w2*0.1,y-h2*0.3,w2*0.15,h2*0.12,0.3,0,Math.PI*2);ctx.fill();
+      }
     }
-    drawPerson(W*0.36,grassY-H*0.045,sc*0.95,'rgba(180,140,100,0.95)');
-    drawPerson(W*0.56,grassY-H*0.045,sc*0.95,'rgba(100,140,180,0.95)');
-    drawPerson(W*0.17,grassY-H*0.03,sc*0.75,'rgba(160,100,120,0.95)');
-    drawPerson(W*0.78,grassY-H*0.03,sc*0.75,'rgba(100,160,120,0.95)');    drawPerson(W*0.36,grassY-H*0.04,sc*0.9,'rgba(180,140,100,0.85)');
-    drawPerson(W*0.56,grassY-H*0.04,sc*0.9,'rgba(100,140,180,0.85)');
-    drawPerson(W*0.17,grassY-H*0.025,sc*0.72,'rgba(160,100,120,0.85)');
-    drawPerson(W*0.78,grassY-H*0.025,sc*0.72,'rgba(100,160,120,0.85)');
+
+    var tc1=isNight?'#0c2008':isSunset?'#1a2c08':'#246018';
+    var tc2=isNight?'#102810':isSunset?'#223408':'#2e7820';
+    var tc3=isNight?'#0e2410':isSunset?'#1e3008':'#3a8c24';
+    // Back tree row
+    drawForestTree(W*0.0,gY-H*0.28,H*0.32,W*0.12,tc1,tc2);
+    drawForestTree(W*0.08,gY-H*0.22,H*0.26,W*0.10,tc2,tc1);
+    drawForestTree(W*0.18,gY-H*0.18,H*0.22,W*0.09,tc3,tc2);
+    drawForestTree(W*0.82,gY-H*0.18,H*0.22,W*0.09,tc3,tc1);
+    drawForestTree(W*0.92,gY-H*0.22,H*0.26,W*0.10,tc2,tc3);
+    drawForestTree(W*1.0,gY-H*0.28,H*0.32,W*0.12,tc1,tc2);
+    // Mid trees
+    drawForestTree(W*0.28,gY-H*0.12,H*0.16,W*0.07,tc2,tc3);
+    drawForestTree(W*0.72,gY-H*0.12,H*0.16,W*0.07,tc3,tc2);
+
+    // FLOWERS
+    if(!isNight){
+      var flowers=[[0.08,0.72,'#ff9090'],[0.14,0.75,'#ffb0d0'],[0.20,0.73,'#fff'],[0.25,0.76,'#ffb060'],[0.55,0.73,'#c0e0ff'],[0.62,0.75,'#d090ff'],[0.70,0.73,'#ff9090'],[0.77,0.76,'#ffb0d0'],[0.42,0.78,'#fff8c0'],[0.58,0.78,'#ffaad0']];
+      flowers.forEach(function(f){
+        var fx=f[0]*W,fy=f[1]*H;
+        ctx.strokeStyle='#4a9020';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(fx,fy+8);ctx.lineTo(fx,fy+2);ctx.stroke();
+        for(var p=0;p<5;p++){ctx.beginPath();ctx.ellipse(fx+Math.cos(p*1.257)*5,fy+Math.sin(p*1.257)*5,4,2.5,p*1.257,0,Math.PI*2);ctx.fillStyle=f[2];ctx.fill();}
+        ctx.beginPath();ctx.arc(fx,fy,2.5,0,Math.PI*2);ctx.fillStyle='#ffe040';ctx.fill();
+      });
+    }
+
+    // BUSHES
+    function drawBush(x,y,sc3,c1,c2,fc){
+      ctx.fillStyle=c1;ctx.beginPath();ctx.ellipse(x,y,sc3*1.5,sc3,0,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle=c2;ctx.beginPath();ctx.ellipse(x-sc3*0.7,y-sc3*0.25,sc3,sc3*0.75,0,0,Math.PI*2);ctx.fill();
+      ctx.beginPath();ctx.ellipse(x+sc3*0.72,y-sc3*0.2,sc3*0.9,sc3*0.7,0,0,Math.PI*2);ctx.fill();
+      ctx.beginPath();ctx.ellipse(x,y-sc3*0.55,sc3*0.85,sc3*0.65,0,0,Math.PI*2);ctx.fill();
+      if(fc&&!isNight){for(var fi=0;fi<5;fi++){var bfx=x+Math.cos(fi*1.26)*sc3*0.85,bfy=y+Math.sin(fi*1.26)*sc3*0.5-sc3*0.2;ctx.beginPath();ctx.arc(bfx,bfy,sc3*0.2,0,Math.PI*2);ctx.fillStyle=fc;ctx.fill();ctx.beginPath();ctx.arc(bfx,bfy,sc3*0.1,0,Math.PI*2);ctx.fillStyle='#fff8a0';ctx.fill();}}
+    }
+    var b1=isNight?'#0a1a08':isSunset?'#162008':'#2a6018';
+    var b2=isNight?'#0e2010':isSunset?'#1e2c08':'#367020';
+    drawBush(W*0.05,gY+H*0.035,20,b1,b2,'#ff8888');
+    drawBush(W*0.15,gY+H*0.04,15,b2,b1,'#ffb0c8');
+    drawBush(W*0.32,gY+H*0.038,13,b1,b2,'#a0d0a0');
+    drawBush(W*0.68,gY+H*0.038,14,b2,b1,'#ffc070');
+    drawBush(W*0.85,gY+H*0.04,16,b1,b2,'#c090ff');
+    drawBush(W*0.95,gY+H*0.035,19,b2,b1,'#ff9090');
+    drawBush(W*0.50,gY+H*0.06,11,b1,b2,'#90c8ff');
+
+    // LAMP POSTS
+    function drawLamp(x,y){
+      var lit=isNight||isSunset||(isDawn);
+      // Post
+      var postG=ctx.createLinearGradient(x-3,0,x+3,0);
+      postG.addColorStop(0,'#1a1a1a');postG.addColorStop(0.5,'#3a3a3a');postG.addColorStop(1,'#1a1a1a');
+      ctx.fillStyle=postG;ctx.fillRect(x-3,y-H*0.22,6,H*0.22+gY-y+H*0.3);
+      // Arm
+      ctx.strokeStyle='#2a2a2a';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(x,y-H*0.22);ctx.quadraticCurveTo(x+4,y-H*0.22-16,x+24,y-H*0.22-18);ctx.stroke();
+      // Glow
+      if(lit){
+        var lx=x+24,ly=y-H*0.22-18;
+        var glow=ctx.createRadialGradient(lx,ly,2,lx,ly,40);
+        glow.addColorStop(0,'rgba(255,220,80,0.55)');glow.addColorStop(0.4,'rgba(255,200,50,0.2)');glow.addColorStop(1,'rgba(255,180,0,0)');
+        ctx.fillStyle=glow;ctx.beginPath();ctx.arc(lx,ly,40,0,Math.PI*2);ctx.fill();
+      }
+      // Lamp head
+      ctx.fillStyle='#111';ctx.fillRect(x+14,y-H*0.22-22,22,4);
+      ctx.beginPath();ctx.ellipse(x+25,y-H*0.22-16,6,4,0,0,Math.PI*2);
+      ctx.fillStyle=lit?'#ffe060':'#555';ctx.fill();
+    }
+    drawLamp(W*0.14,gY);drawLamp(W*0.36,gY);drawLamp(W*0.64,gY);drawLamp(W*0.86,gY);
+
+    // BENCHES
+    function drawBench(x,y,sc4){
+      var wood=isNight?'#3a2810':isSunset?'#4a3010':'#7a5030';
+      var woodH=isNight?'#4a3818':'#9a6838';
+      var iron='#161616';
+      // Shadow
+      ctx.fillStyle='rgba(0,0,0,0.18)';ctx.beginPath();ctx.ellipse(x+28*sc4,y+28*sc4,36*sc4,7*sc4,0,0,Math.PI*2);ctx.fill();
+      // Legs
+      [0,52].forEach(function(ox){ctx.fillStyle=iron;ctx.fillRect(x+ox*sc4,y,5*sc4,26*sc4);});
+      // Support bar
+      ctx.fillStyle=iron;ctx.fillRect(x+2*sc4,y+16*sc4,52*sc4,3*sc4);
+      // Seat planks
+      for(var pi=0;pi<3;pi++){ctx.fillStyle=wood;ctx.fillRect(x-3*sc4,y-26*sc4+pi*8*sc4,62*sc4,6*sc4);ctx.fillStyle=woodH;ctx.fillRect(x-3*sc4,y-26*sc4+pi*8*sc4,62*sc4,2*sc4);}
+      // Back supports
+      [0,54].forEach(function(ox){ctx.fillStyle=iron;ctx.fillRect(x-2*sc4+ox*sc4,y-56*sc4,4*sc4,34*sc4);});
+      ctx.fillStyle=iron;ctx.fillRect(x+24*sc4,y-56*sc4,4*sc4,34*sc4);
+      // Back planks
+      [0,1].forEach(function(bi){ctx.fillStyle=wood;ctx.fillRect(x-3*sc4,y-50*sc4+bi*12*sc4,62*sc4,6*sc4);ctx.fillStyle=woodH;ctx.fillRect(x-3*sc4,y-50*sc4+bi*12*sc4,62*sc4,2*sc4);});
+    }
+    drawBench(W*0.30,gY-H*0.055,0.85);
+    drawBench(W*0.50,gY-H*0.055,0.85);
+    drawBench(W*0.10,gY-H*0.038,0.65);
+    drawBench(W*0.74,gY-H*0.038,0.65);
+
+    // FENCE
+    function drawFence(x1,x2,fy){
+      ctx.fillStyle='#111';ctx.fillRect(x1,fy-3,x2-x1,3);ctx.fillRect(x1,fy-15,x2-x1,2.5);
+      for(var fx=x1+3;fx<x2-3;fx+=18){ctx.fillRect(fx,fy-21,2.5,21);ctx.beginPath();ctx.moveTo(fx+1.25,fy-25);ctx.lineTo(fx+4,fy-20);ctx.lineTo(fx-1.5,fy-20);ctx.fillStyle='#222';ctx.fill();ctx.fillStyle='#111';}
+    }
+    drawFence(W*0.01,W*0.22,gY);drawFence(W*0.78,W*0.99,gY);
+
+    // FIREFLIES at night
+    if(isNight||isDawn){
+      var fireflies=[[0.25,0.6],[0.4,0.65],[0.6,0.62],[0.75,0.58],[0.35,0.7],[0.55,0.68]];
+      fireflies.forEach(function(ff,i){
+        var ffx=ff[0]*W+Math.sin(t*0.03+i*1.2)*12;
+        var ffy=ff[1]*H+Math.cos(t*0.025+i*0.8)*8;
+        var glow2=ctx.createRadialGradient(ffx,ffy,0,ffx,ffy,6);
+        var alpha=0.4+0.6*Math.sin(t*0.08+i*1.5);
+        glow2.addColorStop(0,'rgba(180,255,120,'+alpha+')');
+        glow2.addColorStop(1,'rgba(180,255,120,0)');
+        ctx.fillStyle=glow2;ctx.beginPath();ctx.arc(ffx,ffy,6,0,Math.PI*2);ctx.fill();
+        ctx.fillStyle='rgba(220,255,160,'+(alpha*0.9)+')';ctx.beginPath();ctx.arc(ffx,ffy,1.5,0,Math.PI*2);ctx.fill();
+      });
+    }
+
+    // BIRDS (daytime)
+    if(!isNight&&!isSunset){
+      var birds=[[0.15,0.14],[0.18,0.12],[0.62,0.11],[0.65,0.13],[0.78,0.08]];
+      birds.forEach(function(bd,i){
+        var bx=bd[0]*W+Math.sin(t*0.01+i)*30;var by=bd[1]*H+Math.sin(t*0.015+i*0.7)*8;
+        var wing=Math.sin(t*0.15+i)*0.5;
+        ctx.strokeStyle='rgba(30,30,30,0.7)';ctx.lineWidth=1.5;ctx.beginPath();
+        ctx.moveTo(bx,by);ctx.quadraticCurveTo(bx-6,by-4-wing*6,bx-12,by);ctx.stroke();
+        ctx.beginPath();ctx.moveTo(bx,by);ctx.quadraticCurveTo(bx+6,by-4-wing*6,bx+12,by);ctx.stroke();
+      });
+    }
+
+    // PEOPLE ON BENCHES — always visible, prominent
+    function drawPerson(bx,by,sc5,skinCol,hairCol,clothCol){
+      var glow3=ctx.createRadialGradient(bx+28*sc5,by-40*sc5,5,bx+28*sc5,by-40*sc5,35);
+      glow3.addColorStop(0,'rgba(245,200,66,0.35)');glow3.addColorStop(1,'rgba(245,200,66,0)');
+      ctx.fillStyle=glow3;ctx.beginPath();ctx.arc(bx+28*sc5,by-40*sc5,35,0,Math.PI*2);ctx.fill();
+      // Body
+      ctx.fillStyle=clothCol;ctx.beginPath();ctx.ellipse(bx+28*sc5,by-28*sc5,9*sc5,13*sc5,0,0,Math.PI*2);ctx.fill();
+      // Arms resting
+      ctx.strokeStyle=clothCol;ctx.lineWidth=5*sc5;ctx.lineCap='round';
+      ctx.beginPath();ctx.moveTo(bx+20*sc5,by-28*sc5);ctx.lineTo(bx+10*sc5,by-22*sc5);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(bx+36*sc5,by-28*sc5);ctx.lineTo(bx+46*sc5,by-22*sc5);ctx.stroke();
+      // Head
+      ctx.fillStyle=skinCol;ctx.beginPath();ctx.arc(bx+28*sc5,by-45*sc5,8*sc5,0,Math.PI*2);ctx.fill();
+      // Hair
+      ctx.fillStyle=hairCol;ctx.beginPath();ctx.arc(bx+28*sc5,by-49*sc5,7*sc5,Math.PI,Math.PI*2);ctx.fill();
+      ctx.beginPath();ctx.arc(bx+28*sc5,by-47*sc5,8*sc5,Math.PI+0.3,Math.PI*2-0.3);ctx.fill();
+    }
+
+    // Main benches — prominent people
+    drawPerson(W*0.30,gY-H*0.055+H*0.025,0.85,'#d4a878','#2a1808','#4a6a9a');
+    drawPerson(W*0.50,gY-H*0.055+H*0.025,0.85,'#c09060','#d0c0a0','#8a3a2a');
+    // Side benches — smaller
+    drawPerson(W*0.10,gY-H*0.038+H*0.02,0.65,'#6b3a1f','#0a0404','#4a8a5a');
+    drawPerson(W*0.74,gY-H*0.038+H*0.02,0.65,'#e8c89a','#3a2010','#7a4a8a');
   }
-  function animate(){draw();requestAnimationFrame(animate);}
-window.addEventListener('resize',resize);
+
+  function resize(){
+    canvas.width=window.innerWidth;
+    canvas.height=window.innerHeight;
+    drawScene();
+  }
+
+  function loop(){
+    drawScene();
+    requestAnimationFrame(loop);
+  }
+
+  window.addEventListener('resize',resize);
   resize();
-  setTimeout(function(){resize();animate();},300);
+  loop();
 })();
 
 (function(){
