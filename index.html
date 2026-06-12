@@ -786,11 +786,17 @@ function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeigh
     drawBench(W*0.31,grassY-H*0.065,sc*0.88);drawBench(W*0.51,grassY-H*0.065,sc*0.88);drawBench(W*0.11,grassY-H*0.045,sc*0.68);drawBench(W*0.73,grassY-H*0.045,sc*0.68);
     drawFence(W*0.01,W*0.23,grassY-H*0.005);drawFence(W*0.77,W*0.99,grassY-H*0.005);
     // Sagome persone sulle panchine
-// Sagome persone sulle panchine - sempre visibili
-    function drawPerson(x,y,s,col){
-      var pulse=Math.sin(animFrame*0.05)*2;
-      var glow=ctx.createRadialGradient(x,y-20*s,2,x,y-20*s,28*s+pulse);
-      glow.addColorStop(0,'rgba(245,200,66,0.3)');
+// function drawPerson(x,y,s,col){
+      ctx.shadowColor='rgba(245,200,66,0.9)';ctx.shadowBlur=20*s;
+      ctx.fillStyle=col;
+      ctx.beginPath();ctx.arc(x,y-28*s,9*s,0,Math.PI*2);ctx.fill();
+      ctx.beginPath();ctx.ellipse(x,y-14*s,7*s,13*s,0,0,Math.PI*2);ctx.fill();
+      ctx.shadowBlur=0;ctx.shadowColor='transparent';
+    }
+    drawPerson(W*0.36,grassY-H*0.065,sc*0.88,'rgba(210,170,130,1)');
+    drawPerson(W*0.56,grassY-H*0.065,sc*0.88,'rgba(130,160,210,1)');
+    drawPerson(W*0.16,grassY-H*0.045,sc*0.68,'rgba(180,130,160,1)');
+    drawPerson(W*0.77,grassY-H*0.045,sc*0.68,'rgba(130,180,150,1)');
       glow.addColorStop(1,'rgba(245,200,66,0)');
       ctx.fillStyle=glow;ctx.beginPath();ctx.arc(x,y-20*s,28*s+pulse,0,Math.PI*2);ctx.fill();
       ctx.fillStyle=col;
