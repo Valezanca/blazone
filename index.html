@@ -778,8 +778,7 @@ function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeigh
 window.addEventListener('resize',resize);
   resize();
   setTimeout(resize,200);
-  animate();  var h0=new Date().getHours();if(h0>=5&&h0<21)animate();
-})();
+animate();})();
 
 (function(){
   if('serviceWorker' in navigator)navigator.serviceWorker.register('/sw.js').catch(function(){});
