@@ -786,8 +786,23 @@ function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeigh
     drawBench(W*0.31,grassY-H*0.065,sc*0.88);drawBench(W*0.51,grassY-H*0.065,sc*0.88);drawBench(W*0.11,grassY-H*0.045,sc*0.68);drawBench(W*0.73,grassY-H*0.045,sc*0.68);
     drawFence(W*0.01,W*0.23,grassY-H*0.005);drawFence(W*0.77,W*0.99,grassY-H*0.005);
     // Sagome persone sulle panchine
-    function drawPerson(x,y,s,col){var pulse=Math.sin(animFrame*0.05)*2;var glow=ctx.createRadialGradient(x,y-20*s,2,x,y-20*s,28*s+pulse);glow.addColorStop(0,'rgba(245,200,66,0.25)');glow.addColorStop(1,'rgba(245,200,66,0)');ctx.fillStyle=glow;ctx.beginPath();ctx.arc(x,y-20*s,28*s+pulse,0,Math.PI*2);ctx.fill();ctx.fillStyle=col;ctx.beginPath();ctx.arc(x,y-38*s,8*s,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.ellipse(x,y-22*s,7*s,12*s,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='rgba(245,200,66,0.6)';ctx.beginPath();ctx.arc(x,y-38*s,4*s,0,Math.PI*2);ctx.fill();}
-    drawPerson(W*0.36,grassY-H*0.04,sc*0.9,'rgba(180,140,100,0.85)');
+// Sagome persone sulle panchine - sempre visibili
+    function drawPerson(x,y,s,col){
+      var pulse=Math.sin(animFrame*0.05)*2;
+      var glow=ctx.createRadialGradient(x,y-20*s,2,x,y-20*s,28*s+pulse);
+      glow.addColorStop(0,'rgba(245,200,66,0.3)');
+      glow.addColorStop(1,'rgba(245,200,66,0)');
+      ctx.fillStyle=glow;ctx.beginPath();ctx.arc(x,y-20*s,28*s+pulse,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle=col;
+      ctx.beginPath();ctx.arc(x,y-38*s,8*s,0,Math.PI*2);ctx.fill();
+      ctx.beginPath();ctx.ellipse(x,y-22*s,7*s,12*s,0,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle='rgba(245,200,66,0.8)';
+      ctx.beginPath();ctx.arc(x,y-38*s,3*s,0,Math.PI*2);ctx.fill();
+    }
+    drawPerson(W*0.36,grassY-H*0.045,sc*0.95,'rgba(180,140,100,0.95)');
+    drawPerson(W*0.56,grassY-H*0.045,sc*0.95,'rgba(100,140,180,0.95)');
+    drawPerson(W*0.17,grassY-H*0.03,sc*0.75,'rgba(160,100,120,0.95)');
+    drawPerson(W*0.78,grassY-H*0.03,sc*0.75,'rgba(100,160,120,0.95)');    drawPerson(W*0.36,grassY-H*0.04,sc*0.9,'rgba(180,140,100,0.85)');
     drawPerson(W*0.56,grassY-H*0.04,sc*0.9,'rgba(100,140,180,0.85)');
     drawPerson(W*0.17,grassY-H*0.025,sc*0.72,'rgba(160,100,120,0.85)');
     drawPerson(W*0.78,grassY-H*0.025,sc*0.72,'rgba(100,160,120,0.85)');
