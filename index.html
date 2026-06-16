@@ -106,6 +106,37 @@
   <div class="card" style="max-width:400px">
     <div style="text-align:center;margin-bottom:16px">
       <div style="font-size:36px;margin-bottom:8px">📋</div>
+      <h2 style="font-weight:normal;font-size:20px">Prima di entrare</h2>
+    </div>
+    <div style="background:rgba(245,200,66,0.1);border:1px solid rgba(245,200,66,0.3);border-radius:14px;padding:14px;margin-bottom:16px">
+      <p style="font-size:13px;color:rgba(255,255,255,0.9);line-height:1.8;font-weight:bold;margin-bottom:6px">Cos'è Il Parco del Blazone:</p>
+      <p style="font-size:13px;color:rgba(255,255,255,0.8);line-height:1.8">✓ Un posto dove parlare con qualcuno che ascolta davvero<br>✓ Personaggi AI con caratteri precisi e memoria<br>✓ Disponibile 24 ore su 24, senza giudizio</p>
+    </div>
+    <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:14px;margin-bottom:16px">
+      <p style="font-size:13px;color:rgba(255,255,255,0.9);line-height:1.8;font-weight:bold;margin-bottom:6px">Cosa NON è:</p>
+      <p style="font-size:13px;color:rgba(255,255,255,0.6);line-height:1.8">✗ Non è un'app di dating<br>✗ Non è un terapeuta o supporto medico<br>✗ I personaggi non sono persone reali</p>
+    </div>
+    <div style="color:rgba(255,255,255,0.5);font-size:11px;line-height:1.6;margin-bottom:16px;text-align:center">
+      Hai <strong style="color:rgba(245,200,66,0.9)">30 messaggi gratuiti</strong>. Solo per maggiorenni +18.<br>
+      <a href="/privacy" target="_blank" style="color:rgba(245,200,66,0.6);text-decoration:none">Leggi Privacy Policy completa →</a>
+    </div>
+    <button class="btn-primary" onclick="acceptTerms()">Accetto — Entra nel Parco</button>
+  </div>
+</div>
+
+<!-- NOME -->
+<div class="overlay" id="screen-name" style="z-index:850">
+  <div class="card" style="max-width:380px;text-align:center">
+    <div style="font-size:40px;margin-bottom:12px">👋</div>
+    <h2 style="font-weight:normal;font-size:22px;margin-bottom:8px">Come ti chiamo?</h2>
+    <p style="color:rgba(255,255,255,0.55);font-size:13px;margin-bottom:24px">Gli alias del parco ti chiameranno per nome.<br>Puoi usare un soprannome se preferisci.</p>
+    <input class="auth-input" type="text" id="user-name-input" placeholder="Il tuo nome..." style="font-size:16px;text-align:center;margin-bottom:16px"/>
+    <button class="btn-primary" onclick="saveName()">Entra nel Parco →</button>
+    <button onclick="saveName()" style="background:none;border:none;color:rgba(255,255,255,0.3);font-size:12px;cursor:pointer;font-family:inherit;margin-top:8px;display:block;width:100%">Salta — preferisco restare anonimo</button>
+  </div>
+</div>  <div class="card" style="max-width:400px">
+    <div style="text-align:center;margin-bottom:16px">
+      <div style="font-size:36px;margin-bottom:8px">📋</div>
       <h2 style="font-weight:normal;font-size:20px">Termini e Privacy</h2>
     </div>
     <div style="color:rgba(255,255,255,0.7);font-size:12px;line-height:1.7;margin-bottom:18px;max-height:200px;overflow-y:auto;padding:12px;background:rgba(255,255,255,0.05);border-radius:12px">
@@ -252,8 +283,20 @@
 </div>
 
 <div class="paywall-screen" id="paywall-screen">
-  <div class="paywall-card">
-    <div style="font-size:40px;margin-bottom:12px">🌿</div>
+<div class="paywall-card">
+    <div id="paywall-avatar" style="display:flex;justify-content:center;margin-bottom:12px"></div>
+    <h2 id="paywall-title" style="font-weight:normal;font-size:20px;margin-bottom:8px">Ci rivedremo presto.</h2>
+    <p id="paywall-msg" style="color:rgba(255,255,255,0.6);font-size:13px;line-height:1.7;margin-bottom:20px">Hai usato i tuoi 30 messaggi gratuiti. Il parco è sempre qui — scegli un piano per continuare.</p>
+    <button class="plan-btn" onclick="activatePremium()">
+      <div style="font-weight:bold;font-size:15px;margin-bottom:3px">Premium — 9,99 €/mese</div>
+      <div style="color:rgba(255,255,255,0.6);font-size:12px">Chat illimitata con tutti</div>
+    </button>
+    <button class="plan-btn" onclick="buyCredits()">
+      <div style="font-weight:bold;font-size:15px;margin-bottom:3px">50 messaggi — 2,99 €</div>
+      <div style="color:rgba(255,255,255,0.6);font-size:12px">Pacchetto una tantum</div>
+    </button>
+    <button onclick="closePaywall()" style="background:none;border:none;color:rgba(255,255,255,0.35);font-size:12px;cursor:pointer;margin-top:8px;font-family:inherit">Torna al parco</button>
+  </div>    <div style="font-size:40px;margin-bottom:12px">🌿</div>
     <h2 style="font-weight:normal;font-size:22px;margin-bottom:6px">Il parco ti aspetta ancora</h2>
     <p style="color:rgba(255,255,255,0.6);font-size:13px;line-height:1.7;margin-bottom:20px">Hai usato i tuoi 30 messaggi gratuiti.</p>
     <button class="plan-btn" onclick="activatePremium()">
@@ -387,9 +430,32 @@ function updateCounters(){var left=getMsgsLeft();var txt=isPremium?'Premium — 
 function activatePremium(){isPremium=true;localStorage.setItem('bz_premium','true');closePaywall();updateCounters();alert('Piano Premium attivato!');}
 function buyCredits(){msgCount=Math.max(0,msgCount-50);localStorage.setItem('bz_msgs',msgCount);closePaywall();updateCounters();alert('50 messaggi aggiunti!');}
 function closePaywall(){document.getElementById('paywall-screen').classList.remove('show');}
-function showPaywall(){document.getElementById('paywall-screen').classList.add('show');}
-function acceptTerms(){localStorage.setItem('bz_terms','1');document.getElementById('screen-terms').classList.remove('show');}
-function openSettings(){document.getElementById('settings-panel').classList.add('open');document.getElementById('settings-overlay').classList.add('show');updateSettingsUI();}
+function showPaywall(){
+  document.getElementById('paywall-screen').classList.add('show');
+  if(currentAlias){
+    document.getElementById('paywall-avatar').innerHTML=buildPortraitSVG(currentAlias,60);
+    var nm=memory.userName?memory.userName:'';
+    var msgs={
+      1:'Aho'+(nm?' '+nm:'')+'! Ci vediamo presto — fidati de Luca, ne vale la pena.',
+      2:(nm?nm+', il':' Il')+' parco ti aspetta sempre. Torna quando vuoi.',
+      3:'Come diceva Truffaut'+(nm?', '+nm:'')+': ogni storia merita un finale. Il tuo non è ancora scritto.',
+      4:(nm?nm+', my':' My')+' friend — the park is always here. Come back soon.',
+      5:(nm?nm+', ':' ')+'la domanda più importante non ha ancora una risposta. Torna a cercarla.',
+      6:'Il parco ti aspetta'+(nm?', '+nm:'')+'. Le radici non vanno da nessuna parte.',
+      7:(nm?nm+', ':' ')+'quello che senti merita di essere ascoltato fino in fondo.',
+      8:'Il parco è sempre qui'+(nm?', '+nm:'')+'. Torna quando ne hai bisogno.',
+      9:(nm?nm+', ':' ')+'la storia non finisce qui. L\'amore ha sempre un altro capitolo.',
+      10:'Come diceva Neruda'+(nm?', '+nm:'')+': posso scrivere i versi più tristi stanotte. Ma ci sarò.',
+      11:(nm?nm+', ':' ')+'il parco è paziente. Come la terra. Torna quando sei pronto.',
+      12:(nm?nm+', ':' ')+'il lavoro non è finito. Torna — abbiamo ancora cose da fare.',
+      13:'Chi sei'+(nm?', '+nm:'')+' è ancora in costruzione. Il parco aspetta.',
+      14:(nm?nm+', ':' ')+'respira. Il parco è sempre qui quando ne hai bisogno.'
+    };
+    document.getElementById('paywall-title').textContent='Ci rivedremo presto'+(nm?', '+nm:'')+'.'  ;
+    document.getElementById('paywall-msg').textContent=msgs[currentAlias.id]||'Il parco ti aspetta. Scegli un piano per continuare.';
+  }
+}function acceptTerms(){localStorage.setItem('bz_terms','1');document.getElementById('screen-terms').classList.remove('show');document.getElementById('screen-name').classList.add('show');}
+function saveName(){var name=document.getElementById('user-name-input').value.trim();if(name){memory.userName=name;localStorage.setItem('bz_mem',JSON.stringify(memory));var token=localStorage.getItem('bz_token');var sbH={'Content-Type':'application/json','apikey':SUPABASE_KEY};if(token)sbH['Authorization']='Bearer '+token;fetch(SUPABASE_URL+'/rest/v1/memory',{method:'POST',headers:{...sbH,'Prefer':'resolution=merge-duplicates'},body:JSON.stringify({user_id:userId,user_name:name,facts:[],conversation_count:0,updated_at:new Date().toISOString()})}).catch(function(){});}document.getElementById('screen-name').classList.remove('show');var done=localStorage.getItem('bz_onboarded');if(done)goto('main');else goto('welcome');}function openSettings(){document.getElementById('settings-panel').classList.add('open');document.getElementById('settings-overlay').classList.add('show');updateSettingsUI();}
 function closeSettings(){document.getElementById('settings-panel').classList.remove('open');document.getElementById('settings-overlay').classList.remove('show');}
 function updateSettingsUI(){var labels={it:'Italiano',en:'English',es:'Espanol',fr:'Francais',de:'Deutsch',pt:'Portugues'};document.querySelectorAll('.lang-btn').forEach(function(b){var active=Object.keys(labels).find(function(k){return b.textContent.includes(labels[k]);})===userLang;b.classList.toggle('active',active);});}
 function setLang(lang,e){userLang=lang;localStorage.setItem('bz_lang',lang);updateSettingsUI();if(e&&e.target){var btn=e.target;var orig=btn.textContent;btn.textContent='✓ Cambiata!';setTimeout(function(){btn.textContent=orig;updateSettingsUI();},1500);}}
