@@ -185,8 +185,7 @@
   </div>
   <div style="display:flex;gap:16px;align-items:center">
     <button onclick="swipe('left')" style="padding:12px 24px;border-radius:14px;border:2px solid rgba(255,100,100,0.6);background:rgba(255,60,60,0.15);cursor:pointer;color:rgba(255,150,150,0.9);font-family:inherit;font-size:14px">Prossimo →</button>
-    <button id="swipe-yes-btn" onclick="swipe('right')" style="padding:14px 32px;border-radius:14px;cursor:pointer;font-family:inherit;font-size:15px;font-weight:bold;border:2px solid">Siediti con loro</button>
-  </div>
+<button id="swipe-yes-btn" onclick="swipe('right')" style="padding:14px 32px;border-radius:14px;cursor:pointer;font-family:inherit;font-size:15px;font-weight:bold;border:2px solid">Siediti con loro</button>  </div>
 </div>
 
 <!-- MAIN -->
@@ -466,8 +465,7 @@ function renderSwipe(){
   var orig=document.getElementById('swipe-origin');orig.style.color=a.accent;orig.textContent=a.origin;
   document.getElementById('swipe-desc').textContent=a.goal;
   var tag=document.getElementById('swipe-goal-tag');tag.textContent='Nel parco adesso';tag.style.background=a.accent+'22';tag.style.borderColor=a.accent+'66';tag.style.color=a.accent;
-  var yesBtn=document.getElementById('swipe-yes-btn');yesBtn.style.borderColor=a.accent;yesBtn.style.background=a.accent+'22';yesBtn.style.color='white';
-  currentAlias=a;
+var yesBtn=document.getElementById('swipe-yes-btn');yesBtn.style.borderColor=a.accent;yesBtn.style.background=a.accent+'22';yesBtn.style.color='white';var btnTxt=a.gender==='nb'?'Siediti con loro':a.gender==='female'?'Siediti con lei':'Siediti con lui';yesBtn.textContent=btnTxt;  currentAlias=a;
 }
 function swipe(dir){
   var card=document.getElementById('swipe-card');
