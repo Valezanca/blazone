@@ -559,26 +559,6 @@ function startChat(aliasId){
   if(getMsgsLeft()===0){showPaywall();return;}
   currentAlias=ALIASES.filter(function(a){return a.id===aliasId;})[0];
   messages=histories[aliasId]?histories[aliasId].slice():[];
-  var h=new Date().getHours();
-  var tod=h>=5&&h<12?'mattina':h>=12&&h<17?'pomeriggio':h>=17&&h<21?'sera':'notte';
-  var nm=memory.userName?memory.userName:'';
-  var greetings={
-    1:'Aho'+(nm?' '+nm:'')+'! Sei arrivato al momento giusto. Come va?',
-    2:(nm?nm+', siediti':' Siediti')+' un momento con me. Raccontami tutto.',
-    3:'Benvenuto'+(nm?' '+nm:'')+'. Ho visto tanti film su momenti come questo.',
-    4:'Welcome'+(nm?' '+nm:'')+', my friend. The park is quiet today. Sit with me.',
-    5:(nm?nm+', sei':' Sei')+' arrivato. Il silenzio del parco è un buon inizio.',
-    6:'Siediti'+(nm?', '+nm:'')+'. Il parco sa quando hai bisogno di fermarti.',
-    7:(nm?nm+', come':' Come')+' stai davvero? Sono qui, senza fretta.',
-    8:(nm?nm+', finalmente!':' Finalmente!')+' Come stai? Raccontami tutto.',
-    9:'Ciao'+(nm?' '+nm:'')+'. Il parco di '+tod+' ha qualcosa di speciale, no?',
-    10:'Il vento porta le parole giuste'+(nm?', '+nm:'')+'. Cosa hai nel cuore?',
-    11:'Oi'+(nm?' '+nm:'')+'! Bella '+tod+'. Siediti, non c\'è fretta.',
-    12:'Good'+(nm?', '+nm:'.')+'. You showed up. What\'s going on?',
-    13:'Siediti'+(nm?', '+nm:'')+'. Chi sei quando non stai recitando nessun ruolo?',
-    14:(nm?nm+', ':' ')+'dove senti la tensione adesso, nel corpo?'
-  };
-  if(!messages.length)messages=[{role:'assistant',content:greetings[aliasId]||('Ciao'+(nm?' '+nm:'')+'! Come stai?')}];
   document.getElementById('chat-alias-name').innerHTML=currentAlias.name+' <span style="font-size:9px;font-weight:normal;opacity:0.5">'+currentAlias.origin+'</span>';
   document.getElementById('chat-alias-goal').textContent=currentAlias.goal;
   document.getElementById('chat-avatar-wrap').innerHTML=buildPortraitSVG(currentAlias,32);
@@ -589,8 +569,77 @@ function startChat(aliasId){
   var token=localStorage.getItem('bz_token');
   var sbH={'Content-Type':'application/json','apikey':SUPABASE_KEY};
   if(token)sbH['Authorization']='Bearer '+token;
-  fetch(SUPABASE_URL+'/rest/v1/memory?user_id=eq.'+userId+'&alias_id=eq.'+aliasId+'&select=facts,user_name,conversation_count',{headers:sbH})
+  fetch(SUPABASE_URL+'/rest/v1/memory?user_id=eq.'+userId+'&alias_id=eq.'+aliasId+'&select=facts,user_name,conversation_count,last_seen',{headers:sbH})
     .then(function(r){return r.json();}).then(function(data){
+      var h=new Date().getHours();
+      var tod=h>=5&&h<12?'mattina':h>=12&&h<17?'pomeriggio':h>=17&&h<21?'sera':'notte';
+      if(data&&data[0]){
+        if(data[0].user_name)memory.userName=data[0].user_name;
+        if(data[0].facts&&data[0].facts.length)memory.facts=data[0].facts;
+        memory.convCount=data[0].conversation_count||0;
+        memory.lastSeen=data[0].last_seen||null;
+      }
+      var nm=memory.userName||'';
+      // Controlla se è tornato dopo 24 ore
+      var isReturn=false;
+      if(memory.lastSeen){
+        var lastDate=new Date(memory.lastSeen);
+        var now=new Date();
+        var hoursDiff=(now-lastDate)/3600000;
+        if(hoursDiff>20&&messages.length>0) isReturn=true;
+      }
+      if(!messages.length){
+        // Prima conversazione — saluto standard
+        var greetings={
+          1:'Aho'+(nm?' '+nm:'')+'! Sei arrivato al momento giusto. Come va?',
+          2:(nm?nm+', siediti':' Siediti')+' un momento con me. Raccontami tutto.',
+          3:'Benvenuto'+(nm?' '+nm:'')+'. Ho visto tanti film su momenti come questo.',
+          4:'Welcome'+(nm?' '+nm:'')+', my friend. The park is quiet today. Sit with me.',
+          5:(nm?nm+', sei':' Sei')+' arrivato. Il silenzio del parco è un buon inizio.',
+          6:'Siediti'+(nm?', '+nm:'')+'. Il parco sa quando hai bisogno di fermarti.',
+          7:(nm?nm+', come':' Come')+' stai davvero? Sono qui, senza fretta.',
+          8:(nm?nm+', finalmente!':' Finalmente!')+' Come stai? Raccontami tutto.',
+          9:'Ciao'+(nm?' '+nm:'')+'. Il parco di '+tod+' ha qualcosa di speciale, no?',
+          10:'Il vento porta le parole giuste'+(nm?', '+nm:'')+'. Cosa hai nel cuore?',
+          11:'Oi'+(nm?' '+nm:'')+'! Bella '+tod+'. Siediti, non c\'è fretta.',
+          12:'Good'+(nm?', '+nm:'.')+'. You showed up. What\'s going on?',
+          13:'Siediti'+(nm?', '+nm:'')+'. Chi sei quando non stai recitando nessun ruolo?',
+          14:(nm?nm+', ':' ')+'dove senti la tensione adesso, nel corpo?'
+        };
+        messages=[{role:'assistant',content:greetings[aliasId]||('Ciao'+(nm?' '+nm:'')+'! Come stai?')}];
+      } else if(isReturn){
+        // Torna dopo 24+ ore — messaggio di rientro con memoria
+        var lastFact=memory.facts&&memory.facts.length?memory.facts[memory.facts.length-1]:'';
+        var returnMsgs={
+          1:'Aho'+(nm?' '+nm:'')+'! Sei tornato. '+(lastFact?'L\'ultima volta mi parlavi di '+lastFact+'. Com\'è andata?':'Come va oggi?'),
+          2:(nm?nm+', che':' Che')+' bello rivederti. '+(lastFact?'Pensavo ancora a quello che mi dicevi — '+lastFact+'. Come stai adesso?':'Siediti, raccontami.'),
+          3:(nm?nm+', ':' ')+'bentornato nel parco. '+(lastFact?'Dall\'ultima volta ho pensato a quello che mi dicevi su '+lastFact+'.':'Cosa è successo da quando non ci siamo visti?'),
+          4:'Welcome back'+(nm?', '+nm:'')+'! '+(lastFact?'Last time you mentioned '+lastFact+'. How did that go?':'Good to see you again.'),
+          5:(nm?nm+', ':' ')+'sei tornato. '+(lastFact?'La domanda che lasciavi aperta — '+lastFact+' — hai trovato qualcosa?':'Cosa porti con te oggi?'),
+          6:'Bentornato'+(nm?', '+nm:'')+'! '+(lastFact?'Portavi dentro qualcosa di importante — '+lastFact+'. Come stai adesso?':'Il parco ti aspettava.'),
+          7:(nm?nm+', ':' ')+'sei tornata. '+(lastFact?'Ricordo quello che mi dicevi — '+lastFact+'. Come stai adesso?':'Come stai davvero oggi?'),
+          8:(nm?nm+', ':' ')+'eccoti! '+(lastFact?'Pensavo a te — mi parlavi di '+lastFact+'. Com\'è andata?':'Come stai? Raccontami tutto.'),
+          9:'Ciao'+(nm?' '+nm:'')+'! '+(lastFact?'Dall\'ultima volta pensavo a quello che mi dicevi su '+lastFact+'. Come è andata?':'Bentornato nel parco.'),
+          10:'Bentornato'+(nm?', '+nm:'')+'... '+(lastFact?'Portavi dentro '+lastFact+'. È ancora lì?':'Cosa porti nel cuore oggi?'),
+          11:'Oi'+(nm?' '+nm:'')+'! '+(lastFact?'L\'ultima volta mi parlavi di '+lastFact+'. Poi com\'è andata?':'Bentornato. Siediti.'),
+          12:'Good, you\'re back'+(nm?', '+nm:'')+'! '+(lastFact?'Last time: '+lastFact+'. What happened?':'Let\'s pick up where we left off.'),
+          13:'Sei tornato'+(nm?', '+nm:'')+'! '+(lastFact?'Stavi elaborando qualcosa — '+lastFact+'. Sei più chiaro adesso?':'Chi sei oggi rispetto all\'ultima volta?'),
+          14:(nm?nm+', ':' ')+'sei tornata. '+(lastFact?'L\'ultima volta sentivi '+lastFact+'. Come è nel corpo adesso?':'Come stai oggi? Respira.')
+        };
+        var returnMsg=returnMsgs[aliasId]||('Bentornato'+(nm?', '+nm:'')+'! Come stai oggi?');
+        messages.push({role:'assistant',content:returnMsg});
+        histories[aliasId]=messages.slice(-40);
+        localStorage.setItem('bz_hist',JSON.stringify(histories));
+      }
+      renderMessages();
+    }).catch(function(){
+      var nm=memory.userName||'';
+      var h=new Date().getHours();
+      var tod=h>=5&&h<12?'mattina':h>=12&&h<17?'pomeriggio':h>=17&&h<21?'sera':'notte';
+      if(!messages.length)messages=[{role:'assistant',content:'Ciao'+(nm?' '+nm:'')+'! Come stai?'}];
+      renderMessages();
+    });
+}
       if(data&&data[0]){if(data[0].user_name)memory.userName=data[0].user_name;if(data[0].facts&&data[0].facts.length)memory.facts=data[0].facts;memory.convCount=data[0].conversation_count||0;}
       renderMessages();
     }).catch(function(){renderMessages();});
