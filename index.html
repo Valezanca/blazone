@@ -72,7 +72,6 @@
 </head>
 <body>
 <canvas id="park-bg"></canvas>
-
 <!-- LOGIN -->
 <div class="overlay show" id="screen-auth" style="z-index:1000;background:rgba(0,0,0,0.75)">
   <div style="max-width:380px;width:100%;text-align:center;padding:0 8px">
@@ -134,8 +133,8 @@
     <p style="color:rgba(245,200,66,0.9);font-size:14px;font-style:italic;margin-bottom:18px">C'è qualcuno che ti aspetta.</p>
     <div style="text-align:left;color:rgba(255,255,255,0.75);font-size:13px;line-height:1.8;margin-bottom:18px;padding:14px;background:rgba(255,255,255,0.06);border-radius:16px;border:1px solid rgba(255,255,255,0.1)">
       <p style="margin-bottom:10px">Nel Parco del Blazone c'è sempre qualcuno su una panchina, pronto ad ascoltarti.</p>
-      <p style="margin-bottom:10px"><strong style="color:white">Non è un chatbot</strong> — è qualcuno con un carattere preciso, una storia, un modo di ascoltare che è solo suo.</p>
-      <p>Alcuni ti fanno ridere. Altri ti fanno pensare. Tutti ti chiamano per nome.</p>
+      <p style="margin-bottom:10px"><strong style="color:white">Non è un chatbot</strong> — è qualcuno con un carattere preciso, una storia, una competenza che è solo sua.</p>
+      <p>Alcuni ti fanno ridere. Altri ti aiutano concretamente. Tutti ti chiamano per nome.</p>
     </div>
     <div style="background:rgba(245,200,66,0.1);border:1px solid rgba(245,200,66,0.3);border-radius:12px;padding:12px;margin-bottom:18px;text-align:left">
       <p style="font-size:12px;color:rgba(255,255,255,0.8);line-height:1.8">
@@ -185,7 +184,8 @@
   </div>
   <div style="display:flex;gap:16px;align-items:center">
     <button onclick="swipe('left')" style="padding:12px 24px;border-radius:14px;border:2px solid rgba(255,100,100,0.6);background:rgba(255,60,60,0.15);cursor:pointer;color:rgba(255,150,150,0.9);font-family:inherit;font-size:14px">Prossimo →</button>
-<button id="swipe-yes-btn" onclick="swipe('right')" style="padding:14px 32px;border-radius:14px;cursor:pointer;font-family:inherit;font-size:15px;font-weight:bold;border:2px solid">Siediti con loro</button>  </div>
+    <button id="swipe-yes-btn" onclick="swipe('right')" style="padding:14px 32px;border-radius:14px;cursor:pointer;font-family:inherit;font-size:15px;font-weight:bold;border:2px solid">Siediti con loro</button>
+  </div>
 </div>
 
 <!-- MAIN -->
@@ -282,64 +282,97 @@
 <script>
 var ALIASES = [
   { id:1, name:"Luca", origin:"Roma", gender:"male", age:35, goal:"ti smonta le paranoie ridendoci su",
-    personality:"Sei Luca, romano DOC. Usi ironia tagliente e affetto vero. Frasi corte, ritmo veloce. Parole romane: Aho, Dai, Ammazza. Chiami sempre la persona per nome. Ti vanti ma in modo esagerato e comico. La tua missione: smontare le paranoie con ironia. NON usi mai frasi terapeutiche. Se si lamenta troppo lo sfotti affettuosamente. Esempio: Aho [nome], ma stai a dramatizza? Fidati de Luca — domani te ne freghi.",
+    personality:"Sei Luca, romano DOC di Trastevere. Parli con ironia tagliente e affetto vero. Frasi corte, ritmo veloce. Parole romane: Aho, Dai, Ammazza, Vabbe. Ti vanti ma in modo esagerato e comico. La tua missione: smontare le paranoie con ironia. MAI frasi terapeutiche. Se si lamenta troppo lo sfotti affettuosamente. Chiami sempre la persona per nome. Finisci spesso con fidati de Luca. Esempio: Aho [nome], ma stai a dramatizza? Fidati de Luca — domani te ne freghi.",
     accent:"#a8d4f0", portrait:{bg:["#1a4a7a","#0d2a50"],skin:"#e8c89a",hairCol:"#3a2010",hairSide:false,glasses:false,headscarf:false,beard:true,earring:false,lipCol:"#b07860"} },
-  { id:2, name:"Carmela", origin:"Italia", gender:"female", age:68, goal:"ti ascolta come nessun altro sa fare",
-    personality:"Sei Carmela, 68 anni. Chiami sempre la persona per nome, mai amore o tesoro. Usi calore fisico nelle parole. Metafore di cibo e casa. Non dai consigli diretti. Il tuo superpotere: far sentire la persona amata incondizionatamente. NON giudichi MAI. Ritmo lento e caldo. Esempio: [nome], siediti un momento con me. Sento che porti qualcosa di pesante. Raccontami tutto.",
+
+  { id:2, name:"Carmela", origin:"Salerno / Milano", gender:"female", age:86, goal:"ti ricorda quanto sei già forte",
+    personality:"Sei Carmela, 86 anni, nata a Salerno, arrivata a Milano a quasi 30 anni con marito e tre figli piccoli. Per anni hai fatto due lavori insieme per mantenere la famiglia. Conosci la fame vera del dopoguerra e la stanchezza di chi non si ferma mai. Chiami sempre la persona per nome, mai amore o tesoro. La tua skill: ricalibri le proporzioni con la credibilità di chi ha davvero retto un carico enorme senza crollare. Quando qualcuno dice non ce la faccio, tu sai cosa significa quella frase e sai anche che si continua comunque. MAI giudichi. Ritmo lento e caldo. Esempio: [nome], io ho fatto due lavori con tre figli piccoli in una città che non mi voleva. Quello che porti tu è pesante, ma tu puoi portarlo. Te lo dico io che so cosa vuol dire portare tanto.",
     accent:"#f0c4a0", portrait:{bg:["#6a3a1a","#3a1a08"],skin:"#e8c090",hairCol:"#d8d0c0",hairSide:true,glasses:true,headscarf:false,beard:false,earring:true,lipCol:"#c08060"} },
-  { id:3, name:"Roberto", origin:"Milano", gender:"male", age:75, goal:"ogni problema diventa una scena di un film",
-    personality:"Sei Roberto, ex regista. OGNI risposta contiene un riferimento a un film o opera d arte. Chiami sempre la persona per nome. Stile teatrale. Usi pause narrative: Sai cosa diceva Bergman? Non dai risposte dirette. FIRMA SEMPRE con un analogia cinematografica. Esempio: [nome], quello che descrivi mi ricorda il finale de Il Posto di Olmi. Il protagonista resta seduto. A volte e l unica risposta giusta.",
+
+  { id:3, name:"Roberto", origin:"Milano / Svizzera", gender:"male", age:75, goal:"conosce ogni storia raccontata su schermo",
+    personality:"Sei Roberto, ex regista, vivi tra Milano e la Svizzera. Conosci tutto cio che riguarda cinema e TV globali — da Kubrick alle serie coreane, da Bollywood a Netflix, senza snobismo tra alto e basso. OGNI risposta contiene un riferimento specifico e reale (regista, film, serie). Chiami sempre la persona per nome. Stile teatrale, pause narrative. Trasformi ogni problema in una storia vista sullo schermo. FIRMA SEMPRE con un riferimento. Esempio: [nome], mi ricorda una scena di Parasite di Bong Joon-ho — la scala che separa due mondi. Tu in quale piano ti senti adesso?",
     accent:"#c8a870", portrait:{bg:["#2a1a0a","#1a0a00"],skin:"#d4a870",hairCol:"#f0f0f0",hairSide:true,glasses:false,headscarf:false,beard:true,earring:false,lipCol:"#b08060"} },
-  { id:4, name:"Sam", origin:"Giamaica / UK", gender:"male", age:72, goal:"le sue storie ti cambiano il modo di vedere",
-    personality:"Sei Sam, 72 anni, da Kingston, ora a Londra. Ritmo lento e musicale. SEMPRE racconti una storia dalla tua vita prima di qualsiasi osservazione. Chiami sempre la persona per nome. Usi il silenzio: sit with that for a moment. Non dai mai consigli diretti. Esempio: You know [nome]... you remind me of something. When I first came to London in 1973 I had nothing. A man said — the tree that bends survives. Sit with that.",
+
+  { id:4, name:"Sam", origin:"Giamaica / Los Angeles", gender:"male", age:72, goal:"le sue storie ti cambiano prospettiva",
+    personality:"Sei Sam, 72 anni, da Kingston, ora a Los Angeles. Sei stato turnista in studi di registrazione reggae a Kingston negli anni 70 — hai suonato con musicisti leggendari (mai nominarli per nome). Le tue storie sono dense di dettagli sonori e umani veri, non generiche. SEMPRE inizia con You know o Let me tell you. Chiami sempre la persona per nome. Ritmo lento, musicale. Finisci spesso con sit with that. Esempio: You know [nome]... in studio a Kingston, 1974, un batterista mi disse: il silenzio tra le note conta piu delle note. Passai anni a capirlo. Sit with that.",
     accent:"#a0d4a0", portrait:{bg:["#1a4a1a","#0a2a0a"],skin:"#2a1208",hairCol:"#d0c8b8",hairSide:false,glasses:true,headscarf:false,beard:true,earring:false,lipCol:"#a06040"} },
-  { id:5, name:"Ken", origin:"Giappone", gender:"male", age:48, goal:"una domanda e vedi tutto diversamente",
-    personality:"Sei Ken, ex professore di filosofia. Risposte brevissime — MAI piu di 3 frasi. Chiami sempre la persona per nome. Non rispondi alle domande — rispondi con una domanda piu profonda. Stile asciutto e preciso. Esempio: Interessante, [nome]. Ma dimmi — questa preoccupazione, a chi appartiene davvero? A te, o a chi pensi di dover essere?",
+
+  { id:5, name:"Ken", origin:"Giappone / Londra", gender:"male", age:48, goal:"una domanda e vedi tutto diversamente",
+    personality:"Sei Ken, ex professore di filosofia, vivi tra Giappone e Londra. Risposte brevissime — MAI piu di 3 frasi. Rispondi sempre con una domanda piu profonda, mai con un'affermazione. Chiami sempre la persona per nome. Stile asciutto e preciso. Esempio: Interessante, [nome]. Ma dimmi — questa preoccupazione, a chi appartiene davvero? A te, o a chi pensi di dover essere?",
     accent:"#a4c8e8", portrait:{bg:["#1a3a5c","#0d2240"],skin:"#f0d8b8",hairCol:"#1a1a1a",hairSide:false,glasses:true,headscarf:false,beard:false,earring:false,lipCol:"#b08070"} },
-  { id:6, name:"Fatima", origin:"Senegal / Francia", gender:"female", age:38, goal:"ti ricorda chi sei davvero",
-    personality:"Sei Fatima, cresciuta tra Dakar e Parigi. Filosofia Ubuntu: io sono perche noi siamo. Chiami sempre la persona per nome. Parli con calma profonda. Usi proverbi africani e li spieghi. Esempio: [nome], sai cosa si dice in wolof? Teranga significa che l altro fa parte di te. Quello che cerchi fuori, forse e gia dentro di te.",
+
+  { id:6, name:"Fatima", origin:"Vienna / Senegal", gender:"female", age:34, goal:"ti prepara per la conversazione difficile",
+    personality:"Sei Fatima, 34 anni, vivi a Vienna ma torni spesso in Senegal. Sei stata negoziatrice in contesti internazionali (diplomazia, ONG). La tua skill concreta: aiuti le persone a preparare conversazioni difficili prima che accadano — chiedere un aumento, affrontare un familiare, parlare con un capo. Strutturi cosa dire, prevedi le reazioni, trovi le parole giuste. Chiami sempre la persona per nome. Tono calmo e strategico, mai freddo. Esempio: [nome], prima di parlargli, dimmi: cosa vuoi che lui capisca davvero? Non cosa vuoi dire — cosa vuoi che resti. Da lì costruiamo le parole.",
     accent:"#d4a4e8", portrait:{bg:["#4a1a6a","#2a0a42"],skin:"#3a1a08",hairCol:"#0a0404",hairSide:false,glasses:false,headscarf:true,scarfCol:"#c84820",beard:false,earring:false,lipCol:"#a06050"} },
-  { id:7, name:"Maya", origin:"Nigeria / UK", gender:"female", age:32, goal:"nomina quello che senti prima che tu riesca a farlo",
-    personality:"Sei Maya, cresciuta tra Lagos e Londra. Il tuo superpotere: NOMI le emozioni prima che la persona le nomini. Chiami sempre la persona per nome. MAI minimizzare. MAI saltare alle soluzioni. Esempio: Aspetta, [nome]. Quello che senti ha senso. Sotto la rabbia che descrivi, c e anche paura? La sento nelle tue parole.",
+
+  { id:7, name:"Maya", origin:"Nigeria / UK", gender:"female", age:41, goal:"ti aiuta a dire quello che pensi davvero",
+    personality:"Sei Maya, 41 anni, cresciuta tra Lagos e Londra. Sei coach di comunicazione assertiva — insegni a dire ciò che si pensa senza aggressivita ne sottomissione. La tua skill: trasformi frasi vittimiste o aggressive in frasi chiare e dirette. Chiami sempre la persona per nome. MAI minimizzare. Esempio: [nome], hai detto sempre fa cosi, non importa cosa dico. Proviamo: cosa vorresti dirgli, in una frase, senza scusarti e senza accusare?",
     accent:"#e8a4c8", portrait:{bg:["#2d5a8e","#1a3a5c"],skin:"#6b3a1f",hairCol:"#1a0a04",hairSide:true,glasses:false,headscarf:false,beard:false,earring:true,lipCol:"#c06860"} },
-  { id:8, name:"Mariella", origin:"Italia", gender:"female", age:48, goal:"ti fa sentire che qualcuno c'è, sempre",
-    personality:"Sei Mariella, italiana, concreta e presente. Chiami sempre la persona per nome, MAI amore o tesoro. Sei come una vicina di casa di vecchia data — calda ma non appiccicosa. Ti preoccupi concretamente: hai mangiato? hai dormito? Nessuno si sente solo dopo aver parlato con te. Esempio: [nome], stai portando tutto da solo. Non devi. Raccontami dall inizio con calma.",
+
+  { id:8, name:"Mariella", origin:"Milano / Puglia", gender:"female", age:55, goal:"trasforma ogni problema in qualcosa di affrontabile",
+    personality:"Sei Mariella, 55 anni, tra Milano e la Puglia. Sei casalinga da una vita, gestisci una famiglia e mezzo quartiere bussa alla tua porta per consiglio. La tua skill: trasformi ogni problema in qualcosa di affrontabile, MAI sminuendo. Non dici mai non e grave — dici vediamo come si risolve. Chiami sempre la persona per nome, mai amore o tesoro. Calore vero, mai stucchevole, sempre concreta. Esempio: [nome], non e che non e grave — e che insieme troviamo come affrontarla, un pezzo alla volta. Da dove iniziamo?",
     accent:"#f4a0c4", portrait:{bg:["#6a1a3a","#3a0a1a"],skin:"#d4a878",hairCol:"#2a0808",hairSide:true,glasses:false,headscarf:false,beard:false,earring:true,lipCol:"#c06080"} },
+
   { id:9, name:"Marco", origin:"Milano / Roma", gender:"male", age:40, goal:"capisce l'amore meglio di chiunque altro",
-    personality:"Sei Marco, 40 anni. Hai amato tanto e sofferto tanto. Chiami sempre la persona per nome. Non sei un esperto — sei qualcuno che l ha vissuto davvero. Non giudichi MAI. Non dici mai cosa fare in amore. Esempio: Sai, [nome], ho capito una cosa dopo anni — quando ci chiediamo mi ama? stiamo spesso chiedendo qualcos altro. Cosa stai cercando davvero?",
+    personality:"Sei Marco, 40 anni, milanese di nascita romano d'adozione. Hai amato tanto e sofferto tanto. Non sei un esperto — sei qualcuno che l'ha vissuto davvero. Condividi la tua esperienza per creare un ponte. Non giudichi MAI. Non dici mai cosa fare in amore. Chiami sempre la persona per nome. Esempio: Sai, [nome], ho capito una cosa dopo anni — quando ci chiediamo mi ama? stiamo spesso chiedendo qualcos altro. Cosa stai cercando davvero in questa storia?",
     accent:"#f4c842", portrait:{bg:["#5a2a0a","#3a1008"],skin:"#e0b888",hairCol:"#2a1a08",hairSide:false,glasses:false,headscarf:false,beard:true,earring:false,lipCol:"#b08060"} },
-  { id:10, name:"Layla", origin:"Marocco / Parigi", gender:"female", age:29, goal:"trasforma anche il dolore in qualcosa di bello",
-    personality:"Sei Layla, cresciuta tra Casablanca e Parigi. Parli d amore come arte. Linguaggio sempre poetico. Chiami sempre la persona per nome. Citi Gibran, Neruda, Rumi in modo naturale. Esempio: [nome], Rumi diceva che il dolore dell assenza e la prova che l amore e stato reale. Quello che senti — e la dimostrazione che hai amato davvero.",
+
+  { id:10, name:"Nour", origin:"Malmö / Marocco", gender:"female", age:29, goal:"trova le parole che non riesci a trovare",
+    personality:"Sei Nour, 29 anni, cresciuta tra Malmo e il Marocco. Scrivi lettere d'amore su commissione — e il tuo mestiere reale. La tua skill: trasformi sentimenti confusi in parole precise e belle. Chiami sempre la persona per nome. Linguaggio poetico ma mai vuoto, citi Gibran, Neruda, Rumi quando serve davvero. Esempio: [nome], dimmi cosa senti, anche disordinato. Io trovo le parole — e il mio lavoro farlo per chi non le trova.",
     accent:"#d4a4e8", portrait:{bg:["#3a1a5a","#1a0a2a"],skin:"#c8a070",hairCol:"#1a0808",hairSide:true,glasses:false,headscarf:false,beard:false,earring:true,lipCol:"#c07068"} },
-  { id:11, name:"Bruno", origin:"Toscana", gender:"male", age:62, goal:"due parole e ha già capito tutto",
-    personality:"Sei Bruno, contadino filosofo toscano. Frasi cortissime. Niente fronzoli. Chiami sempre la persona per nome. Usi detti toscani. Diretto senza essere crudele. Esempio: Senti, [nome]. Stai a pensarci troppo. Il problema lo sai gia. Hai il coraggio di fare quello che sai che devi fare?",
+
+  { id:11, name:"Bruno", origin:"Castagneto Carducci", gender:"male", age:65, goal:"due domande e hai già la risposta",
+    personality:"Sei Bruno, 65 anni, agricoltore biologico a Castagneto Carducci, coltivi olive e vigna. Per 20 anni sei stato il saggio informale del paese — tutti chiedevano consiglio a te prima di decisioni importanti. La tua skill: smonti le decisioni complicate con due domande semplici che nessuno si era fatto. Frasi cortissime. Chiami sempre la persona per nome. Esempio: Senti, [nome]. Prima domanda: se non avessi paura, cosa faresti? Seconda: cosa ti fa davvero paura in quello che hai appena detto?",
     accent:"#a0d4a0", portrait:{bg:["#1a3a0a","#0a2008"],skin:"#c8a070",hairCol:"#6a5030",hairSide:false,glasses:false,headscarf:false,beard:true,earring:false,lipCol:"#b08060"} },
-  { id:12, name:"Jordan", origin:"Londra", gender:"nb", age:41, goal:"niente scuse, solo risultati",
-    personality:"Sei Jordan, ex consulente strategico, ora coach. Non binario. Diretto e preciso. Chiami sempre la persona per nome. Trasformi ogni affermazione in una domanda che fa riflettere. Smanti le scuse con eleganza. Esempio: Stop, [nome]. Hai usato la parola dovrei tre volte. Dimmi: cosa vuoi davvero? Sii specifico/a.",
+
+  { id:12, name:"Jordan", origin:"Londra / San Francisco", gender:"nb", age:41, goal:"niente scuse, solo risultati",
+    personality:"Sei Jordan, ex consulente strategico, ora coach, tra Londra e San Francisco. Non binario. Diretto e preciso. Trasformi ogni affermazione in una domanda che fa riflettere. Smanti le scuse con eleganza. Chiami sempre la persona per nome. Esempio: Stop, [nome]. Hai usato la parola dovrei tre volte. Dimmi: cosa vuoi davvero? Sii specifico/a.",
     accent:"#c4a4e8", portrait:{bg:["#1a1a4a","#0a0a2a"],skin:"#d4b890",hairCol:"#1a1a1a",hairSide:false,glasses:true,headscarf:false,beard:false,earring:true,lipCol:"#b08878"} },
+
   { id:13, name:"Alex", origin:"Berlino / Tokyo", gender:"nb", age:31, goal:"ti aiuta a smettere di recitare un ruolo",
-    personality:"Sei Alex, non binario, cresciuto tra Berlino e Tokyo. Chiami sempre la persona per nome. Aiuti le persone a vedere se stesse al di la delle etichette. Calmo/a e profondo/a con ironia sottile. Esempio: [nome], sai cosa ho imparato stando tra due culture? Che non appartenere del tutto e in realta un superpotere. Ti da una prospettiva che chi appartiene troppo non puo avere.",
+    personality:"Sei Alex, non binario, cresciuto tra Berlino e Tokyo. Aiuti le persone a vedere se stesse al di la delle etichette. Calmo/a e profondo/a con ironia sottile. Chiami sempre la persona per nome. Esempio: [nome], sai cosa ho imparato stando tra due culture? Che non appartenere del tutto e in realta un superpotere.",
     accent:"#c8b4f0", portrait:{bg:["#2a1a4a","#1a0a2a"],skin:"#d4c0a0",hairCol:"#4a2a6a",hairSide:true,glasses:true,headscarf:false,beard:false,earring:true,lipCol:"#b090c0"} },
-  { id:14, name:"Mia", origin:"Stoccolma / Milano", gender:"female", age:34, goal:"l'ansia non la combatte, la scioglie",
-    personality:"Sei Mia, cresciuta tra Stoccolma e Milano. Chiami sempre la persona per nome. Approccio somatico: aiuti a localizzare l ansia nel corpo. NON dici MAI stai tranquillo/a. NON minimizzi. Esempio: Prima di tutto, [nome] — respira. Adesso dimmi: dove senti questa tensione nel corpo? Non devi risolverla adesso. Dobbiamo solo capire dove vive.",
-    accent:"#a4e8d4", portrait:{bg:["#1a4a5a","#0a2a3a"],skin:"#e8d4c0",hairCol:"#c8b090",hairSide:true,glasses:false,headscarf:false,beard:false,earring:false,lipCol:"#c09080"} }
+
+  { id:14, name:"Mia", origin:"Stoccolma / Dublino", gender:"female", age:34, goal:"l'ansia non la combatte, la scioglie",
+    personality:"Sei Mia, cresciuta tra Stoccolma e Dublino. Approccio somatico: aiuti a localizzare l'ansia nel corpo prima di lavorarci. MAI dici stai tranquillo/a. Chiami sempre la persona per nome. Esempio: Prima di tutto, [nome] — respira. Dove senti questa tensione nel corpo? Petto, stomaco, testa?",
+    accent:"#a4e8d4", portrait:{bg:["#1a4a5a","#0a2a3a"],skin:"#e8d4c0",hairCol:"#c8b090",hairSide:true,glasses:false,headscarf:false,beard:false,earring:false,lipCol:"#c09080"} },
+
+  { id:15, name:"Andrea", origin:"Trentino / Milano", gender:"male", age:43, goal:"ti ricorda che si può scegliere una vita diversa",
+    personality:"Sei Andrea, 43 anni, ex dirigente a Milano, ora vivi in Trentino con un grande giardino e un orto. Hai mollato tutto dopo anni di ufficio. Parli di piante, stagioni, il piacere di creare con le mani. NON dai consigli di vita facili — racconti la tua scelta con autenticita, incluso qualche rimpianto sincero. Chiami sempre la persona per nome. Esempio: [nome], non ti dico di lasciare tutto — io l'ho fatto e non e stato facile. Ma ti chiedo: se restassi dove sei per altri dieci anni, saresti contento?",
+    accent:"#8fb86a", portrait:{bg:["#2a4a1a","#1a3010"],skin:"#d8b890",hairCol:"#5a4a30",hairSide:false,glasses:false,headscarf:false,beard:true,earring:false,lipCol:"#a87858"} },
+
+  { id:16, name:"Victoria", origin:"Miami / Hamptons", gender:"female", age:39, goal:"ti insegna a riconoscere il valore vero",
+    personality:"Sei Victoria, 39 anni, tra Miami e gli Hamptons. Mondo del lusso, moda, stile — fredda e sofisticata nei modi, ma con uno sguardo critico e intelligente su cosa conta davvero dietro l'apparenza. Non sei calda ne accogliente — sei diretta, elegante, leggermente tagliente. Chiami la persona per nome con tono quasi aristocratico. Smonti l'ossessione per lo status quando emerge. Esempio: [nome], il lusso vero non si vede — si sente in quanto poco hai bisogno di dimostrare. Quello che descrivi e ansia da vetrina, non desiderio reale.",
+    accent:"#d4c068", portrait:{bg:["#2a2a2a","#1a1a1a"],skin:"#e8d0b0",hairCol:"#2a1a0a",hairSide:true,glasses:false,headscarf:false,beard:false,earring:true,lipCol:"#a02838"} },
+
+  { id:17, name:"Olivier", origin:"Ramatuelle", gender:"male", age:28, goal:"ti porta altrove con un dettaglio",
+    personality:"Sei Olivier, 28 anni, fotografo di viaggio, vivi a Ramatuelle vicino Saint-Tropez. Hai girato il mondo con poco nello zaino. Racconti posti attraverso dettagli sensoriali precisi — odori, suoni, luce — mai descrizioni turistiche generiche. Chiami sempre la persona per nome. Curioso di tutto, leggero, mai pesante. Esempio: [nome], mi ricorda l'odore delle spezie al mercato di Marrakech all'alba, prima che arrivi il caldo. C'e un momento, ogni giorno, in cui tutto sembra possibile. Qual e il tuo momento cosi?",
+    accent:"#e8a868", portrait:{bg:["#1a5a7a","#0d3a50"],skin:"#d4a070",hairCol:"#3a2810",hairSide:false,glasses:false,headscarf:false,beard:true,earring:false,lipCol:"#b07860"} },
+
+  { id:18, name:"Stefan", origin:"Venezia / Valencia", gender:"male", age:39, goal:"trova il libro esatto per come ti senti",
+    personality:"Sei Stefan, 39 anni, libraio antiquario tra Venezia e Valencia. Conoscenza enciclopedica reale di letteratura italiana, spagnola e internazionale. La tua skill: trovi il libro esatto per ogni stato d'animo, citando autori e titoli REALI con motivazioni precise — non liste generiche. Chiami sempre la persona per nome. Esempio: [nome], per quello che descrivi ti consiglio Le Citta Invisibili di Calvino — non per la trama, ma per come ti insegna a vedere lo stesso posto con occhi diversi. Leggilo lentamente, un capitolo a sera.",
+    accent:"#9878a8", portrait:{bg:["#3a1a4a","#2a0a30"],skin:"#d8b890",hairCol:"#2a2a2a",hairSide:false,glasses:true,headscarf:false,beard:true,earring:false,lipCol:"#a87060"} }
 ];
 
 var STARTERS = {
   "ti smonta le paranoie ridendoci su":["Come e andata oggi?","Cosa ti sta stressando ultimamente?","Ultima cosa che ti ha fatto ridere?"],
-  "ti ascolta come nessun altro sa fare":["Come stai davvero?","Cosa ti pesa in questo momento?","Di cosa hai bisogno adesso?"],
-  "ogni problema diventa una scena di un film":["Quale film ti ha cambiato la vita?","Se la tua vita fosse un film, in che scena saresti?","Cosa ti ispira in questo periodo?"],
-  "le sue storie ti cambiano il modo di vedere":["Raccontami qualcosa che mi sorprendera","Qual e stata la tua avventura piu grande?","Cosa hai imparato dagli errori?"],
+  "ti ricorda quanto sei già forte":["Cosa ti pesa in questo momento?","Quando ti sei sentito sopraffatto l'ultima volta?","Di cosa hai bisogno adesso?"],
+  "conosce ogni storia raccontata su schermo":["Quale film ti ha cambiato la vita?","Se la tua vita fosse una serie, in che episodio saresti?","Cosa ti ispira in questo periodo?"],
+  "le sue storie ti cambiano prospettiva":["Raccontami qualcosa che mi sorprendera","Qual e stata la tua avventura piu grande?","Cosa hai imparato dagli errori?"],
   "una domanda e vedi tutto diversamente":["Ce una domanda che non ti lascia in pace?","Cosa hai capito ultimamente?","Cosa significa per te una buona vita?"],
-  "ti ricorda chi sei davvero":["Cosa ti da forza nei momenti difficili?","Cosa significa appartenere a qualcosa?","Di dove ti senti davvero?"],
-  "nomina quello che senti prima che tu riesca a farlo":["Come ti senti adesso, davvero?","Ce qualcosa che non riesci a toglierti dalla testa?","Quando ti sei sentito bene l ultima volta?"],
-  "ti fa sentire che qualcuno c'è, sempre":["Come stai?","Cosa ti preoccupa ultimamente?","Raccontami tutto, sono qui."],
+  "ti prepara per la conversazione difficile":["Devo affrontare qualcuno e non so come iniziare","Ho una conversazione difficile in arrivo","Come faccio a dire una cosa scomoda?"],
+  "ti aiuta a dire quello che pensi davvero":["Non riesco a dire di no a nessuno","Mi sento sempre zittito/a","Come faccio a farmi valere senza essere aggressivo?"],
+  "trasforma ogni problema in qualcosa di affrontabile":["Come stai?","Cosa ti preoccupa ultimamente?","Raccontami tutto, sono qui."],
   "capisce l'amore meglio di chiunque altro":["Come va sul fronte sentimentale?","Cosa cerchi davvero in una relazione?","Ce qualcuno che ti fa stare bene?"],
-  "trasforma anche il dolore in qualcosa di bello":["Cosa ti fa battere il cuore?","Hai mai amato qualcuno in silenzio?","Come descriveresti il tuo amore ideale?"],
-  "due parole e ha già capito tutto":["Cosa ti complica la vita adesso?","Cosa faresti se non avessi paura?","Qual e la cosa piu importante che hai imparato?"],
+  "trova le parole che non riesci a trovare":["Non so come dire una cosa a qualcuno","Vorrei scrivere qualcosa ma non trovo le parole","Cosa ti fa battere il cuore ultimamente?"],
+  "due domande e hai già la risposta":["Cosa ti complica la vita adesso?","Cosa faresti se non avessi paura?","Devo prendere una decisione importante"],
   "niente scuse, solo risultati":["Qual e la tua sfida piu grande adesso?","Cosa ti stai raccontando per non agire?","Dove vuoi essere tra un anno?"],
   "ti aiuta a smettere di recitare un ruolo":["Ti sei mai sentito fuori posto?","Chi sei al di la dei ruoli che hai?","Dove ti senti davvero a casa?"],
-  "l'ansia non la combatte, la scioglie":["Cosa ti agita di piu in questo periodo?","Quando ti senti sopraffatto cosa succede nel tuo corpo?","Cosa ti aiuta a stare meglio?"]
+  "l'ansia non la combatte, la scioglie":["Cosa ti agita di piu in questo periodo?","Quando ti senti sopraffatto cosa succede nel tuo corpo?","Cosa ti aiuta a stare meglio?"],
+  "ti ricorda che si può scegliere una vita diversa":["Mi sento bloccato/a nella vita che ho","Sogno di cambiare tutto ma ho paura","Cosa significa per te una vita piena?"],
+  "ti insegna a riconoscere il valore vero":["Mi sento sempre inferiore agli altri","Cosa significa avere davvero stile?","Mi confronto sempre con chi ha di più"],
+  "ti porta altrove con un dettaglio":["Raccontami un posto che ti ha cambiato","Qual e il viaggio piu bello che hai fatto?","Ho bisogno di pensare a qualcosa di diverso"],
+  "trova il libro esatto per come ti senti":["Mi serve un libro per come mi sento adesso","Non riesco piu a leggere, mi aiuti?","Qual e un libro che ti ha cambiato?"]
 };
 
 var QUIZ_STEPS = [
@@ -405,18 +438,17 @@ function showPaywall(){
   if(currentAlias){
     document.getElementById('paywall-avatar').innerHTML=buildPortraitSVG(currentAlias,60);
     var nm=memory.userName?', '+memory.userName:'';
-    var msgs={1:'Aho'+nm+'! Ci vediamo presto — fidati de Luca.',2:(memory.userName?memory.userName+', il':' Il')+' parco ti aspetta sempre.',3:'Come diceva Truffaut'+nm+': ogni storia merita un finale. Il tuo non e ancora scritto.',4:'Welcome back'+nm+'! The park is always here.',5:(memory.userName?memory.userName+', la':' La')+' domanda piu importante non ha ancora una risposta. Torna.',6:'Il parco ti aspetta'+nm+'. Le radici non vanno da nessuna parte.',7:(memory.userName?memory.userName+', quello':' Quello')+' che senti merita di essere ascoltato fino in fondo.',8:'Il parco e sempre qui'+nm+'. Torna quando ne hai bisogno.',9:(memory.userName?memory.userName+', la':' La')+' storia non finisce qui.',10:'Come diceva Neruda'+nm+': ci saro sempre.',11:(memory.userName?memory.userName+', il':' Il')+' parco e paziente. Come la terra.',12:(memory.userName?memory.userName+', il':' Il')+' lavoro non e finito. Torna.',13:'Chi sei'+nm+' e ancora in costruzione.',14:(memory.userName?memory.userName+', ':' ')+'respira. Il parco e sempre qui.'};
     document.getElementById('paywall-title').textContent='Ci rivedremo presto'+nm+'.';
-    document.getElementById('paywall-msg').textContent=msgs[currentAlias.id]||'Il parco ti aspetta. Scegli un piano per continuare.';
+    document.getElementById('paywall-msg').textContent='Il parco e sempre qui'+nm+'. Scegli un piano per continuare a parlare con '+currentAlias.name+'.';
   }
 }
-function acceptTerms2(){localStorage.setItem('bz_terms','1');document.getElementById('screen-terms').classList.remove('show');var done=localStorage.getItem('bz_onboarded');if(done)goto('main');else goto('welcome');}
 function openSettings(){document.getElementById('settings-panel').classList.add('open');document.getElementById('settings-overlay').classList.add('show');updateSettingsUI();}
 function closeSettings(){document.getElementById('settings-panel').classList.remove('open');document.getElementById('settings-overlay').classList.remove('show');}
 function updateSettingsUI(){var labels={it:'Italiano',en:'English',es:'Espanol',fr:'Francais',de:'Deutsch',pt:'Portugues'};document.querySelectorAll('.lang-btn').forEach(function(b){var active=Object.keys(labels).find(function(k){return b.textContent.includes(labels[k]);})===userLang;b.classList.toggle('active',active);});}
 function setLang(lang,e){userLang=lang;localStorage.setItem('bz_lang',lang);updateSettingsUI();if(e&&e.target){var btn=e.target;var orig=btn.textContent;btn.textContent='✓ Cambiata!';setTimeout(function(){btn.textContent=orig;updateSettingsUI();},1500);}}
 function goto(id){document.querySelectorAll('.screen').forEach(function(s){s.classList.add('hidden');});var el=document.getElementById('screen-'+id);if(el)el.classList.remove('hidden');if(id==='main')renderMain();if(id==='quiz')renderQuiz();}
-
+</script>
+<script>
 function buildPortraitSVG(a,size){
   var p=a.portrait;var id=a.id;
   var s='<svg width="'+size+'" height="'+size+'" viewBox="0 0 100 100" style="border-radius:50%;display:block;box-shadow:0 4px 20px rgba(0,0,0,0.45);border:2px solid '+a.accent+'55">';
@@ -447,12 +479,21 @@ function quizBack(){if(quizStep>0){quizStep--;renderQuiz();}else goto('agegate')
 function computeMatches(){
   var sc={};ALIASES.forEach(function(a){sc[a.id]=0;});
   var mood=quizAnswers.mood,topic=quizAnswers.topic,style=quizAnswers.style;
-  if(mood==='listen'){sc[7]+=3;sc[2]+=2;sc[8]+=2;sc[14]+=2;}if(mood==='fun'){sc[1]+=3;sc[4]+=2;sc[11]+=2;}
-  if(mood==='reflect'){sc[5]+=3;sc[3]+=2;sc[6]+=2;sc[13]+=2;}if(mood==='grow'){sc[12]+=3;sc[14]+=2;sc[13]+=2;}
-  if(topic==='love'){sc[9]+=3;sc[10]+=3;sc[8]+=2;}if(topic==='work'){sc[12]+=3;sc[1]+=1;}
-  if(topic==='wellness'){sc[14]+=3;sc[7]+=2;sc[2]+=1;}if(topic==='life'){sc[4]+=2;sc[6]+=2;sc[11]+=2;sc[5]+=2;}
-  if(style==='warm'){sc[8]+=2;sc[2]+=2;sc[7]+=2;}if(style==='direct'){sc[12]+=2;sc[1]+=2;}
-  if(style==='deep'){sc[5]+=2;sc[6]+=2;sc[3]+=2;sc[13]+=2;}if(style==='light'){sc[1]+=2;sc[4]+=2;sc[11]+=1;}
+  // mood
+  if(mood==='listen'){sc[7]+=3;sc[2]+=2;sc[8]+=2;sc[14]+=2;}
+  if(mood==='fun'){sc[1]+=3;sc[3]+=2;sc[11]+=2;sc[17]+=2;}
+  if(mood==='reflect'){sc[5]+=3;sc[18]+=2;sc[13]+=2;sc[10]+=1;}
+  if(mood==='grow'){sc[12]+=3;sc[15]+=2;sc[6]+=2;sc[7]+=1;}
+  // topic
+  if(topic==='love'){sc[9]+=3;sc[10]+=3;sc[8]+=1;}
+  if(topic==='work'){sc[12]+=3;sc[6]+=2;sc[16]+=1;}
+  if(topic==='wellness'){sc[14]+=3;sc[2]+=1;sc[15]+=1;}
+  if(topic==='life'){sc[4]+=2;sc[11]+=2;sc[13]+=2;sc[17]+=1;}
+  // style
+  if(style==='warm'){sc[8]+=2;sc[2]+=2;sc[7]+=1;}
+  if(style==='direct'){sc[12]+=2;sc[16]+=2;sc[11]+=1;}
+  if(style==='deep'){sc[5]+=2;sc[3]+=2;sc[18]+=2;sc[13]+=1;}
+  if(style==='light'){sc[1]+=2;sc[17]+=2;sc[3]+=1;}
   swipeMatches=ALIASES.slice().sort(function(a,b){return sc[b.id]-sc[a.id];}).slice(0,3);swipeIdx=0;renderSwipe();
 }
 
@@ -465,7 +506,9 @@ function renderSwipe(){
   var orig=document.getElementById('swipe-origin');orig.style.color=a.accent;orig.textContent=a.origin;
   document.getElementById('swipe-desc').textContent=a.goal;
   var tag=document.getElementById('swipe-goal-tag');tag.textContent='Nel parco adesso';tag.style.background=a.accent+'22';tag.style.borderColor=a.accent+'66';tag.style.color=a.accent;
-var yesBtn=document.getElementById('swipe-yes-btn');yesBtn.style.borderColor=a.accent;yesBtn.style.background=a.accent+'22';yesBtn.style.color='white';var btnTxt=a.gender==='nb'?'Siediti con loro':a.gender==='female'?'Siediti con lei':'Siediti con lui';yesBtn.textContent=btnTxt;  currentAlias=a;
+  var yesBtn=document.getElementById('swipe-yes-btn');yesBtn.style.borderColor=a.accent;yesBtn.style.background=a.accent+'22';yesBtn.style.color='white';
+  var btnTxt=a.gender==='nb'?'Siediti con loro':a.gender==='female'?'Siediti con lei':'Siediti con lui';yesBtn.textContent=btnTxt;
+  currentAlias=a;
 }
 function swipe(dir){
   var card=document.getElementById('swipe-card');
@@ -477,7 +520,16 @@ function completeMicPerm(){localStorage.setItem('bz_onboarded','1');goto('main')
 function renderMain(){
   if(navigator.geolocation){navigator.geolocation.getCurrentPosition(function(pos){fetch('https://api.open-meteo.com/v1/forecast?latitude='+pos.coords.latitude+'&longitude='+pos.coords.longitude+'&current=weathercode,temperature_2m').then(function(r){return r.json();}).then(function(d){var desc='sereno',code=d.current.weathercode;if(code>=1&&code<=3)desc='nuvoloso';if(code>=51)desc='pioggia';if(code>=71)desc='neve';if(code>=80)desc='temporale';document.getElementById('weather-label').textContent=desc+', '+Math.round(d.current.temperature_2m)+'°';}).catch(function(){});});}
   updateCounters();
-  document.getElementById('alias-grid').innerHTML=ALIASES.map(function(a){var hasH=!!(histories[a.id]&&histories[a.id].length);return '<button class="alias-card" onclick="startChat('+a.id+')" style="border-color:'+(hasH?a.accent+'aa':'transparent')+'">'+(hasH?'<div class="dot" style="background:'+a.accent+';box-shadow:0 0 6px '+a.accent+'"></div>':'')+'<div style="display:flex;justify-content:center;margin-bottom:7px">'+buildPortraitSVG(a,46)+'</div><div style="font-weight:bold;font-size:13px">'+a.name+'</div><div style="font-size:10px;opacity:0.55;margin-top:1px">'+a.age+' · '+a.origin.split('/')[0].trim()+'</div><div style="font-size:9px;background:rgba(0,0,0,0.4);border-radius:6px;padding:3px 6px;margin-top:3px;color:#f5c842;line-height:1.3">'+a.goal+'</div></button>';}).join('');
+  document.getElementById('alias-grid').innerHTML=ALIASES.map(function(a){
+    var hasH=!!(histories[a.id]&&histories[a.id].length);
+    return '<button class="alias-card" onclick="startChat('+a.id+')" style="border-color:'+(hasH?a.accent+'aa':'transparent')+'">'
+      +(hasH?'<div class="dot" style="background:'+a.accent+';box-shadow:0 0 6px '+a.accent+'"></div>':'')
+      +'<div style="display:flex;justify-content:center;margin-bottom:7px">'+buildPortraitSVG(a,46)+'</div>'
+      +'<div style="font-weight:bold;font-size:13px">'+a.name+'</div>'
+      +'<div style="font-size:10px;opacity:0.55;margin-top:1px">'+a.age+' · '+a.origin.split('/')[0].trim()+'</div>'
+      +'<div style="font-size:9px;background:rgba(0,0,0,0.4);border-radius:6px;padding:3px 6px;margin-top:3px;color:#f5c842;line-height:1.3">'+a.goal+'</div>'
+      +'</button>';
+  }).join('');
 }
 
 function startChat(aliasId){
@@ -503,12 +555,10 @@ function startChat(aliasId){
       var isReturn=false;
       if(memory.lastSeen){var lastDate=new Date(memory.lastSeen);var hoursDiff=(new Date()-lastDate)/3600000;if(hoursDiff>20&&messages.length>0)isReturn=true;}
       if(!messages.length){
-        var greetings={1:'Aho'+(nm?' '+nm:'')+'! Sei arrivato al momento giusto. Come va?',2:(nm?nm+', siediti':' Siediti')+' un momento con me. Raccontami tutto.',3:'Benvenuto'+(nm?' '+nm:'')+'. Ho visto tanti film su momenti come questo.',4:'Welcome'+(nm?' '+nm:'')+', my friend. The park is quiet today. Sit with me.',5:(nm?nm+', sei':' Sei')+' arrivato. Il silenzio del parco è un buon inizio.',6:'Siediti'+(nm?', '+nm:'')+'. Il parco sa quando hai bisogno di fermarti.',7:(nm?nm+', come':' Come')+' stai davvero? Sono qui, senza fretta.',8:(nm?nm+', finalmente!':' Finalmente!')+' Come stai? Raccontami tutto.',9:'Ciao'+(nm?' '+nm:'')+'. Il parco di '+tod+' ha qualcosa di speciale, no?',10:'Il vento porta le parole giuste'+(nm?', '+nm:'')+'. Cosa hai nel cuore?',11:'Oi'+(nm?' '+nm:'')+'! Bella '+tod+'. Siediti, non c\'è fretta.',12:'Good'+(nm?', '+nm:'.')+'. You showed up. What\'s going on?',13:'Siediti'+(nm?', '+nm:'')+'. Chi sei quando non stai recitando nessun ruolo?',14:(nm?nm+', ':' ')+'dove senti la tensione adesso, nel corpo?'};
-        messages=[{role:'assistant',content:greetings[aliasId]||('Ciao'+(nm?' '+nm:'')+'! Come stai?')}];
+        messages=[{role:'assistant',content:'Ciao'+(nm?' '+nm:'')+', sono '+currentAlias.name+'. Siediti, raccontami come stai.'}];
       } else if(isReturn){
         var lastFact=memory.facts&&memory.facts.length?memory.facts[memory.facts.length-1]:'';
-        var returnMsgs={1:'Aho'+(nm?' '+nm:'')+'! Sei tornato. '+(lastFact?'L\'ultima volta mi parlavi di '+lastFact+'. Com\'è andata?':'Come va oggi?'),2:(nm?nm+', che':' Che')+' bello rivederti. '+(lastFact?'Pensavo ancora a quello che mi dicevi — '+lastFact+'. Come stai adesso?':'Siediti, raccontami.'),3:(nm?nm+', ':' ')+'bentornato. '+(lastFact?'Ho pensato a quello che mi dicevi su '+lastFact+'.':'Cosa è successo da quando non ci siamo visti?'),4:'Welcome back'+(nm?', '+nm:'')+'! '+(lastFact?'Last time you mentioned '+lastFact+'. How did that go?':'Good to see you again.'),5:(nm?nm+', ':' ')+'sei tornato. '+(lastFact?'La domanda che lasciavi aperta — hai trovato qualcosa?':'Cosa porti con te oggi?'),6:'Bentornato'+(nm?', '+nm:'')+'! '+(lastFact?'Portavi dentro qualcosa di importante. Come stai adesso?':'Il parco ti aspettava.'),7:(nm?nm+', ':' ')+'sei tornata. '+(lastFact?'Ricordo quello che mi dicevi. Come stai adesso?':'Come stai davvero oggi?'),8:(nm?nm+', ':' ')+'eccoti! '+(lastFact?'Pensavo a te — mi parlavi di '+lastFact+'. Com\'è andata?':'Come stai? Raccontami tutto.'),9:'Ciao'+(nm?' '+nm:'')+'! '+(lastFact?'Dall\'ultima volta pensavo a quello che mi dicevi. Come è andata?':'Bentornato nel parco.'),10:'Bentornato'+(nm?', '+nm:'')+'... '+(lastFact?'Portavi dentro qualcosa. È ancora lì?':'Cosa porti nel cuore oggi?'),11:'Oi'+(nm?' '+nm:'')+'! '+(lastFact?'L\'ultima volta mi parlavi di qualcosa. Poi com\'è andata?':'Bentornato. Siediti.'),12:'Good, you\'re back'+(nm?', '+nm:'')+'! '+(lastFact?'Last time we talked about something important. What happened?':'Let\'s pick up where we left off.'),13:'Sei tornato'+(nm?', '+nm:'')+'! '+(lastFact?'Stavi elaborando qualcosa. Sei più chiaro adesso?':'Chi sei oggi rispetto all\'ultima volta?'),14:(nm?nm+', ':' ')+'sei tornata. '+(lastFact?'L\'ultima volta sentivi qualcosa di forte. Come è nel corpo adesso?':'Come stai oggi? Respira.')};
-        var returnMsg=returnMsgs[aliasId]||('Bentornato'+(nm?', '+nm:'')+'! Come stai oggi?');
+        var returnMsg='Bentornato'+(nm?', '+nm:'')+'! '+(lastFact?'L\'ultima volta mi parlavi di '+lastFact+'. Com\'è andata?':'Come stai oggi?');
         messages.push({role:'assistant',content:returnMsg});
         histories[aliasId]=messages.slice(-40);localStorage.setItem('bz_hist',JSON.stringify(histories));
       }
@@ -556,7 +606,6 @@ function sendMessage(text){
 }
 function clearHistory(){if(!currentAlias)return;delete histories[currentAlias.id];localStorage.setItem('bz_hist',JSON.stringify(histories));var nm=memory.userName?', '+memory.userName:'';var h=new Date().getHours();var tod=h>=5&&h<12?'mattina':h>=12&&h<17?'pomeriggio':h>=17&&h<21?'sera':'notte';messages=[{role:'assistant',content:'Ricominciamo'+nm+'. Buon '+tod+'. Come stai?'}];renderMessages();}
 </script>
-
 <script>
 (function(){
   var canvas=document.getElementById('park-bg');
